@@ -1,11 +1,6 @@
 import torch.nn.functional as F
-from torch.nn import Parameter
 import torch
 from torch import nn
-
-from numpy import arange
-from numpy.random import mtrand
-import numpy as np
 
 class Attention(nn.Module):
     def __init__(self, enc_hid_dim, dec_hid_dim):
@@ -14,17 +9,10 @@ class Attention(nn.Module):
         
     def forward(self, s, enc_output):
         
-        # s = [batch_size, dec_hid_dim]
-        # enc_output = [batch_size, src_len, dec_hid_dim]
-        
         batch_size = enc_output.shape[0]
         src_len = enc_output.shape[1]
-        
-        # repeat decoder hidden state src_len times
-        # s = [batch_size, src_len, dec_hid_dim]
-        # enc_output = [batch_size, src_len, dec_hid_dim]
+
         s = s.repeat(1, src_len, 1)
-        # attention = [batch_size, 1, src_len]
         attention = self.attn(torch.cat((s, enc_output), dim = 2)).transpose(1,2)
         
         return F.softmax(attention, dim=2)
@@ -47,7 +35,7 @@ class DEC(torch.nn.Module):
 
         self.dropout = torch.nn.Dropout(args.dropout)
 
-        # attention机制实现
+        # attention
         self.attention = Attention(args.enc_num_unit, args.dec_num_unit)
         self.fc = torch.nn.Linear(2*args.dec_num_unit, args.dec_num_unit)
 
@@ -79,9 +67,7 @@ class DEC(torch.nn.Module):
             return inputs
 
     def forward(self, received):
-        # received = [batch_size, src_len, rate]
         received = received.type(torch.FloatTensor).to(self.this_device)
-        # rnn_out = [batch, block_len, dec_num_unit]
         out1,_ = self.dec1_rnns(received)
         out2,_ = self.dec2_rnns(received)
 
@@ -92,27 +78,12 @@ class DEC(torch.nn.Module):
 
         for i in range(self.args.block_len):
             if i>0 and i<5:
-                # # a = [batch_size, 1, src_len]
-                # a1 = self.attention(out1[:,i:i+1,:], out1[:,:i,:])
-                # a2 = self.attention(out2[:,i:i+1,:], out2[:,:i,:])
-
-                # # c = [batch_size, dec_hid_dim]
-                # c1 = torch.bmm(a1, out1[:,:i,:])
-                # c2 = torch.bmm(a2, out2[:,:i,:])
-
-                # ith_out1 = self.fc(torch.cat((c1,out1[:,i:i+1,:]),dim=2)).squeeze(1)
-                # ith_out2 = self.fc(torch.cat((c2,out2[:,i:i+1,:]),dim=2)).squeeze(1)
-
-                # rnn_out1[:,i,:] = ith_out1
-                # rnn_out2[:,i,:] = ith_out2
                 rnn_out1[:,i,:] = out1[:,i,:]
                 rnn_out2[:,i,:] = out2[:,i,:]
             if i>=5:
-                # a = [batch_size, 1, src_len]
                 a1 = self.attention(out1[:,i:i+1,:], out1[:,i-5:i,:])
                 a2 = self.attention(out2[:,i:i+1,:], out2[:,i-5:i,:])
 
-                # c = [batch_size, dec_hid_dim]
                 c1 = torch.bmm(a1, out1[:,i-5:i,:])
                 c2 = torch.bmm(a2, out2[:,i-5:i,:])
 

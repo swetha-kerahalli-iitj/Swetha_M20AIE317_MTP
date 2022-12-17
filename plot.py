@@ -3,6 +3,7 @@ Input file follows the following format. All lines are
 mandatory. No comments can be made within the file.
 Must be followed strictly.
 '''
+import glob
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -15,8 +16,6 @@ import matplotlib.pylab as pylab
 
 rcParams['legend.numpoints'] = 1
 mpl.style.use('seaborn')
-# plt.rcParams['axes.facecolor']='binary'
-# print(rcParams.keys())
 params = {
     'font.family': 'sans-serif',
     'font.sans-serif': 'Times New Roman',
@@ -51,8 +50,7 @@ def plot(lr):
         ax[i].plot(x, y2, '-', c='#377eb8', label="D=10", linewidth=2, markersize=6)
         ax[i].set_title(s[i],fontweight='bold',fontsize=16)
         ax[i].legend(loc='best',fancybox=True, framealpha=0,fontsize=14)
-        ax[i].grid(True, linestyle='dotted')  # x坐标轴的网格使用主刻度
-        # ax.yaxis.grid(True, linestyle='dotted')  # y坐标轴的网格使用次刻度
+        ax[i].grid(True, linestyle='dotted')  # X
 
     if lr==0.01:
         ax[2].plot(snrs, bler_d1_1_001, '-', c='#e41b1b', label="D=1", linewidth=2, markersize=6)
@@ -69,22 +67,17 @@ def plot(lr):
     plt.savefig('lr'+str(lr)+'.png', format='png', bbox_inches='tight', transparent=True, dpi=800)
     plt.show()
 
-# plot(0.01)
-# plot(0.001)
-
-def plot_attn(lr,D):
+def plot_attn(lr,D,filenamed1,filenamed10):
     fig, ax = plt.subplots(1, 3, figsize=(15, 6), tight_layout=True)
     ax = ax.ravel()
     s = ['Loss', 'BER', 'BLER']
     filename1 = './data/data_awgn_lr_'+str(lr)+'_D1_10000.txt'
     filename2 = './data/data_awgn_lr_'+str(lr)+'_D10_10000.txt'
-    attn_filename1 = './data/attention_data_awgn_lr_'+str(lr)+'_D1_10000.txt'
-    attn_filename2 = './data/attention_data_awgn_lr_'+str(lr)+'_D10_10000.txt'
 
     data1 = np.loadtxt(filename1,usecols=[1, 2], ndmin=2).T
     data2 = np.loadtxt(filename2,usecols=[1, 2], ndmin=2).T
-    attn_data1 = np.loadtxt(attn_filename1,usecols=[1, 2], ndmin=2).T
-    attn_data2 = np.loadtxt(attn_filename2,usecols=[1, 2], ndmin=2).T
+    attn_data1 = np.loadtxt(filenamed1,usecols=[1, 2], ndmin=2).T
+    attn_data2 = np.loadtxt(filenamed10,usecols=[1, 2], ndmin=2).T
 
     snrs =  [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
     bler1 = [0.9964999999999999, 0.9902999999999998, 0.9718, 0.9379, 0.8751, 0.7842, 0.6458999999999999, 0.5028, 0.35530000000000006, 0.23699999999999996, 0.1437, 0.07880000000000002]
@@ -102,13 +95,10 @@ def plot_attn(lr,D):
             y1 = data2[i, x]
             y2 = attn_data2[i, x]
         ax[i].plot(x, y1, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=6)
-        # ax[i].plot(x, y2, '--', c='#377eb8', label="no attention D=10", linewidth=2, markersize=6)
         ax[i].plot(x, y2, '-', c='#377eb8', label="with attention D={}".format(D), linewidth=2, markersize=6)
-        # ax[i].plot(x, y4, '-', c='#377eb8', label="with attention D=10", linewidth=2, markersize=6)
         ax[i].set_title(s[i],fontweight='bold',fontsize=16)
         ax[i].legend(loc='best',fancybox=True, framealpha=0,fontsize=14)
-        ax[i].grid(True, linestyle='dotted')  # x坐标轴的网格使用主刻度
-        # ax.yaxis.grid(True, linestyle='dotted')  # y坐标轴的网格使用次刻度
+        ax[i].grid(True, linestyle='dotted')  # X
 
     if D==1:
         ax[2].plot(snrs, bler1, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=6)
@@ -119,16 +109,10 @@ def plot_attn(lr,D):
     ax[2].set_title(s[2],fontweight='bold',fontsize=16)
     ax[2].legend(loc='best',fancybox=True, framealpha=0,fontsize=14)
     ax[2].grid(True, linestyle='dotted')
-    plt.savefig('attention_D'+str(D)+'.png', format='png', bbox_inches='tight', transparent=True, dpi=800)
+    plt.savefig('./data_test/plots/attention_D'+str(D)+'.png', format='png', bbox_inches='tight', transparent=True, dpi=800)
     plt.show()
 
-plot_attn(0.01,1)
-plot_attn(0.01,10)
-
-'''
 colors = ['#C95F63', '#F1AD32', '#3B8320', '#516EA9',  '#292DF4', ]
-# '#C95F63'红色 '#292DF4'亮蓝
-# #['navy', 'firebrick', 'darkgreen', 'darkgoldenrod', 'darkolivegreen',  'darkmagenta']
 line_styles = ['-']  # ['-', ':',  '--','-.']
 marker_types = ['o', 's', 'v', '^', '*', 'h']
 
@@ -139,7 +123,7 @@ legend = {
     'title': 'Delay=10 num_block=50000 lr=0.01',
     'xlabel': 'Epoch',
     'ylabel': 'BER',
-    'savepath': './data/awgn_lr0.01_D10_50000.png',
+    'savepath': './data/plots/awgn_lr0.01_D10_50000.png',
     'fig_size': (9,6),
     'label_fontsize': 15,
     'markersize': 10,
@@ -157,7 +141,7 @@ legend_snr = {
     'title': 'Delay=10 num_block=50000 lr=0.01',
     'xlabel': 'SNR',
     'ylabel': 'BER',
-    'savepath': './data/awgn_lr0.01_D10_50000_snr.png',
+    'savepath': './data/plots/awgn_lr0.01_D10_50000_snr.png',
     'fig_size': (9,6),
     'label_fontsize': 15,
     'markersize': 10,
@@ -170,15 +154,17 @@ legend_snr = {
     'line_length': 40,
     'markevery': 0.5
 }
-def plot_snr(legend):
-    # 读取数据
-    X = [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
-    Y = [0.0701569989323616, 0.05043799802660942, 0.0348035953938961, 0.022770600393414497, 0.014346200972795486, 0.008601599372923374, 0.004972000140696764, 0.0027095996774733067, 0.0014349999837577343, 0.0007247999892570078, 0.00036559993168339133, 0.00017820001812651753]
+def plot_snr(filename,legend):
+    data = np.loadtxt(filename)
+    X = data[:, 0]
+    Y = data[:, 3]
+    # X = [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+    # Y = [0.0701569989323616, 0.05043799802660942, 0.0348035953938961, 0.022770600393414497, 0.014346200972795486, 0.008601599372923374, 0.004972000140696764, 0.0027095996774733067, 0.0014349999837577343, 0.0007247999892570078, 0.00036559993168339133, 0.00017820001812651753]
     plt.figure(figsize=legend['fig_size'])
     plt.title(legend['title'], fontsize=legend['title_size'])
     ax = plt.subplot(111)
-    plt.xticks(fontsize=legend['label_fontsize']-2)  # x轴字体大小
-    plt.yticks(fontsize=legend['label_fontsize']-2)  # y轴字体大小
+    plt.xticks(fontsize=legend['label_fontsize']-2)  # x cordinate
+    plt.yticks(fontsize=legend['label_fontsize']-2)  # Y cordinate
     l1 = ax.plot(X, Y, color=colors[0], linestyle=line_styles[0], marker=marker_types[0], markersize=legend['markersize'], linewidth=legend['linewidth'], label=legend['ylabel'])
     ax.set_xlabel(legend['xlabel'], fontsize=legend['label_fontsize'])
     ax.set_ylabel(legend['ylabel'], fontsize=legend['label_fontsize'])
@@ -186,64 +172,28 @@ def plot_snr(legend):
     plt.show()
 
 def plot(filename, legend):
-    # 读取数据
-    # X = np.arange(1,121)
     data = np.loadtxt(filename)
     X = data[:,0]
     Y = data[:,2]
     plt.figure(figsize=legend['fig_size'])
     plt.title(legend['title'], fontsize=legend['title_size'])
     ax = plt.subplot(111)
-    plt.xticks(fontsize=legend['label_fontsize']-2)  # x轴字体大小
-    plt.yticks(fontsize=legend['label_fontsize']-2)  # y轴字体大小
+    plt.xticks(fontsize=legend['label_fontsize']-2)  # x cordinate
+    plt.yticks(fontsize=legend['label_fontsize']-2)  # Y cordinate
     l1 = ax.plot(X, Y, color=colors[0], linestyle=line_styles[0], linewidth=legend['linewidth'], label=legend['ylabel'])
     ax.set_xlabel(legend['xlabel'], fontsize=legend['label_fontsize'])
     ax.set_ylabel(legend['ylabel'], fontsize=legend['label_fontsize'])
     plt.savefig(legend['savepath'])
     plt.show()
-    
-    # # 画图
-    # plt.figure(figsize=legend['fig_size'])
-    # plt.title(legend['title'])
-    # ax = plt.subplot(121)
-    # plt.xticks(fontsize=legend['label_fontsize']-2)  # x轴字体大小
-    # plt.yticks(fontsize=legend['label_fontsize']-2)  # y轴字体大小
-    # l1 = ax.plot(x_data, y_data[0], color=colors[0], marker=marker_types[0], linestyle=line_styles[0], markersize=legend['markersize'], markevery=legend['markevery'], linewidth=legend['linewidth'], label=legend['ylabels'][0])
-    # ax.set_xlabel(legend['xlabel'], fontsize=legend['label_fontsize'])
-    # ax.set_ylabel(legend['ylabels'][0], fontsize=legend['label_fontsize'])
 
-    # ax2 = ax.twinx()
-    # plt.yticks(fontsize=legend['label_fontsize']-2)  # y轴字体大小
-    # l2 = ax2.plot(x_data, y_data[1], c=colors[1], marker=marker_types[1], linestyle=line_styles[0], markersize=legend['markersize'], markevery=legend['markevery'], linewidth=legend['linewidth'], label=legend['ylabels'][1])
-    # ax2.set_ylabel(legend['ylabels'][1], fontsize=legend['label_fontsize'])
-    # ax2.grid(None)
+def get_plots(filenames,lr):
+    d1FilenamesList = glob.glob('./data_test/data_awgn_lr_'+str(lr)+'_D1_*.txt')
+    d10FilenamesList = glob.glob('./data_test/data_awgn_lr_'+str(lr)+'_D10_*.txt')
+    d1FilenamesList[:0]=d1FilenamesList
+    d1FilenamesList[:0] = d1FilenamesList
+    # plot_attn(lr, 1, filename)
 
-    # line = l1 + l2
-    # labs = [l.get_label() for l in line]
-    # ax.legend(line, labs, loc=legend['loc'], fontsize=legend['label_fontsize'])
-    # plt.title(legend['title'], fontsize=legend['title_size'])
+    for filename in d1FilenamesList:
+        plot(filename, legend)
+        plot_snr(filename, legend_snr)
 
-    # ax3 = plt.subplot(122)
-    # plt.xticks(fontsize=legend['label_fontsize']-2)  # x轴字体大小
-    # plt.yticks(fontsize=legend['label_fontsize']-2)  # y轴字体大小
-    # l3 = ax3.plot(x_data, y_data[2], c=colors[2], marker=marker_types[2], linestyle=line_styles[0], markersize=legend['markersize'], markevery=legend['markevery'], linewidth=legend['linewidth'], label=legend['ylabels'][2])
-    # ax3.set_xlabel(legend['xlabel'], fontsize=legend['label_fontsize'])
-    # ax3.set_ylabel(legend['ylabels'][2], fontsize=legend['label_fontsize'])
-
-    # ax4 = ax3.twinx()
-    # plt.yticks(fontsize=legend['label_fontsize']-2)  # y轴字体大小
-    # l4 = ax4.plot(x_data, y_data[3], c=colors[3], marker=marker_types[3], linestyle=line_styles[0], markersize=legend['markersize'], markevery=legend['markevery'], linewidth=legend['linewidth'], label=legend['ylabels'][3])
-    # ax4.set_ylabel(legend['ylabels'][3], fontsize=legend['label_fontsize'])
-    # ax4.grid(None)
-
-    # line2 = l3 + l4
-    # labs2 = [l.get_label() for l in line2]
-    # ax3.legend(line2, labs2, loc=legend['loc'], fontsize=legend['label_fontsize'])
-    # plt.title(legend['title'], fontsize=legend['title_size'])
-    
-    # plt.subplots_adjust(wspace =0.28, hspace =0)#调整子图间距
-    # plt.savefig('vgg16-cifar100.png')
-    # plt.show()
-
-plot("./data/data_awgn_lr_0.01_D10_50000.txt", legend)
-plot_snr(legend_snr)'''
