@@ -1,0 +1,83 @@
+Namespace(channel='awgn', vv=5, radar_prob=0.05, radar_power=5.0, train_enc_channel_low=1.0, train_enc_channel_high=1.0, train_dec_channel_low=-1.5, train_dec_channel_high=2.0, init_nw_weight='default', code_rate_k=1, code_rate_n=3, enc_rnn='gru', dec_rnn='gru', enc_num_layer=2, dec_num_layer=2, dec_num_unit=100, enc_num_unit=25, enc_act='elu', dec_act='linear', num_train_dec=5, num_train_enc=1, dropout=0.0, snr_test_start=-1.5, snr_test_end=4.0, snr_points=12, batch_size=100, num_epoch=5, test_ratio=1, block_len=100, block_len_low=10, block_len_high=200, is_variable_block_len=False, num_block=1000, test_channel_mode='block_norm', train_channel_mode='block_norm', enc_truncate_limit=0, no_code_norm=False, enc_quantize_level=2, enc_value_limit=1.0, enc_grad_limit=0.01, enc_clipping='both', optimizer='adam', dec_lr=0.001, enc_lr=0.001, no_cuda=False, rec_quantize=False, print_pos_ber=False, print_pos_power=False, print_test_traj=False, precompute_norm_stats=False, D=1)
+use_cuda:  False
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(1, 25, num_layers=2, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=3, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(3, 100, num_layers=2, batch_first=True)
+    (dec2_rnns): GRU(3, 100, num_layers=2, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=1, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69276011  running time 97.59823060035706
+====> Epoch: 1 Average loss: 0.66678618  running time 96.2950119972229
+====> Epoch: 1 Average loss: 0.57166741  running time 95.1980197429657
+====> Epoch: 1 Average loss: 0.43561912  running time 99.0618851184845
+====> Epoch: 1 Average loss: 0.39355978  running time 87.10310959815979
+====> Epoch: 1 Average loss: 0.38524069  running time 86.93180418014526
+====> Test set BCE loss 0.35373198986053467 Custom Loss 0.35373198986053467 with ber  0.15202999114990234 with bler  1.0
+saved model C:\WorkSpace\Swetha_M20AIE317_MTP\model_test\attention_model_1_awgn_lr_0.001_D1_1000_20221202-003853.pt
+each epoch training time: 566.3747727870941s
+====> Epoch: 2 Average loss: 0.32641252  running time 86.91151714324951
+====> Epoch: 2 Average loss: 0.30641344  running time 86.38028979301453
+====> Epoch: 2 Average loss: 0.30304358  running time 88.09974098205566
+====> Epoch: 2 Average loss: 0.29985283  running time 89.27494597434998
+====> Epoch: 2 Average loss: 0.29460685  running time 87.6795105934143
+====> Epoch: 2 Average loss: 0.29054527  running time 86.71580815315247
+====> Test set BCE loss 0.2557739019393921 Custom Loss 0.2557739019393921 with ber  0.10406999289989471 with bler  1.0
+saved model C:\WorkSpace\Swetha_M20AIE317_MTP\model_test\attention_model_2_awgn_lr_0.001_D1_1000_20221202-003853.pt
+each epoch training time: 529.182131767273s
+====> Epoch: 3 Average loss: 0.22407995  running time 86.94745469093323
+====> Epoch: 3 Average loss: 0.22399321  running time 86.90955328941345
+====> Epoch: 3 Average loss: 0.21654111  running time 86.35574007034302
+====> Epoch: 3 Average loss: 0.21539445  running time 87.02289366722107
+====> Epoch: 3 Average loss: 0.21464579  running time 87.05548214912415
+====> Epoch: 3 Average loss: 0.21522327  running time 86.68317580223083
+====> Test set BCE loss 0.16886834800243378 Custom Loss 0.16886834800243378 with ber  0.0637500062584877 with bler  0.9950000000000001
+saved model C:\WorkSpace\Swetha_M20AIE317_MTP\model_test\attention_model_3_awgn_lr_0.001_D1_1000_20221202-003853.pt
+each epoch training time: 525.0857746601105s
+====> Epoch: 4 Average loss: 0.15605579  running time 86.60195660591125
+====> Epoch: 4 Average loss: 0.17918090  running time 86.64828634262085
+====> Epoch: 4 Average loss: 0.17393829  running time 86.62838506698608
+====> Epoch: 4 Average loss: 0.17210319  running time 86.72808194160461
+====> Epoch: 4 Average loss: 0.16979250  running time 87.11991429328918
+====> Epoch: 4 Average loss: 0.17235667  running time 86.71416735649109
+====> Test set BCE loss 0.12874972820281982 Custom Loss 0.12874972820281982 with ber  0.04768999665975571 with bler  0.993
+saved model C:\WorkSpace\Swetha_M20AIE317_MTP\model_test\attention_model_4_awgn_lr_0.001_D1_1000_20221202-003853.pt
+each epoch training time: 524.5760424137115s
+====> Epoch: 5 Average loss: 0.12463262  running time 86.48900985717773
+====> Epoch: 5 Average loss: 0.15167622  running time 86.89477300643921
+====> Epoch: 5 Average loss: 0.15470123  running time 87.33970093727112
+====> Epoch: 5 Average loss: 0.15064336  running time 86.6680235862732
+====> Epoch: 5 Average loss: 0.14660228  running time 86.47890496253967
+====> Epoch: 5 Average loss: 0.14927768  running time 87.03769826889038
+====> Test set BCE loss 0.10946983098983765 Custom Loss 0.10946983098983765 with ber  0.040119998157024384 with bler  0.978
+saved model C:\WorkSpace\Swetha_M20AIE317_MTP\model_test\attention_model_5_awgn_lr_0.001_D1_1000_20221202-003853.pt
+each epoch training time: 525.0092051029205s
+saved model C:\WorkSpace\Swetha_M20AIE317_MTP\model_test\attention_model_awgn_lr_0.001_D1_1000.pt
+SNRS [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+Test SNR -1.5 with ber  0.09397000074386597 with bler 1.0
+Test SNR -1.0 with ber  0.08264999091625214 with bler 1.0
+Test SNR -0.5 with ber  0.07075999677181244 with bler 0.9970000000000001
+Test SNR 0.0 with ber  0.059450000524520874 with bler 0.991
+Test SNR 0.5 with ber  0.05079000070691109 with bler 0.9950000000000001
+Test SNR 1.0 with ber  0.04062000289559364 with bler 0.9780000000000001
+Test SNR 1.5 with ber  0.032710000872612 with bler 0.9710000000000001
+Test SNR 2.0 with ber  0.026149999350309372 with bler 0.9269999999999999
+Test SNR 2.5 with ber  0.019449999555945396 with bler 0.8390000000000001
+Test SNR 3.0 with ber  0.014630000106990337 with bler 0.756
+Test SNR 3.5 with ber  0.009919999167323112 with bler 0.602
+Test SNR 4.0 with ber  0.007850000634789467 with bler 0.533
+final results on SNRs  [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+BER [0.09397000074386597, 0.08264999091625214, 0.07075999677181244, 0.059450000524520874, 0.05079000070691109, 0.04062000289559364, 0.032710000872612, 0.026149999350309372, 0.019449999555945396, 0.014630000106990337, 0.009919999167323112, 0.007850000634789467]
+BLER [1.0, 1.0, 0.9970000000000001, 0.991, 0.9950000000000001, 0.9780000000000001, 0.9710000000000001, 0.9269999999999999, 0.8390000000000001, 0.756, 0.602, 0.533]
+encoder power is 1.0
+adjusted SNR should be [-1.4999997446509226, -1.0000000166986343, -0.49999973308696327, -0.0, 0.5000001308463472, 1.0000002900227403, 1.5000000201403676, 2.0000002404171053, 2.5000000877622415, 3.0000002493010487, 3.500000207085638, 3.999999717024358]
+Training Time: 2718.648963689804s
