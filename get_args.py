@@ -73,9 +73,9 @@ def get_args():
 
     parser.add_argument('-num_block', type=int, default=1000)
 
-    # parser.add_argument('-test_channel_mode',
-    #                     choices=['block_norm','block_norm_ste'],
-    #                     default='block_norm')
+    parser.add_argument('-test_channel_mode',
+                        choices=['block_norm','block_norm_ste'],
+                        default='block_norm')
     parser.add_argument('-train_channel_mode',
                         choices=['block_norm','block_norm_ste'],
                         default='block_norm')

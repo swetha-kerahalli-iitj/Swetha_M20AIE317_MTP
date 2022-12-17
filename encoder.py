@@ -1,10 +1,6 @@
 import torch
 import torch.nn.functional as F
 
-from numpy import arange
-from numpy.random import mtrand
-import math
-import numpy as np
 from utils import STEQuantize 
     
 class ENC(torch.nn.Module):
