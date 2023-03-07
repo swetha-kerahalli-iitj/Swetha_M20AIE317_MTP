@@ -3,19 +3,14 @@ import torch.optim as optim
 import sys, os
 import time
 from get_args import get_args
-from plot import plot_attn, plot, plot_snr,legend, legend_snr
+from plot import plot_attn, plot, plot_snr,legend, legend_snr,get_plots
 from trainer import train, validate, test
+from Rayleigh_Noise_Util.QPSK_Mod_Demod import QPSK_Mod_Demod
 
 from encoder import ENC
 from decoder import DEC
 
-BASE_PATH = r'C:\WorkSpace\Swetha_M20AIE317_MTP'
-LOG_PATH = os.path.join(BASE_PATH, r'logs_test')
-DATA_PATH = os.path.join(BASE_PATH, r'data_test')
-MODEL_PATH = os.path.join(BASE_PATH, r'model_test')
-for path in (LOG_PATH,DATA_PATH,MODEL_PATH):
-    if not os.path.isdir(path):
-        os.makedirs(path)
+
 attnFilename=[]
 # utils for logger
 class Logger(object):
@@ -38,7 +33,14 @@ if __name__ == '__main__':
     start_time = time.time()
 
     args = get_args()
-
+    BASE_PATH = args.BASE_PATH
+    LOG_PATH = args.LOG_PATH
+    DATA_PATH =args.DATA_PATH
+    MODEL_PATH = args.MODEL_PATH
+    PLOT_PATH = args.PLOT_PATH
+    for path in (LOG_PATH, DATA_PATH, MODEL_PATH,PLOT_PATH):
+        if not os.path.isdir(path):
+            os.makedirs(path)
     # put all printed things to log file
     if args.init_nw_weight == 'default':
         start_epoch = 1
@@ -56,6 +58,8 @@ if __name__ == '__main__':
 
     filename = os.path.join(DATA_PATH, 'attention_data_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(
         args.D) + '_' + str(args.num_block) + '_' + timestamp + '.txt')
+    filename_test = os.path.join(DATA_PATH, 'attention_data_test_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(
+        args.D) + '_' + str(args.num_block) + '_' + timestamp + '.txt')
 
     attnFilename.append(filename)
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -66,13 +70,13 @@ if __name__ == '__main__':
     # Setup Channel AE: Encoder, Decoder, Channel
     #################################################
 
-    encoder = ENC(args)
-    decoder = DEC(args)
-
-    # choose support channels
+    # encoder = ENC(args,'encoder')
+    # decoder = DEC(args)
+    #
+    # # choose support channels
     from channel_ae import Channel_AE
 
-    model = Channel_AE(args, encoder, decoder).to(device)
+    model = QPSK_Mod_Demod(args,'encoder').to(device)
 
     # weight loading
     if args.init_nw_weight == 'default':
@@ -89,21 +93,21 @@ if __name__ == '__main__':
 
         model.args = args
 
-    print(model)
+    print("model: ",model)
 
     ##################################################################
     # Setup Optimizers
     ##################################################################
 
     OPT = optim.Adam
-
-    if args.num_train_enc != 0:  # no optimizer for encoder
-        enc_optimizer = OPT(model.enc.parameters(), lr=args.enc_lr)
-
-    if args.num_train_dec != 0:
-        dec_optimizer = OPT(filter(lambda p: p.requires_grad, model.dec.parameters()), lr=args.dec_lr)
-
-    general_optimizer = OPT(filter(lambda p: p.requires_grad, model.parameters()), lr=args.dec_lr)
+    #
+    # if args.num_train_enc != 0:  # no optimizer for encoder
+    #     enc_optimizer = OPT(model.enc.parameters(), lr=args.enc_lr)
+    #
+    # if args.num_train_dec != 0:
+    #     dec_optimizer = OPT(filter(lambda p: p.requires_grad, model.dec.parameters()), lr=args.dec_lr)
+    #
+    # general_optimizer = OPT(filter(lambda p: p.requires_grad, model.parameters()), lr=args.dec_lr)
 
     #################################################
     # Training Processes
@@ -114,13 +118,13 @@ if __name__ == '__main__':
         epoch_start_time = time.time()
         if args.num_train_enc > 0:
             for idx in range(args.num_train_enc):
-                train(epoch, model, enc_optimizer, args, use_cuda=use_cuda, mode='encoder')
+                 train(epoch, model, args, use_cuda=use_cuda, mode='encoder')
 
         if args.num_train_dec > 0:
             for idx in range(args.num_train_dec):
-                train(epoch, model, dec_optimizer, args, use_cuda=use_cuda, mode='decoder')
+                train(epoch, model, args,  use_cuda=use_cuda, mode='decoder')
 
-        this_loss, this_ber, this_bler = validate(model, general_optimizer, args, use_cuda=use_cuda)
+        this_loss, this_ber, this_bler = validate(model, args, use_cuda=use_cuda)
 
         report_loss.append(this_loss)
         report_ber.append(this_ber)
@@ -163,18 +167,18 @@ if __name__ == '__main__':
         test(model, args, block_len=args.block_len_high, use_cuda=use_cuda)
 
     else:
-        test(model, args, use_cuda=use_cuda)
+        test(model, args,filename_test, use_cuda=use_cuda)
 
-    # get_plots(attnFilename,args.enc_lr)
-    lr = 0.01
-    filenamed1 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
-    filenamed10 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
-    plot_attn(lr, 1, filenamed1, filenamed10)
-    plot(filenamed1, legend)
-    plot_snr(filenamed1, legend_snr)
-    plot_attn(lr, 10, filenamed1, filenamed10)
-    plot(filenamed10, legend)
-    plot_snr(filenamed10, legend_snr)
+    get_plots(args.enc_lr)
+    # lr = 0.01
+    # filenamed1 = './data123/data_awgn_lr_' + str(lr) + '_D110_10000.txt'
+    # filenamed10 = './data123/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
+    # plot_attn(lr, 1, filenamed1)
+    # plot(filenamed1, legend)
+    # plot_snr(filenamed1, legend_snr)
+    # plot_attn(lr, 10, filenamed1, filenamed10)
+    # plot(filenamed10, legend)
+    # plot_snr(filenamed10, legend_snr)
     print("Training Time: {}s".format(time.time() - start_time))
 
 

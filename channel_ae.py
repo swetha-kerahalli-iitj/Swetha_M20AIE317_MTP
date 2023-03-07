@@ -3,7 +3,7 @@ import torch
 from utils import STEQuantize as MyQuantize
 
 class Channel_AE(torch.nn.Module):
-    def __init__(self, args, enc, dec):
+    def __init__(self, args):
         super(Channel_AE, self).__init__()
         use_cuda = not args.no_cuda and torch.cuda.is_available()
         self.this_device = torch.device("cuda" if use_cuda else "cpu")

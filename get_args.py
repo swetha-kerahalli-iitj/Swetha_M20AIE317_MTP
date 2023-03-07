@@ -50,7 +50,7 @@ def get_args():
     parser.add_argument('-dec_act', choices=['tanh', 'selu', 'relu', 'elu', 'sigmoid', 'linear'], default='linear')
 
     ################################################################
-    # Training ALgorithm related parameters
+    # Training Algorithm related parameters
     ################################################################
     parser.add_argument('-num_train_dec', type=int, default=5, help ='')
     parser.add_argument('-num_train_enc', type=int, default=1, help ='')
@@ -62,7 +62,7 @@ def get_args():
     parser.add_argument('-snr_points', type=int, default=12)
 
     parser.add_argument('-batch_size', type=int, default=100)
-    parser.add_argument('-num_epoch', type=int, default=1)
+    parser.add_argument('-num_epoch', type=int, default=2)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
     parser.add_argument('-block_len', type=int, default=100)
@@ -71,7 +71,7 @@ def get_args():
     parser.add_argument('--is_variable_block_len', action='store_true', default=False,
                         help='training with different block length')
 
-    parser.add_argument('-num_block', type=int, default=1000)
+    parser.add_argument('-num_block', type=int, default=10000)
 
     parser.add_argument('-test_channel_mode',
                         choices=['block_norm','block_norm_ste'],
@@ -98,9 +98,9 @@ def get_args():
     ################################################################
     # Optimizer related parameters
     ################################################################
-    parser.add_argument('-optimizer', choices=['adam', 'lookahead', 'sgd'], default='adam', help = '....:)')
-    parser.add_argument('-dec_lr', type = float, default=0.001, help='decoder leanring rate')
-    parser.add_argument('-enc_lr', type = float, default=0.001, help='encoder leanring rate')
+    parser.add_argument('-optimizer', choices=['adam', 'lookahead', 'sgd'], default='adam', help = '.:)')
+    parser.add_argument('-dec_lr', type = float, default=0.01, help='decoder leanring rate')
+    parser.add_argument('-enc_lr', type = float, default=0.01, help='encoder leanring rate')
 
     ################################################################
     # MISC
@@ -120,8 +120,19 @@ def get_args():
     parser.add_argument('--precompute_norm_stats', action='store_true', default=False,
                         help='Use pre-computed mean/std statistics')
 
-    parser.add_argument('-D', type = int, default=1, help = 'delay')
+    parser.add_argument('-D', type = int, default=10, help = 'delay')
+    # QPSK
+    parser.add_argument('-nb', type=int, default=100, help='Define the number of bits transmitted')
+    parser.add_argument('-SNR', type=int, default=0, help='Signal to noise ratio')
+    parser.add_argument('-qpsk_mode_type', type=int, default=4, help='QPSK modulation type( can be 8,16,64)')
+    parser.add_argument('-plot_file_enc', default='', help='File to save for encoded plot')
+    parser.add_argument('-T',type=int, default=1, help=' Baseband signal width, which is frequency')
 
+    parser.add_argument('BASE_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP')
+    parser.add_argument('LOG_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\logs_test123')
+    parser.add_argument('DATA_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\data_test123')
+    parser.add_argument('MODEL_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\model_test123')
+    parser.add_argument('PLOT_PATH', default=r'C:\WorkSpace\Swetha_M20AIE317_MTP\plot_test123')
     args = parser.parse_args()
 
     return args
