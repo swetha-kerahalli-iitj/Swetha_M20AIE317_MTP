@@ -9,10 +9,6 @@ from trainer import train, validate, test
 from encoder import ENC
 from decoder import DEC
 
-BASE_PATH = r'C:\WorkSpace\Swetha_M20AIE317_MTP'
-LOG_PATH = os.path.join(BASE_PATH, r'logs_test')
-DATA_PATH = os.path.join(BASE_PATH, r'data_test')
-MODEL_PATH = os.path.join(BASE_PATH, r'model_test')
 for path in (LOG_PATH,DATA_PATH,MODEL_PATH):
     if not os.path.isdir(path):
         os.makedirs(path)
@@ -38,7 +34,14 @@ if __name__ == '__main__':
     start_time = time.time()
 
     args = get_args()
-
+    BASE_PATH = args.BASE_PATH
+    LOG_PATH = args.LOG_PATH
+    DATA_PATH = args.DATA_PATH
+    MODEL_PATH = args.MODEL_PATH
+    PLOT_PATH = args.PLOT_PATH
+    for path in (LOG_PATH, DATA_PATH, MODEL_PATH, PLOT_PATH):
+        if not os.path.isdir(path):
+            os.makedirs(path)
     # put all printed things to log file
     if args.init_nw_weight == 'default':
         start_epoch = 1

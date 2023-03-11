@@ -122,6 +122,12 @@ def get_args():
 
     parser.add_argument('-D', type = int, default=1, help = 'delay')
 
+    parser.add_argument('-BASE_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading')
+    parser.add_argument('-LOG_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\logs_faded')
+    parser.add_argument('-DATA_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\data_test123')
+    parser.add_argument('-MODEL_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_test123')
+    parser.add_argument('-PLOT_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\plot_test123')
+
     args = parser.parse_args()
 
     return args
