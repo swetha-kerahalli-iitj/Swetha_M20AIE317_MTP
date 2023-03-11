@@ -3,8 +3,20 @@ import torch.optim as optim
 import sys, os
 import time
 from get_args import get_args
-from plot import plot_attn, plot, plot_snr,legend, legend_snr
-from trainer import train, validate, test
+import math
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+import commpy.channelcoding.convcode as cc
+import commpy.channels as chan
+# import commpy.links as lk
+from moddemod_qpsk_links import LinkModel
+import commpy.modulation as mod
+import commpy.utilities as util
+from scipy import special
+from channel_enc_dec import Channel_AE
+from moddemod_train import train,validate,test
 
 from encoder import ENC
 from decoder import DEC
@@ -67,14 +79,25 @@ if __name__ == '__main__':
     #################################################
     # Setup Channel AE: Encoder, Decoder, Channel
     #################################################
+    # Modem : QPSK
+    QAM16 = mod.QAMModem(16)
+    channels = chan.MIMOFlatChannel(4, 4)
+    channels.uncorr_rayleigh_fading(complex)
 
-    encoder = ENC(args)
-    decoder = DEC(args)
+    # SNR range to test
+    SNRs = np.arange(0, 21, 5) + 10 * math.log10(QAM16.num_bits_symbol)
+    mean_BER_theoretical = np.zeros(len(SNRs))
+    i = 0
+    for SNR in SNRs:
+        # calculate theoretical BER for BPSK
+        SNR_lin = 10 ** (SNR / 10)
+        mean_BER_theoretical[i] = 1 / 2 * special.erfc(np.sqrt(SNR_lin))
+        i += 1
 
-    # choose support channels
-    from channel_ae import Channel_AE
+    # Build model from parameters
+    code_rate = 1 / 3
 
-    model = Channel_AE(args, encoder, decoder).to(device)
+    model = Channel_AE(args,channels,QAM16, code_rate).to(device)
 
     # weight loading
     if args.init_nw_weight == 'default':
@@ -93,43 +116,23 @@ if __name__ == '__main__':
 
     print(model)
 
-    ##################################################################
-    # Setup Optimizers
-    ##################################################################
-
-    OPT = optim.Adam
-
-    if args.num_train_enc != 0:  # no optimizer for encoder
-        enc_optimizer = OPT(model.enc.parameters(), lr=args.enc_lr)
-
-    if args.num_train_dec != 0:
-        dec_optimizer = OPT(filter(lambda p: p.requires_grad, model.dec.parameters()), lr=args.dec_lr)
-
-    general_optimizer = OPT(filter(lambda p: p.requires_grad, model.parameters()), lr=args.dec_lr)
 
     #################################################
     # Training Processes
     #################################################
     report_loss, report_ber, report_bler = [], [], []
-
     for epoch in range(start_epoch, args.num_epoch + 1):
         epoch_start_time = time.time()
-        if args.num_train_enc > 0:
-            for idx in range(args.num_train_enc):
-                train(epoch, model, enc_optimizer, args, use_cuda=use_cuda, mode='encoder')
-
-        if args.num_train_dec > 0:
-            for idx in range(args.num_train_dec):
-                train(epoch, model, dec_optimizer, args, use_cuda=use_cuda, mode='decoder')
-
-        this_loss, this_ber, this_bler = validate(model, general_optimizer, args, use_cuda=use_cuda)
-
+        SNRs = np.arange(0, 21, 5) + 10 * math.log10(QAM16.num_bits_symbol)
+        this_loss,this_ber= train(epoch, model, SNRs, code_rate,args)
+        this_loss, this_ber= validate(model, SNRs,code_rate, args, use_cuda=use_cuda)
+        this_bler = this_loss
         report_loss.append(this_loss)
-        report_ber.append(this_ber)
+        report_ber.append(this_ber[0])
         report_bler.append(this_bler)
 
         data_file = open(filename, 'a')
-        data_file.write(str(epoch) + ' ' + str(this_loss) + ' ' + str(this_ber) + ' ' + str(this_bler) + "\n")
+        data_file.write(str(epoch) + ' ' + str(this_loss) + ' ' + str(this_ber[0]) + ' ' + str(this_bler) + "\n")
         data_file.close()
 
         # save model per epoch
@@ -156,6 +159,7 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), modelpath)
     print('saved model', modelpath)
 
+
     if args.is_variable_block_len:
         print('testing block length', args.block_len_low)
         test(model, args, block_len=args.block_len_low, use_cuda=use_cuda)
@@ -165,19 +169,48 @@ if __name__ == '__main__':
         test(model, args, block_len=args.block_len_high, use_cuda=use_cuda)
 
     else:
-        test(model, args,filename_test, use_cuda=use_cuda)
+        test(model,SNRs, code_rate, filename_test,args, use_cuda=use_cuda)
 
-    # get_plots(attnFilename,args.enc_lr)
-    lr = 0.01
-    filenamed1 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
-    filenamed10 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
-    plot_attn(lr, 1, filenamed1, filenamed10)
-    plot(filenamed1, legend)
-    plot_snr(filenamed1, legend_snr)
-    plot_attn(lr, 10, filenamed1, filenamed10)
-    plot(filenamed10, legend)
-    plot_snr(filenamed10, legend_snr)
-    print("Training Time: {}s".format(time.time() - start_time))
+    data = np.loadtxt(filename, usecols=[0, 2]).T
+    test_data = np.loadtxt(filename_test, usecols=[0, 1]).T
+    snrs = test_data[0, :]
+    ber = test_data[1, :]
+    epoch = data[0, :]
+    ber_epoch = data[1, :]
+    mean_BER_theoretical = np.zeros(len(snrs))
+    ber_db= np.zeros(len(snrs))
+    i = 0
+    for SNR in snrs:
+        # calculate theoretical BER for BPSK
+        SNR_lin = 10 ** (SNR / 10)
+        mean_BER_theoretical[i] = 1 / 2 * special.erfc(np.sqrt(SNR_lin))
+        i += 1
 
+    plt.semilogy(epoch, ber_epoch, 'o-')
+    plt.grid()
+    plt.xlabel('Epoch)')
+    plt.ylabel('Bit Error Rate')
+    plt.legend('epoch-ber')
+    plt.savefig('./attention_D_epcoh_' + str(1) + '.png', format='png', bbox_inches='tight',
+                transparent=True, dpi=800)
+    plt.show()
+    desiredber = (2e-1, 1e-1, 3e-2, 2e-3, 4e-5)
+    plt.semilogy(snrs, ber, 'o-',snrs, desiredber, 'o-')
+    plt.grid()
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.legend(('SNR-BER','Theo SNR-BER'))
+    plt.savefig('./attention_D_snr_' + str(1) + '.png', format='png', bbox_inches='tight',
+                transparent=True, dpi=800)
+    plt.show()
+
+    # plt.semilogy( snrs, mean_BER_theoretical, 'o-')
+    # plt.grid()
+    # plt.xlabel('Signal to Noise Ration (dB)')
+    # plt.ylabel('Bit Error Rate')
+    # plt.legend('Theo SNR-ber')
+    # plt.savefig('./attention_D_snr_theo_' + str(1) + '.png', format='png', bbox_inches='tight',
+    #             transparent=True, dpi=800)
+    # plt.show()
 
 

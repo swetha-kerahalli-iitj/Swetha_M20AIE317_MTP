@@ -46,8 +46,8 @@ def get_args():
     parser.add_argument('-dec_num_unit', type=int, default=100, help = 'This is CNN number of filters, and RNN units')
     parser.add_argument('-enc_num_unit', type=int, default=25, help = 'This is CNN number of filters, and RNN units')
 
-    parser.add_argument('-enc_act', choices=['tanh', 'selu', 'relu', 'elu', 'sigmoid', 'linear'], default='elu', help='only elu works')
-    parser.add_argument('-dec_act', choices=['tanh', 'selu', 'relu', 'elu', 'sigmoid', 'linear'], default='linear')
+    parser.add_argument('-enc_act', choices=['tanh', 'selu', 'relu', 'elu', 'sigmoid', 'linear','qpsk4','qpsk8','qpsk16','qpsk64'], default='qpsk4', help='only elu works')
+    parser.add_argument('-dec_act', choices=['tanh', 'selu', 'relu', 'elu', 'sigmoid', 'linear','qpsk4','qpsk8','qpsk16','qpsk64'], default='qpsk4')
 
     ################################################################
     # Training Algorithm related parameters
@@ -61,8 +61,8 @@ def get_args():
     parser.add_argument('-snr_test_end', type=float, default=4.0)
     parser.add_argument('-snr_points', type=int, default=12)
 
-    parser.add_argument('-batch_size', type=int, default=100)
-    parser.add_argument('-num_epoch', type=int, default=2)
+    parser.add_argument('-batch_size', type=int, default=5e5)
+    parser.add_argument('-num_epoch', type=int, default=4)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
     parser.add_argument('-block_len', type=int, default=100)
@@ -127,12 +127,14 @@ def get_args():
     parser.add_argument('-qpsk_mode_type', type=int, default=4, help='QPSK modulation type( can be 8,16,64)')
     parser.add_argument('-plot_file_enc', default='', help='File to save for encoded plot')
     parser.add_argument('-T',type=int, default=1, help=' Baseband signal width, which is frequency')
+    parser.add_argument('-err_min', type=int, default=200, help=' to skip on having ber > err_min')
+    parser.add_argument('-send_chunk', type=int, default=720, help=' to skip on having ber > err_min')
 
-    parser.add_argument('BASE_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP')
-    parser.add_argument('LOG_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\logs_test123')
-    parser.add_argument('DATA_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\data_test123')
-    parser.add_argument('MODEL_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\model_test123')
-    parser.add_argument('PLOT_PATH', default=r'C:\WorkSpace\Swetha_M20AIE317_MTP\plot_test123')
+    parser.add_argument('-BASE_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP')
+    parser.add_argument('-LOG_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\logs_test123')
+    parser.add_argument('-DATA_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\data_test123')
+    parser.add_argument('-MODEL_PATH',default = r'C:\WorkSpace\Swetha_M20AIE317_MTP\model_test123')
+    parser.add_argument('-PLOT_PATH', default=r'C:\WorkSpace\Swetha_M20AIE317_MTP\plot_test123')
     args = parser.parse_args()
 
     return args

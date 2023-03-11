@@ -5,14 +5,11 @@ Must be followed strictly.
 '''
 import glob
 
-import matplotlib.pyplot as plt
 import matplotlib as mpl
-import matplotlib.ticker as ticker
-import os, sys
-import numpy as np
-
-from pylab import rcParams
 import matplotlib.pylab as pylab
+import matplotlib.pyplot as plt
+import numpy as np
+from pylab import rcParams
 
 rcParams['legend.numpoints'] = 1
 mpl.style.use('seaborn')

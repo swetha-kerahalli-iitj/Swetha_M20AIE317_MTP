@@ -2,8 +2,6 @@ import torch
 import numpy as np
 import math
 import torch.nn.functional as F
-from scipy import special
-
 
 def errors_ber(y_true, y_pred, positions = 'default'):
     y_true = y_true.view(y_true.shape[0], -1, 1)
@@ -41,7 +39,7 @@ def errors_ber_pos(y_true, y_pred, discard_pos = []):
     return res
 
 def code_power(the_codes):
-    # the_codes = the_codes.cpu().numpy()
+    the_codes = the_codes.cpu().numpy()
     the_codes = np.abs(the_codes)**2
     the_codes = the_codes.sum(2)/the_codes.shape[2]
     tmp =  the_codes.sum(0)/the_codes.shape[0]
@@ -66,17 +64,7 @@ def errors_bler(y_true, y_pred, positions = 'default'):
         bler_err_rate = sum(np.sum(tp0,axis=1)>0)*1.0/(X_test.shape[0])
 
     return bler_err_rate
-def ber_theo(SNR,qpsk_mode):
-    # calculate mean BER over realizations
-    mean_BER_theoretical = np.zeros(len(SNR))
-    for snr,i in SNR:
 
-
-        SNR_lin = 10 ** (snr / 10)
-        mean_BER_theoretical += 1 / qpsk_mode * special.erfc(np.sqrt(SNR_lin))
-        if snr == 0.0:
-            mean_BER_theoretical_zero = mean_BER_theoretical
-    return mean_BER_theoretical,mean_BER_theoretical_zero
 # note there are a few definitions of SNR. In our result, we stick to the following SNR setup.
 def snr_db2sigma(train_snr):
     return 10**(-train_snr*1.0/20)
@@ -89,9 +77,7 @@ def snr_sigma2db(train_sigma):
 
 def generate_noise(noise_shape, args, test_sigma = 'default', snr_low = 0.0, snr_high = 0.0, mode = 'encoder'):
     # SNRs at training
-    if test_sigma == 'rayleigh':
-        return torch.from_numpy(np.random.rayleigh(size=noise_shape))
-    elif test_sigma == 'default':
+    if test_sigma == 'default':
         this_sigma_low = snr_db2sigma(snr_low)
         this_sigma_high= snr_db2sigma(snr_high)
         # mixture of noise sigma.
@@ -114,6 +100,7 @@ def generate_noise(noise_shape, args, test_sigma = 'default', snr_low = 0.0, snr
         corrupted_signal = args.radar_power* np.random.standard_normal( size = noise_shape ) * add_pos
         fwd_noise = this_sigma * torch.randn(noise_shape, dtype=torch.float) +\
                     torch.from_numpy(corrupted_signal).type(torch.FloatTensor)
+
     else:
         # Unspecific channel, use AWGN channel.
         fwd_noise  = this_sigma * torch.randn(noise_shape, dtype=torch.float)
@@ -123,8 +110,7 @@ def generate_noise(noise_shape, args, test_sigma = 'default', snr_low = 0.0, snr
 def customized_loss(output, X_train, args, size_average = True, noise = None, code = None):
     output = torch.clamp(output, 0.0, 1.0)
     if size_average == True:
-        # loss = F.binary_cross_entropy(output.real, X_train)
-        loss = F.cross_entropy(output,X_train)
+        loss = F.binary_cross_entropy(output, X_train)
     else:
         return [F.binary_cross_entropy(item1, item2) for item1, item2 in zip(output, X_train)]
 
