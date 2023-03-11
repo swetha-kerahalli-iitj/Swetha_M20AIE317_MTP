@@ -1,6 +1,7 @@
 import torch.nn.functional as F
 import torch
 from torch import nn
+import commpy as cpy
 
 class Attention(nn.Module):
     def __init__(self, enc_hid_dim, dec_hid_dim):
@@ -61,6 +62,18 @@ class DEC(torch.nn.Module):
             return F.selu(inputs)
         elif self.args.dec_act == 'sigmoid':
             return F.sigmoid(inputs)
+        elif self.args.dec_act == 'qpsk4':
+            qpsk = cpy.PSKModem(4)
+            return qpsk.demodulate(inputs,self.args.qpsk_demod_type)
+        elif self.args.dec_act == 'qpsk8':
+            qpsk = cpy.PSKModem(8)
+            return qpsk.demodulate(inputs,self.args.qpsk_demod_type)
+        elif self.args.dec_act == 'qpsk16':
+            qpsk = cpy.PSKModem(16)
+            return qpsk.demodulate(inputs,self.args.qpsk_demod_type)
+        elif self.args.dec_act == 'qpsk64':
+            qpsk = cpy.PSKModem(64)
+            return qpsk.demodulate(inputs,self.args.qpsk_demod_type)
         elif self.args.dec_act == 'linear':
             return inputs
         else:

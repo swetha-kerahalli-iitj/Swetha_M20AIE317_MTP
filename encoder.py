@@ -1,8 +1,9 @@
 import torch
 import torch.nn.functional as F
+import commpy as cpy
+from utils import STEQuantize
 
-from utils import STEQuantize 
-    
+
 class ENC(torch.nn.Module):
     def __init__(self, args):
         super(ENC, self).__init__()
@@ -19,29 +20,30 @@ class ENC(torch.nn.Module):
             RNN_MODEL = torch.nn.GRU
         elif args.enc_rnn == 'lstm':
             RNN_MODEL = torch.nn.LSTM
+        elif args.enc_rnn == 'lstm':
+            RNN_MODEL = torch.nn.LSTM
         else:
             RNN_MODEL = torch.nn.RNN
 
+        self.enc_rnn = RNN_MODEL(1, args.enc_num_unit,
+                                 num_layers=args.enc_num_layer, bias=True, batch_first=True,
+                                 dropout=0)
 
-        self.enc_rnn       = RNN_MODEL(1, args.enc_num_unit,
-                                           num_layers=args.enc_num_layer, bias=True, batch_first=True,
-                                           dropout=0)
-
-        self.enc_linear    = torch.nn.Linear(args.enc_num_unit, int(args.code_rate_n/args.code_rate_k))
+        self.enc_linear = torch.nn.Linear(args.enc_num_unit, int(args.code_rate_n / args.code_rate_k))
 
     def set_precomp(self, mean_scalar, std_scalar):
         self.mean_scalar = mean_scalar.to(self.this_device)
-        self.std_scalar  = std_scalar.to(self.this_device)
+        self.std_scalar = std_scalar.to(self.this_device)
 
     # not tested yet
     def reset_precomp(self):
         self.mean_scalar = torch.zeros(1).type(torch.FloatTensor).to(self.this_device)
-        self.std_scalar  = torch.ones(1).type(torch.FloatTensor).to(self.this_device)
-        self.num_test_block= 0.0
+        self.std_scalar = torch.ones(1).type(torch.FloatTensor).to(self.this_device)
+        self.num_test_block = 0.0
 
     def enc_act(self, inputs):
         if self.args.enc_act == 'tanh':
-            return  F.tanh(inputs)
+            return F.tanh(inputs)
         elif self.args.enc_act == 'elu':
             return F.elu(inputs)
         elif self.args.enc_act == 'relu':
@@ -50,6 +52,18 @@ class ENC(torch.nn.Module):
             return F.selu(inputs)
         elif self.args.enc_act == 'sigmoid':
             return F.sigmoid(inputs)
+        elif self.args.enc_act == 'qpsk4':
+            qpsk = cpy.PSKModem(4)
+            return qpsk.modulate(inputs.detach().numpy())
+        elif self.args.enc_act == 'qpsk8':
+            qpsk = cpy.PSKModem(8)
+            return qpsk.modulate(inputs)
+        elif self.args.enc_act == 'qpsk16':
+            qpsk = cpy.PSKModem(16)
+            return qpsk.modulate(inputs)
+        elif self.args.enc_act == 'qpsk64':
+            qpsk = cpy.PSKModem(64)
+            return qpsk.modulate(inputs)
         elif self.args.enc_act == 'linear':
             return inputs
         else:
@@ -60,22 +74,22 @@ class ENC(torch.nn.Module):
         if self.args.no_code_norm:
             return x_input
         else:
-            this_mean    = torch.mean(x_input)
-            this_std     = torch.std(x_input)
+            this_mean = torch.mean(x_input)
+            this_std = torch.std(x_input)
 
             if self.args.precompute_norm_stats:
                 self.num_test_block += 1.0
-                self.mean_scalar = (self.mean_scalar*(self.num_test_block-1) + this_mean)/self.num_test_block
-                self.std_scalar  = (self.std_scalar*(self.num_test_block-1) + this_std)/self.num_test_block
-                x_input_norm = (x_input - self.mean_scalar)/self.std_scalar
+                self.mean_scalar = (self.mean_scalar * (self.num_test_block - 1) + this_mean) / self.num_test_block
+                self.std_scalar = (self.std_scalar * (self.num_test_block - 1) + this_std) / self.num_test_block
+                x_input_norm = (x_input - self.mean_scalar) / self.std_scalar
             else:
-                x_input_norm = (x_input-this_mean)*1.0 / this_std
+                x_input_norm = (x_input - this_mean) * 1.0 / this_std
 
             if self.args.train_channel_mode == 'block_norm_ste':
                 stequantize = STEQuantize.apply
                 x_input_norm = stequantize(x_input_norm, self.args)
 
-            if self.args.enc_truncate_limit>0:
+            if self.args.enc_truncate_limit > 0:
                 x_input_norm = torch.clamp(x_input_norm, -self.args.enc_truncate_limit, self.args.enc_truncate_limit)
 
             return x_input_norm

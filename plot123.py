@@ -4,7 +4,6 @@ mandatory. No comments can be made within the file.
 Must be followed strictly.
 '''
 import glob
-import os
 
 import matplotlib as mpl
 import matplotlib.pylab as pylab
@@ -72,50 +71,39 @@ def plot(lr,D):
     plt.savefig('lr'+str(lr)+'.png', format='png', bbox_inches='tight', transparent=True, dpi=800)
     plt.show()
 
-def plot_attn(lr,D,attnFilename,path):
+def plot_attn(lr,D,attnFilename):
     fig, ax = plt.subplots(1, 3, figsize=(15, 6), tight_layout=True)
     ax = ax.ravel()
     s = ['Loss', 'BER', 'BLER']
-    xlabel = ['Epoch', 'Epoch', 'SNR']
-    ylabel = s
     filename = './data/data_awgn_lr_'+str(lr)+'_D'+str(D)+'_10000.txt'
 
     data = np.loadtxt(filename,usecols=[1, 2], ndmin=2).T
     attn_data = np.loadtxt(attnFilename,usecols=[1, 2], ndmin=2).T
-    #
-    # snrs =  [-1.4999997446509226, -1.0000000166986343, -0.49999973308696327, -0.0, 0.5000001308463472, 1.0000002900227403, 1.5000000201403676, 2.0000002404171053, 2.5000000877622415, 3.0000002493010487, 3.500000207085638, 3.999999717024358]
-    bler1 = [ 0.9379, 0.8751, 0.7842, 0.6458999999999999, 0.5028, 0.35530000000000006, 0.23699999999999996, 0.1437, 0.07880000000000002]
-    bler2 = [ 0.9091999999999999, 0.8275, 0.7047999999999999, 0.5689, 0.4257000000000001, 0.2861, 0.185, 0.10680000000000003, 0.05400000000000003]
-    # attn_bler1 = [0.9976999999999998, 0.9926999999999998, 0.9778999999999998, 0.9552999999999996, 0.9033000000000002, 0.8141999999999999, 0.6979999999999997, 0.5603999999999998, 0.42700000000000005, 0.2877999999999999, 0.18660000000000007, 0.11429999999999996]
-    # attn_bler2 = [0.9991999999999999, 0.9975999999999996, 0.9915000000000002, 0.9798999999999991, 0.9525999999999999, 0.9045000000000003, 0.8342999999999998, 0.7151, 0.5929000000000001, 0.46180000000000004, 0.3278999999999999, 0.21520000000000006]
-    snrs = [ 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
-    attn_bler1 = [ 0.9552999999999996, 0.9033000000000002, 0.8141999999999999, 0.6979999999999997, 0.5603999999999998, 0.42700000000000005, 0.2877999999999999, 0.18660000000000007, 0.11429999999999996]
-    attn_bler2 = [ 0.9798999999999991, 0.9525999999999999, 0.9045000000000003, 0.8342999999999998, 0.7151, 0.5929000000000001, 0.46180000000000004, 0.3278999999999999, 0.21520000000000006]
+
+    snrs =  [-1.4999997446509226, -1.0000000166986343, -0.49999973308696327, -0.0, 0.5000001308463472, 1.0000002900227403, 1.5000000201403676, 2.0000002404171053, 2.5000000877622415, 3.0000002493010487, 3.500000207085638, 3.999999717024358]
+    bler1 = [0.9964999999999999, 0.9902999999999998, 0.9718, 0.9379, 0.8751, 0.7842, 0.6458999999999999, 0.5028, 0.35530000000000006, 0.23699999999999996, 0.1437, 0.07880000000000002]
+    bler2 = [0.9942, 0.9829000000000001, 0.9583, 0.9091999999999999, 0.8275, 0.7047999999999999, 0.5689, 0.4257000000000001, 0.2861, 0.185, 0.10680000000000003, 0.05400000000000003]
+    attn_bler1 = [0.9976999999999998, 0.9926999999999998, 0.9778999999999998, 0.9552999999999996, 0.9033000000000002, 0.8141999999999999, 0.6979999999999997, 0.5603999999999998, 0.42700000000000005, 0.2877999999999999, 0.18660000000000007, 0.11429999999999996]
+    attn_bler2 = [0.9991999999999999, 0.9975999999999996, 0.9915000000000002, 0.9798999999999991, 0.9525999999999999, 0.9045000000000003, 0.8342999999999998, 0.7151, 0.5929000000000001, 0.46180000000000004, 0.3278999999999999, 0.21520000000000006]
+
     n = attn_data.shape[1]  # number of rows
     x = range(0,n)
     for i in range(2):
-        if(i==1):
-            y1 = [10*j for j in data[i, x]]
-            y2 = [10*j for j in attn_data[i, x]]
-        else:
-            y1 = data[i, x]
-            y2 = attn_data[i, x]
+        y1 = data[i, x]
+        y2 = attn_data[i, x]
+
         ax[i].plot(x, y1, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=6)
         ax[i].plot(x, y2, '-', c='#377eb8', label="with attention D={}".format(D), linewidth=2, markersize=6)
-        ax[i].set_xlabel(xlabel[i], fontsize=14)
-        ax[i].set_ylabel(ylabel[i], fontsize=14)
         ax[i].set_title(s[i],fontweight='bold',fontsize=16)
         ax[i].legend(loc='best',fancybox=True, framealpha=0,fontsize=14)
         ax[i].grid(True, linestyle='dotted')  # X
 
     if D==1:
-        ax[2].plot(snrs, bler1, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=8)
-        ax[2].plot(snrs, attn_bler1, '-', c='#377eb8', label="with attention D={}".format(D), linewidth=2, markersize=8)
+        ax[2].plot(snrs, bler1, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=6)
+        ax[2].plot(snrs, attn_bler1, '-', c='#377eb8', label="with attention D={}".format(D), linewidth=2, markersize=6)
     if D==10:
-        ax[2].plot(snrs, bler2, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=8)
-        ax[2].plot(snrs, attn_bler2, '-', c='#377eb8', label="with attention D={}".format(D), linewidth=2, markersize=8)
-    ax[2].set_xlabel(xlabel[2], fontsize=14)
-    ax[2].set_ylabel(ylabel[2], fontsize=14)
+        ax[2].plot(snrs, bler2, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=6)
+        ax[2].plot(snrs, attn_bler2, '-', c='#377eb8', label="with attention D={}".format(D), linewidth=2, markersize=6)
     ax[2].set_title(s[2],fontweight='bold',fontsize=16)
     ax[2].legend(loc='best',fancybox=True, framealpha=0,fontsize=14)
     ax[2].grid(True, linestyle='dotted')
@@ -214,18 +202,18 @@ def plot(filename, legend,D):
     plt.savefig(legend['savepath'])
     plt.show()
 
-def get_plots(lr,path):
-    d1FilenamesList = glob.glob(os.path.join(path,r'attention_data_awgn_lr_'+str(lr)+'_D1_*.txt'))
-    d10FilenamesList = glob.glob(os.path.join(path,r'attention_data_awgn_lr_'+str(lr)+'_D10_*.txt'))
+def get_plots(lr):
+    d1FilenamesList = glob.glob('./data_new/attention_data_awgn_lr_'+str(lr)+'_D1_*.txt')
+    d10FilenamesList = glob.glob('./data_new/attention_data_awgn_lr_'+str(lr)+'_D10_*.txt')
     # d1FilenamesList[:0]=d1FilenamesList
     # d1FilenamesList[:0] = d1FilenamesList
     # plot_attn(lr, 1, filename)
 
     for filename in d1FilenamesList:
-        plot_attn(lr, 1, filename)
+        # plot_attn(lr, 1, filename)
         # plot(filename, legend,1)
-        # plot_snr(filename, legend_snr,1)
+        plot_snr(filename, legend_snr,1)
     for filename in d10FilenamesList:
-        plot_attn(lr, 10, filename)
+        # plot_attn(lr, 10, filename)
         # plot(filename, legend,10)
-        # plot_snr(filename, legend_snr,10)
+        plot_snr(filename, legend_snr,10)
