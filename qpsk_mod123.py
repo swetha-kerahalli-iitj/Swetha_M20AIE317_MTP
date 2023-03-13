@@ -1,6 +1,7 @@
 from __future__ import division, print_function  # Python 2 compatibility
 
 import math
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,8 +19,63 @@ from numpy import arange, sqrt, log10
 from numpy.random import seed
 
 from commpy.modulation import QAMModem, kbest, best_first_detector
+from scipy import special
+from scipy.special import erfc
+
+from plot import get_plots
+from utils import get_theo_ber
 
 if __name__ == '__main__':
+    path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading'
+    filename = os.path.join(path,r'data_faded',r'sample_test.txt')
+    test_filename = os.path.join(path,r'data_faded', r'attention_data_test_awgn_lr_0.01_D1_5000_20230312-142944.txt')
+    timestamp = '20230311-220633_123'
+    test_data = np.loadtxt(test_filename, usecols=[0, 1, 2]).T
+    snrs = test_data[0, :]
+    ber = test_data[1, :]
+    bler = test_data[2, :]
+    mean_BER_theoretical = np.zeros(len(snrs))
+    ber_db  = np.zeros(len(snrs))
+    test_file_path = os.path.join(path, 'rayleigh_test_both' + str(timestamp) + '.png')
+    test_file_path_act = os.path.join(path, 'rayleigh_test_act_' + str(timestamp) + '.png')
+    test_file_path_exp = os.path.join(path, 'rayleigh_test_exp_' + str(timestamp) + '.png')
+    ber_snr_noise = (0.39027778 ,0.32083333 ,0.3375,     0.28333333, 0.28680556, 0.20138889
+, 0.18055556, 0.1337963,  0.09305556, 0.04305556, 0.02465278)
+
+    i = 0
+    for SNR in snrs:
+        # calculate theoretical BER for BPSK
+        mean_BER_theoretical[i] = get_theo_ber(SNR)
+        ber_db[i] = 10 * math.log10(ber[i])
+        i += 1
+
+    plt.semilogy(snrs, ber, 'o-', snrs, ber_snr_noise, 'o-')
+    plt.grid()
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.legend(('test snr-ber', 'theo snr-ber'))
+    plt.savefig(test_file_path, format='png', bbox_inches='tight',
+                transparent=True, dpi=800)
+    plt.show()
+
+    plt.semilogy(snrs, ber, 'o-')
+    plt.grid()
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.legend('test snr-ber')
+    plt.savefig(test_file_path_act, format='png', bbox_inches='tight',
+                transparent=True, dpi=800)
+    plt.show()
+
+    plt.semilogy(snrs, mean_BER_theoretical, 'o-')
+    plt.grid()
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.legend('theo snr-ber')
+    plt.savefig(test_file_path_exp, format='png', bbox_inches='tight',
+                transparent=True, dpi=800)
+    plt.show()
+    exit()
     # Authors: CommPy contributors
     # License: BSD 3-Clause
 
@@ -106,7 +162,7 @@ if __name__ == '__main__':
     # Modem : QPSK
     # modem = mod.QAMModem(4)
     QAM16 =  mod.QAMModem(16)
-    RayleighChannel =  chan.MIMOFlatChannel(4, 4)
+    RayleighChannel =  chan.MIMOFlatChannel(3,3)
     RayleighChannel.uncorr_rayleigh_fading(complex)
 
     # AWGN channel
@@ -115,7 +171,9 @@ if __name__ == '__main__':
     # channels = chan.MIMOFlatChannel(4, 4)
     # channels.uncorr_rayleigh_fading(complex)
     # SNR range to test
-    SNRs = np.arange(0, 21, 5) + 10 * log10(QAM16.num_bits_symbol)
+    SNRs = (-2, 0, 2, 4 , 6, 8, 10, 12, 14, 16,18)
+    # snr_interval = ((4) - (-1.5)) * 1.0 / (12- 1)
+    # SNRs = [snr_interval * item + (-1.5) for item in range(12)]
 
 
     def receiver(y, h, constellation, noise_var):
@@ -130,10 +188,38 @@ if __name__ == '__main__':
     # Test
     BERs = lk.link_performance(model, SNRs, 5e5, 200, 720, model.rate)
     desiredber = (2e-1, 1e-1, 3e-2, 2e-3, 4e-5)
-    plt.semilogy(SNRs, BERs, 'o-',SNRs, desiredber, 'o-')
+    # desired[n, m] = exp(1j * 2 * pi * (n * 1 * cos(0.5) - m * 0.1 * cos(2)))
+    print(BERs)
+    mean_BER_theoretical = np.zeros(len(SNRs))
+    desired = np.zeros(len(SNRs))
+    i=0
+    for SNR in SNRs:
+        # calculate theoretical BER for BPSK
+        # SNR_lin = 10 ** (SNR / 10)
+        # mean_BER_theoretical[i] = 1 / 2 * special.erfc(np.sqrt(SNR_lin))
+        # desired[i] = erfc(sqrt(10 ** (SNR/ 10) / 2)) / 2
+        mean_BER_theoretical[i] = get_theo_ber(SNR)
+        i += 1
+    print('desiredber :',desiredber)
+    print('mean_BER_theoretical ',mean_BER_theoretical)
+    plt.semilogy(SNRs, BERs)
     plt.grid()
     plt.xlabel('Signal to Noise Ration (dB)')
     plt.ylabel('Bit Error Rate')
-    plt.legend(('Hard demodulation','desired'))
+    plt.legend(('Hard demodulation'))
+    plt.show()
+
+    # plt.semilogy(SNRs, BERs, 'o-', SNRs, desired, 'o-')
+    # plt.grid()
+    # plt.xlabel('Signal to Noise Ration (dB)')
+    # plt.ylabel('Bit Error Rate')
+    # plt.legend(('Hard demodulation', 'desired'))
+    # plt.show()
+
+    plt.semilogy(SNRs, BERs, 'o-', SNRs, mean_BER_theoretical, 'o-')
+    plt.grid()
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.legend(('Hard demodulation', 'math'))
     plt.show()
 

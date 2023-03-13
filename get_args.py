@@ -21,7 +21,7 @@ def get_args():
     parser.add_argument('-radar_power',type=float, default=5.0, help ='only for radar distribution channel')
 
     # continuous channels training algorithms
-    parser.add_argument('-train_enc_channel_low', type=float, default  = 1.0)
+    parser.add_argument('-train_enc_channel_low', type=float, default  = 4.0)
     parser.add_argument('-train_enc_channel_high', type=float, default = 1.0)
     parser.add_argument('-train_dec_channel_low', type=float, default  = -1.5)
     parser.add_argument('-train_dec_channel_high', type=float, default = 2.0)
@@ -62,7 +62,7 @@ def get_args():
     parser.add_argument('-snr_points', type=int, default=12)
 
     parser.add_argument('-batch_size', type=int, default=100)
-    parser.add_argument('-num_epoch', type=int, default=1)
+    parser.add_argument('-num_epoch', type=int, default=20)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
     parser.add_argument('-block_len', type=int, default=100)
@@ -99,8 +99,8 @@ def get_args():
     # Optimizer related parameters
     ################################################################
     parser.add_argument('-optimizer', choices=['adam', 'lookahead', 'sgd'], default='adam', help = '....:)')
-    parser.add_argument('-dec_lr', type = float, default=0.001, help='decoder leanring rate')
-    parser.add_argument('-enc_lr', type = float, default=0.001, help='encoder leanring rate')
+    parser.add_argument('-dec_lr', type = float, default=0.01, help='decoder leanring rate')
+    parser.add_argument('-enc_lr', type = float, default=0.01, help='encoder leanring rate')
 
     ################################################################
     # MISC
@@ -124,9 +124,9 @@ def get_args():
 
     parser.add_argument('-BASE_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading')
     parser.add_argument('-LOG_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\logs_faded')
-    parser.add_argument('-DATA_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\data_test123')
-    parser.add_argument('-MODEL_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_test123')
-    parser.add_argument('-PLOT_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\plot_test123')
+    parser.add_argument('-DATA_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\data_faded')
+    parser.add_argument('-MODEL_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded')
+    parser.add_argument('-PLOT_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\plots_faded')
 
     args = parser.parse_args()
 

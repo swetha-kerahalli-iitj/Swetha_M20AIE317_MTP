@@ -1,0 +1,46 @@
+Namespace(channel='awgn', vv=5, radar_prob=0.05, radar_power=5.0, train_enc_channel_low=1.0, train_enc_channel_high=1.0, train_dec_channel_low=-1.5, train_dec_channel_high=2.0, init_nw_weight='default', code_rate_k=1, code_rate_n=3, enc_rnn='gru', dec_rnn='gru', enc_num_layer=2, dec_num_layer=2, dec_num_unit=100, enc_num_unit=25, enc_act='elu', dec_act='linear', num_train_dec=5, num_train_enc=1, dropout=0.0, snr_test_start=-1.5, snr_test_end=4.0, snr_points=12, batch_size=100, num_epoch=3, test_ratio=1, block_len=100, block_len_low=10, block_len_high=200, is_variable_block_len=False, num_block=1000, test_channel_mode='block_norm', train_channel_mode='block_norm', enc_truncate_limit=0, no_code_norm=False, enc_quantize_level=2, enc_value_limit=1.0, enc_grad_limit=0.01, enc_clipping='both', optimizer='adam', dec_lr=0.001, enc_lr=0.001, no_cuda=False, rec_quantize=False, print_pos_ber=False, print_pos_power=False, print_test_traj=False, precompute_norm_stats=False, D=1, BASE_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading', LOG_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\logs_faded', DATA_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\data_faded', MODEL_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\model_faded', PLOT_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\plots_faded')
+use_cuda:  False
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(1, 25, num_layers=2, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=3, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(3, 100, num_layers=2, batch_first=True)
+    (dec2_rnns): GRU(3, 100, num_layers=2, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=1, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69421843  running time 91.03403067588806
+====> Epoch: 1 Average loss: 0.68950983  running time 91.40806698799133
+====> Epoch: 1 Average loss: 0.68774369  running time 91.65911364555359
+====> Epoch: 1 Average loss: 0.68773707  running time 90.6475977897644
+====> Epoch: 1 Average loss: 0.68726498  running time 90.8842990398407
+====> Epoch: 1 Average loss: 0.68776884  running time 90.49185514450073
+====> Test set BCE loss 0.6866359710693359 Custom Loss 0.6866359710693359 with ber  0.4538300633430481 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded\attention_model_1_awgn_lr_0.001_D1_1000_20230312-022531.pt
+each epoch training time: 551.6687595844269s
+====> Epoch: 2 Average loss: 0.68495313  running time 91.02461528778076
+====> Epoch: 2 Average loss: 0.68153488  running time 90.6228699684143
+====> Epoch: 2 Average loss: 0.68124915  running time 90.91336941719055
+====> Epoch: 2 Average loss: 0.68053125  running time 90.49901866912842
+====> Epoch: 2 Average loss: 0.68087876  running time 90.94584846496582
+====> Epoch: 2 Average loss: 0.67994835  running time 90.90403580665588
+====> Test set BCE loss 0.6785758137702942 Custom Loss 0.6785758137702942 with ber  0.4285300374031067 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded\attention_model_2_awgn_lr_0.001_D1_1000_20230312-022531.pt
+each epoch training time: 550.6103620529175s
+====> Epoch: 3 Average loss: 0.67855063  running time 90.94738149642944
+====> Epoch: 3 Average loss: 0.67599295  running time 90.78316044807434
+====> Epoch: 3 Average loss: 0.67600204  running time 90.68116474151611
+====> Epoch: 3 Average loss: 0.67595010  running time 90.78224110603333
+====> Epoch: 3 Average loss: 0.67654405  running time 90.80715751647949
+====> Epoch: 3 Average loss: 0.67480605  running time 90.73426222801208
+====> Test set BCE loss 0.6730605363845825 Custom Loss 0.6730605363845825 with ber  0.4194699823856354 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded\attention_model_3_awgn_lr_0.001_D1_1000_20230312-022531.pt
+each epoch training time: 550.492192029953s
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded\attention_model_awgn_lr_0.001_D1_1000.pt

@@ -1,7 +1,12 @@
+from fractions import Fraction
+
 import torch
 import numpy as np
 import math
 import torch.nn.functional as F
+import commpy.modulation as mod
+import commpy.channels as chan
+from commpy.modulation import QAMModem, kbest, best_first_detector
 
 def errors_ber(y_true, y_pred, positions = 'default'):
     y_true = y_true.view(y_true.shape[0], -1, 1)
@@ -74,6 +79,55 @@ def snr_sigma2db(train_sigma):
         return -20.0 * math.log(train_sigma, 10)
     except:
         return -20.0 * torch.log10(train_sigma)
+def get_modem(mod_type='QAM_16'):
+    if mod_type == 'QAM_16':
+        return mod.QAMModem(16)
+def get_theo_ber(SNR,M=16):
+    k = math.log2(M);
+    SNRLin = 10 ** (SNR / 10);
+    gamma_c = SNRLin * k;
+
+    if M == 4:
+        # 4 - QAM
+        ber = 1 / 2 * (1 - math.sqrt(gamma_c / k/ (1 + gamma_c / k)));
+    elif M == 16 :
+        # 16 - QAM
+        ber = 3 / 8 * (1 - math.sqrt(2 / 5 * gamma_c / k / (1 + 2 / 5 * gamma_c / k)));
+    elif M == 64:
+        # 64 - QAM
+        ber = 7 / 24 * (1 - math.sqrt(1 / 7 * gamma_c / k/ (1 + 1 / 7 * gamma_c / k)));
+    return ber
+def generate_Rayleigh_noise_SNR(SNR,noise_shape,args,mod_type ='QAM_16',code_rate=1/3):
+    send_chunk = noise_shape[0]
+    number_chunks_per_send = noise_shape[1]
+    msg = np.random.choice((0, 1), send_chunk * number_chunks_per_send*noise_shape[2]*4)
+    # msg =  torch.randint(0, 1, noise_shape, dtype=torch.float)
+    mod = get_modem(mod_type)
+
+    RayleighChannel = chan.MIMOFlatChannel(noise_shape[2],noise_shape[2])
+    RayleighChannel.uncorr_rayleigh_fading(complex)
+    RayleighChannel.set_SNR_dB(SNR, float(code_rate), mod.Es)
+    symbs = mod.modulate(msg)
+    channel_output = RayleighChannel.propagate(symbs)
+    resized_output = np.array(channel_output).reshape(noise_shape)
+    # resized_symbs = np.array(symbs).reshape(noise_shape)
+    # rate = code_rate
+    # divider = (Fraction(1, mod.num_bits_symbol * RayleighChannel.nb_tx) * 1 / code_rate).denominator
+    # send_chunk = max(divider, send_chunk // divider * divider)
+    #
+    # receive_size = RayleighChannel.nb_tx * mod.num_bits_symbol
+    # # Deals with MIMO channel
+    # if isinstance(RayleighChannel, chan.MIMOFlatChannel):
+    #     nb_symb_vector = len(channel_output)
+    #     received_msg = np.empty(int(math.ceil(len(msg) / float(rate))))
+    #     for i in range(nb_symb_vector):
+    #         received_msg[receive_size * i:receive_size * (i + 1)] = \
+    #             mod.receive(channel_output[i], RayleighChannel.channel_gains[i],
+    #                          mod.constellation, RayleighChannel.noise_std ** 2)
+    # else:
+    #     received_msg = mod.receive(channel_output, RayleighChannel.channel_gains,
+    #                                 mod.constellation,RayleighChannel.noise_std ** 2)
+    return torch.from_numpy(resized_output)
 
 def generate_noise(noise_shape, args, test_sigma = 'default', snr_low = 0.0, snr_high = 0.0, mode = 'encoder'):
     # SNRs at training
