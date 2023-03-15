@@ -5,10 +5,11 @@ import time
 import torch.nn.functional as F
 
 from utils import snr_sigma2db, snr_db2sigma, code_power, errors_ber_pos, errors_ber, errors_bler, generate_noise, \
-    customized_loss, generate_Rayleigh_noise_SNR, get_modem
+    customized_loss, generate_Rayleigh_noise_SNR, get_modem, awgn_ber, rayleigh_ber, gen_mod
 
 import numpy as np
 from numpy.random import mtrand
+
 
 ######################################################################################
 #
@@ -17,18 +18,16 @@ from numpy.random import mtrand
 ######################################################################################
 
 
-def train(epoch, model, optimizer, args, use_cuda = False, verbose = True, mode = 'encoder'):
-
+def train(epoch, model, optimizer, args, use_cuda=False, verbose=True, mode='encoder'):
     device = torch.device("cuda" if use_cuda else "cpu")
 
     model.train()
     start_time = time.time()
     train_loss = 0.0
+    mod = get_modem()
     k_same_code_counter = 0
 
-
-    for batch_idx in range(int(args.num_block/args.batch_size)):
-
+    for batch_idx in range(int(args.num_block / args.batch_size)):
 
         if args.is_variable_block_len:
             block_len = np.random.randint(args.block_len_low, args.block_len_high)
@@ -36,59 +35,76 @@ def train(epoch, model, optimizer, args, use_cuda = False, verbose = True, mode 
             block_len = args.block_len
 
         optimizer.zero_grad()
-        
-        X_train    = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
 
+        # X_train    = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
+        input_shape = (args.batch_size, block_len, args.code_rate_k)
         noise_shape = (args.batch_size, args.block_len, args.code_rate_n)
         # train encoder/decoder with different SNR... seems to be a good practice.
-        SNR=0.0
+        SNR = args.train_enc_channel_low
+        code_rate = args.code_rate_k / args.code_rate_n
         if mode == 'encoder':
-            fwd_noise  = generate_Rayleigh_noise_SNR(SNR,noise_shape,args)
+            fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR(SNR, noise_shape, args,
+                                                                   code_rate=code_rate)
         else:
-            fwd_noise  = generate_Rayleigh_noise_SNR(SNR,noise_shape,args)
+            fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR( SNR, noise_shape, args,
+                                                                   code_rate=code_rate)
 
+        # X_train, fwd_noise, encoded_input = X_train.to(device), fwd_noise.to(device), encoded_input.to(device)
+        noise = fwd_noise.to(device)
+        X_train = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+        # mod_input = gen_mod(input_msg,noise_shape,mod)
+        # X_train = mod_input[:,:,:args.code_rate_k]
+        fwd_noise = noise.real.float()
         X_train, fwd_noise = X_train.to(device), fwd_noise.to(device)
-
-        output, code = model(X_train, fwd_noise)
+        output, code = model(X_train,fwd_noise )
         output = torch.clamp(output, 0.0, 1.0)
 
         if mode == 'encoder':
-            loss = customized_loss(output, X_train, args, noise=fwd_noise, code = code)
+            loss = customized_loss(output, X_train, args, noise=fwd_noise, code=code)
 
         else:
-            loss = customized_loss(output, X_train, args, noise=fwd_noise, code = code)
+            loss = customized_loss(output, X_train, args, noise=fwd_noise, code=code)
 
         loss.backward()
         train_loss += loss.item()
         optimizer.step()
 
     end_time = time.time()
-    train_loss = train_loss /(args.num_block/args.batch_size)
+    train_loss = train_loss / (args.num_block / args.batch_size)
     if verbose:
         print('====> Epoch: {} Average loss: {:.8f}'.format(epoch, train_loss), \
-            ' running time', str(end_time - start_time))
+              ' running time', str(end_time - start_time))
 
     return train_loss
 
 
-
-def validate(model, optimizer, args, use_cuda = False, verbose = True):
-
+def validate(model, optimizer, args, use_cuda=False, verbose=True):
     device = torch.device("cuda" if use_cuda else "cpu")
 
     model.eval()
+    mod = get_modem()
     test_bce_loss, test_custom_loss, test_ber, test_bler = 0.0, 0.0, 0.0, 0.0
-    SNR =args.train_enc_channel_low
+
     with torch.no_grad():
-        num_test_batch = int(args.num_block/args.batch_size * args.test_ratio)
+        num_test_batch = int(args.num_block / args.batch_size * args.test_ratio)
         for batch_idx in range(num_test_batch):
-            X_test     = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
             noise_shape = (args.batch_size, args.block_len, args.code_rate_n)
-            fwd_noise  = generate_Rayleigh_noise_SNR(SNR,noise_shape,args)
 
-            X_test, fwd_noise= X_test.to(device), fwd_noise.to(device)
-
+            # train encoder/decoder with different SNR... seems to be a good practice.
+            SNR = args.train_enc_channel_low
+            code_rate = args.code_rate_k / args.code_rate_n
+            fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR( SNR, noise_shape, args,
+                                                                   code_rate=code_rate)
+            noise = fwd_noise.to(device)
+            # X_test = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+            # X_test = X_test.type(torch.FloatTensor).to(device)
+            fwd_noise = noise.real.float()
+            X_test = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+            # mod_input = gen_mod(input_msg, noise_shape, mod)
+            # X_test = mod_input[:, :, :args.code_rate_k].to(device)
+            X_test, fwd_noise = X_test.to(device), fwd_noise.to(device)
             optimizer.zero_grad()
+
             output, codes = model(X_test, fwd_noise)
 
             output = torch.clamp(output, 0.0, 1.0)
@@ -97,32 +113,30 @@ def validate(model, optimizer, args, use_cuda = False, verbose = True):
             X_test = X_test.detach()
 
             test_bce_loss += F.binary_cross_entropy(output, X_test)
-            test_custom_loss += customized_loss(output, X_test, noise = fwd_noise, args = args, code = codes)
-            test_ber  += errors_ber(output,X_test)
-            test_bler += errors_bler(output,X_test)
-
+            test_custom_loss += customized_loss(output, X_test, noise=fwd_noise, args=args, code=codes)
+            test_ber += errors_ber(output, X_test)
+            test_bler += errors_bler(output, X_test)
 
     test_bce_loss /= num_test_batch
     test_custom_loss /= num_test_batch
-    test_ber  /= num_test_batch
+    test_ber /= num_test_batch
     test_bler /= num_test_batch
 
     if verbose:
         print('====> Test set BCE loss', float(test_bce_loss),
-              'Custom Loss',float(test_custom_loss),
+              'Custom Loss', float(test_custom_loss),
               'with ber ', float(test_ber),
               'with bler ', float(test_bler),
-        )
+              )
 
     report_loss = float(test_bce_loss)
-    report_ber  = float(test_ber)
-    report_bler  = float(test_bler)
+    report_ber = float(test_ber)
+    report_bler = float(test_bler)
 
     return report_loss, report_ber, report_bler
 
 
-def test(model,filename, args, block_len = 'default',use_cuda = False):
-
+def test(model, filename, args, block_len='default', use_cuda=False):
     device = torch.device("cuda" if use_cuda else "cpu")
     model.eval()
 
@@ -134,60 +148,73 @@ def test(model,filename, args, block_len = 'default',use_cuda = False):
     # Precomputes Norm Statistics.
     if args.precompute_norm_stats:
         with torch.no_grad():
-            num_test_batch = int(args.num_block/(args.batch_size)* args.test_ratio)
+            num_test_batch = int(args.num_block / (args.batch_size) * args.test_ratio)
             for batch_idx in range(num_test_batch):
-                X_test = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
+                X_test = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
                 X_test = X_test.to(device)
-                _      = model.enc(X_test)
-            print('Pre-computed norm statistics mean ',model.enc.mean_scalar, 'std ', model.enc.std_scalar)
+                _ = model.enc(X_test)
+            print('Pre-computed norm statistics mean ', model.enc.mean_scalar, 'std ', model.enc.std_scalar)
 
     ber_res, bler_res = [], []
-    # snr_interval = (args.snr_test_end - args.snr_test_start)* 1.0 /  (args.snr_points-1)
-    # snrs = [snr_interval* item + args.snr_test_start for item in range(args.snr_points)]
+    snr_interval = (args.snr_test_end - args.snr_test_start)* 1.0 /  (args.snr_points-1)
+    snrs = [snr_interval* item + args.snr_test_start for item in range(args.snr_points)]
     # mod = get_modem()
-    snrs = np.arange(-2,20, 2)
+    # snrs = np.arange(0, 20, 2)
     print('SNRS', snrs)
     sigmas = snrs
     data_file = open(filename, 'a')
-
+    mod = get_modem()
     for sigma, this_snr in zip(sigmas, snrs):
-        test_ber, test_bler = .0, .0
+        test_ber, test_bler,awgn_test_ber,rayleigh_test = .0, .0, .0, .0
         with torch.no_grad():
-            num_test_batch = int(args.num_block/(args.batch_size))
+            num_test_batch = int(args.num_block / (args.batch_size))
             for batch_idx in range(num_test_batch):
-                X_test     = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
                 noise_shape = (args.batch_size, args.block_len, args.code_rate_n)
-                fwd_noise  = generate_Rayleigh_noise_SNR(sigma,noise_shape,args)
 
-                X_test, fwd_noise= X_test.to(device), fwd_noise.to(device)
+                # train encoder/decoder with different SNR... seems to be a good practice.
+                code_rate = args.code_rate_k / args.code_rate_n
+                fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR(this_snr, noise_shape, args,
+                                                                       code_rate=code_rate)
+                noise = fwd_noise.to(device)
+                X_test = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+                # X_test = X_test.type(torch.FloatTensor).to(device)
+                # mod_input = gen_mod(input_msg, noise_shape, mod)
+                # X_test = mod_input[:, :, :args.code_rate_k].to(device)
 
+                fwd_noise = noise.real.float()
+                X_test, fwd_noise = X_test.to(device), fwd_noise.to(device)
                 X_hat_test, the_codes = model(X_test, fwd_noise)
 
-                test_ber  += errors_ber(X_hat_test,X_test)
-                test_bler += errors_bler(X_hat_test,X_test)
-
+                test_ber += errors_ber(X_hat_test, X_test)
+                test_bler += errors_bler(X_hat_test, X_test)
+                awgn_test_ber += awgn_ber(encoded_input,input_msg,this_snr,noise_shape,mod)
+                rayleigh_test += rayleigh_ber(encoded_input,input_msg,this_snr,noise_shape,mod,code_rate)
                 if batch_idx == 0:
-                    test_pos_ber = errors_ber_pos(X_hat_test,X_test)
-                    codes_power  = code_power(the_codes)
+                    test_pos_ber = errors_ber_pos(X_hat_test, X_test)
+                    codes_power = code_power(the_codes)
                 else:
-                    test_pos_ber += errors_ber_pos(X_hat_test,X_test)
-                    codes_power  += code_power(the_codes)
+                    test_pos_ber += errors_ber_pos(X_hat_test, X_test)
+                    codes_power += code_power(the_codes)
 
             if args.print_pos_power:
-                print('code power', codes_power/num_test_batch)
+                print('code power', codes_power / num_test_batch)
             if args.print_pos_ber:
-                res_pos = test_pos_ber/num_test_batch
+                res_pos = test_pos_ber / num_test_batch
                 res_pos_arg = np.array(res_pos.cpu()).argsort()[::-1]
                 res_pos_arg = res_pos_arg.tolist()
                 print('positional ber', res_pos)
-                print('positional argmax',res_pos_arg)
+                print('positional argmax', res_pos_arg)
 
-        test_ber  /= num_test_batch
+        test_ber /= num_test_batch
         test_bler /= num_test_batch
-        print('Test SNR',this_snr ,'with ber ', float(test_ber), 'with bler', float(test_bler))
-        data_file.write(str(sigma) + ' ' + str(float(test_ber))+ ' ' + str(float(test_bler)) + "\n")
+        awgn_test_ber /= num_test_batch
+        rayleigh_test /= num_test_batch
+        print('Test SNR', this_snr, 'with ber ', float(test_ber), 'with awgn ber ', float(awgn_test_ber),'with rayleigh ber '
+              , float(rayleigh_test),'with bler', float(test_bler))
+        data_file.write(str(sigma) + ' ' + str(float(test_ber)) + ' '+ str(float(awgn_test_ber)) + ' '+
+                        str(float(rayleigh_test)) + ' '  + str(float(test_bler)) + "\n")
         ber_res.append(float(test_ber))
-        bler_res.append( float(test_bler))
+        bler_res.append(float(test_bler))
     data_file.close()
     print('final results on SNRs ', snrs)
     print('BER', ber_res)
@@ -197,11 +224,11 @@ def test(model,filename, args, block_len = 'default',use_cuda = False):
     enc_power = 0.0
     with torch.no_grad():
         for idx in range(num_test_batch):
-            X_test     = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
-            X_test     = X_test.to(device)
-            X_code     = model.enc(X_test)
-            enc_power +=  torch.std(X_code)
+            X_test = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
+            X_test = X_test.to(device)
+            X_code = model.enc(X_test)
+            enc_power += torch.std(X_code)
     enc_power /= float(num_test_batch)
-    print('encoder power is',enc_power.item())
-    adj_snrs = [snr_sigma2db(snr_db2sigma(item)/enc_power) for item in snrs]
-    print('adjusted SNR should be',adj_snrs)
+    print('encoder power is', enc_power.item())
+    adj_snrs = [snr_sigma2db(snr_db2sigma(item) / enc_power) for item in snrs]
+    print('adjusted SNR should be', adj_snrs)

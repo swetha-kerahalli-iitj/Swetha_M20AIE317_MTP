@@ -94,6 +94,8 @@ def plot_attn(lr, D, filename, legend):
         ax[i].set_title(s[i], fontweight='bold', fontsize=16)
         ax[i].legend(loc='best', fancybox=True, framealpha=0, fontsize=14)
         ax[i].grid(True, linestyle='dotted')  # X
+        if i==1:
+            ax[i].semilogy()
 
     plt.savefig(legend['savepath'], format='png', bbox_inches='tight', transparent=True,
                 dpi=800)
@@ -146,45 +148,71 @@ legend_snr = {
 
 
 def plot_snr_test(filename, plot_path,timestamp):
-    test_data = np.loadtxt(filename, usecols=[0,1,2]).T
+    test_data = np.loadtxt(filename).T
     snrs = test_data[0, :]
     ber = test_data[1, :]
-    bler = test_data[2, :]
+    awgn = test_data[2, :]
+    rayleigh =test_data[3, :]
+    bler = test_data[4, :]
     mean_BER_theoretical = np.zeros(len(snrs))
     test_file_path = os.path.join(plot_path, 'rayleigh_test_both'+str(timestamp)+'.png')
     test_file_path_act = os.path.join(plot_path, 'rayleigh_test_act_'+str(timestamp)+'.png')
-    test_file_path_exp = os.path.join(plot_path, 'rayleigh_test_exp_'+str(timestamp)+'.png')
+    test_file_path_awgn = os.path.join(plot_path, 'rayleigh_test_awgn_'+str(timestamp)+'.png')
+    test_file_path_ray = os.path.join(plot_path, 'rayleigh_test_ray_' + str(timestamp) + '.png')
+    test_file_path_exp = os.path.join(plot_path, 'rayleigh_test_exp_' + str(timestamp) + '.png')
     i = 0
     for SNR in snrs:
         # calculate theoretical BER for BPSK
         mean_BER_theoretical[i] = get_theo_ber(SNR)
         i += 1
 
-    plt.plot(snrs, ber, 'o-',snrs,mean_BER_theoretical,'o-')
+    plt.semilogy(snrs, ber, 'o-',snrs,awgn,'o-',snrs,rayleigh,'o-')
     plt.grid()
     plt.xlabel('Signal to Noise Ration (dB)')
     plt.ylabel('Bit Error Rate')
-    plt.legend(('test snr-ber','theo snr-ber'))
+    plt.xticks(snrs)
+    # plt.yticks((0.1,0.01))
+    plt.title('test-awgn-simulated rayleigh SNR-BER')
+    plt.legend(('test rayleigh snr-ber','awgn snr-ber','sim rayleigh snr-ber'))
     plt.savefig(test_file_path, format='png', bbox_inches='tight',
-                transparent=True, dpi=800)
+                 dpi=1200)
     plt.show()
 
-    plt.plot(snrs, ber, 'o-')
+    plt.semilogy(snrs, ber, 'o-')
     plt.grid()
+    plt.xticks(snrs)
+    # plt.yticks((0,0.1, 0.01))
     plt.xlabel('Signal to Noise Ration (dB)')
     plt.ylabel('Bit Error Rate')
+    plt.title('test rayleigh SNR-BER')
     plt.legend('test snr-ber')
     plt.savefig(test_file_path_act, format='png', bbox_inches='tight',
-                transparent=True, dpi=800)
+                 dpi=1200)
     plt.show()
 
-    plt.plot( snrs, mean_BER_theoretical, 'o-')
+    plt.semilogy( snrs, awgn, 'o-')
     plt.grid()
+    plt.xticks(snrs)
+    # plt.yticks((0,0.1, 0.01))
     plt.xlabel('Signal to Noise Ration (dB)')
     plt.ylabel('Bit Error Rate')
-    plt.legend( 'theo snr-ber')
-    plt.savefig(test_file_path_exp, format='png', bbox_inches='tight',
-                transparent=True, dpi=800)
+    plt.title('awgn SNR-BER')
+    plt.legend( 'awgn snr-ber')
+    plt.savefig(test_file_path_awgn, format='png', bbox_inches='tight',
+                dpi=1200)
+    plt.show()
+
+    plt.plot(snrs, rayleigh, 'o-')
+    plt.grid()
+    plt.yscale('symlog')
+    plt.xticks(snrs)
+    # plt.yticks((0,0.1, 0.01))
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.title('simulated rayleigh SNR-BER')
+    plt.legend('sim rayleigh snr-ber')
+    plt.savefig(test_file_path_ray, format='png', bbox_inches='tight',
+               dpi=1200)
     plt.show()
 
 

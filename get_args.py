@@ -21,7 +21,7 @@ def get_args():
     parser.add_argument('-radar_power',type=float, default=5.0, help ='only for radar distribution channel')
 
     # continuous channels training algorithms
-    parser.add_argument('-train_enc_channel_low', type=float, default  = 4.0)
+    parser.add_argument('-train_enc_channel_low', type=float, default  = 0.0)
     parser.add_argument('-train_enc_channel_high', type=float, default = 1.0)
     parser.add_argument('-train_dec_channel_low', type=float, default  = -1.5)
     parser.add_argument('-train_dec_channel_high', type=float, default = 2.0)
@@ -30,17 +30,17 @@ def get_args():
 
     # code rate is k/n, so that enable multiple code rates. This has to match the encoder/decoder nw structure.
     parser.add_argument('-code_rate_k', type=int, default=1)
-    parser.add_argument('-code_rate_n', type=int, default=3)
+    parser.add_argument('-code_rate_n', type=int, default=2)
 
     ################################################################
     # TurboAE encoder/decoder parameters
     ################################################################
-    parser.add_argument('-enc_rnn', choices=['gru', 'lstm', 'rnn'], default='gru')
-    parser.add_argument('-dec_rnn', choices=['gru', 'lstm', 'rnn'], default='gru')
+    parser.add_argument('-enc_rnn', choices=['gru', 'lstm', 'rnn'], default='rnn')
+    parser.add_argument('-dec_rnn', choices=['gru', 'lstm', 'rnn'], default='rnn')
 
     # CNN/RNN related
-    parser.add_argument('-enc_num_layer', type=int, default=2)
-    parser.add_argument('-dec_num_layer', type=int, default=2)
+    parser.add_argument('-enc_num_layer', type=int, default=3)
+    parser.add_argument('-dec_num_layer', type=int, default=3)
 
 
     parser.add_argument('-dec_num_unit', type=int, default=100, help = 'This is CNN number of filters, and RNN units')
@@ -62,7 +62,7 @@ def get_args():
     parser.add_argument('-snr_points', type=int, default=12)
 
     parser.add_argument('-batch_size', type=int, default=100)
-    parser.add_argument('-num_epoch', type=int, default=20)
+    parser.add_argument('-num_epoch', type=int, default=3)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
     parser.add_argument('-block_len', type=int, default=100)
