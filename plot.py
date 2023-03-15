@@ -4,6 +4,7 @@ mandatory. No comments can be made within the file.
 Must be followed strictly.
 '''
 import glob
+import math
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -13,6 +14,12 @@ import numpy as np
 
 from pylab import rcParams
 import matplotlib.pylab as pylab
+<<<<<<< Updated upstream
+=======
+from scipy import special
+
+from utils import get_theo_ber, get_modem
+>>>>>>> Stashed changes
 
 rcParams['legend.numpoints'] = 1
 mpl.style.use('seaborn')
@@ -67,8 +74,14 @@ def plot(lr):
     plt.savefig('lr'+str(lr)+'.png', format='png', bbox_inches='tight', transparent=True, dpi=800)
     plt.show()
 
+<<<<<<< Updated upstream
 def plot_attn(lr,D,filenamed1,filenamed10):
     fig, ax = plt.subplots(1, 3, figsize=(15, 6), tight_layout=True)
+=======
+
+def plot_attn(lr, D, filename, legend):
+    fig, ax = plt.subplots(1, 2, figsize=(15, 6), tight_layout=True)
+>>>>>>> Stashed changes
     ax = ax.ravel()
     s = ['Loss', 'BER', 'BLER']
     filename1 = './data/data_awgn_lr_'+str(lr)+'_D1_10000.txt'
@@ -90,6 +103,7 @@ def plot_attn(lr,D,filenamed1,filenamed10):
     for i in range(2):
         if D==1:
             y1 = data1[i, x]
+<<<<<<< Updated upstream
             y2 = attn_data1[i, x]
         if D==10:
             y1 = data2[i, x]
@@ -99,6 +113,19 @@ def plot_attn(lr,D,filenamed1,filenamed10):
         ax[i].set_title(s[i],fontweight='bold',fontsize=16)
         ax[i].legend(loc='best',fancybox=True, framealpha=0,fontsize=14)
         ax[i].grid(True, linestyle='dotted')  # X
+=======
+        ax[i].plot(x, y1, 'o--', c='#e41b1b', linewidth=2, markersize=6)
+        ax[i].set_title(s[i], fontweight='bold', fontsize=16)
+        ax[i].set_ylabel(s[i], fontweight='bold', fontsize=16)
+        ax[i].set_xlabel('Epoch', fontweight='bold', fontsize=16)
+        ax[i].set_xticks(x)
+        if i > 0:
+            ax[i].set_yscale('logit')
+
+        ax[i].legend(loc='best', fancybox=True, framealpha=0, fontsize=14)
+        ax[i].grid(True, linestyle='dotted')  # X
+
+>>>>>>> Stashed changes
 
     if D==1:
         ax[2].plot(snrs, bler1, '--', c='#e41b1b', label="no attention D={}".format(D), linewidth=2, markersize=6)
@@ -140,9 +167,15 @@ legend = {
 legend_snr = {
     'title': 'Delay=10 num_block=50000 lr=0.01',
     'xlabel': 'SNR',
+<<<<<<< Updated upstream
     'ylabel': 'BER',
     'savepath': './data/plots/awgn_lr0.01_D10_50000_snr.png',
     'fig_size': (9,6),
+=======
+    'ylabel': 'BLER',
+    'savepath': 'rayleigh_lr0.01_D10_50000_snr.png',
+    'fig_size': (9, 6),
+>>>>>>> Stashed changes
     'label_fontsize': 15,
     'markersize': 10,
     'linewidth': 2,
@@ -154,7 +187,103 @@ legend_snr = {
     'line_length': 40,
     'markevery': 0.5
 }
+<<<<<<< Updated upstream
 def plot_snr(filename,legend):
+=======
+
+
+def plot_snr_test(filename, plot_path,timestamp):
+    test_data = np.loadtxt(filename).T
+    snrs = test_data[0, :]
+    ber = test_data[1, :]
+    awgn = test_data[2, :]
+    rayleigh =test_data[3, :]
+    bler = test_data[4, :]
+    mod = get_modem()
+    mean_BER_theoretical = np.zeros(len(snrs))
+    test_file_path = os.path.join(plot_path, 'rayleigh_test_both'+str(timestamp)+'.png')
+    test_file_path_act = os.path.join(plot_path, 'rayleigh_test_act_'+str(timestamp)+'.png')
+    test_file_path_awgn = os.path.join(plot_path, 'rayleigh_test_awgn_'+str(timestamp)+'.png')
+    test_file_path_ray = os.path.join(plot_path, 'rayleigh_test_ray_' + str(timestamp) + '.png')
+    test_file_path_exp = os.path.join(plot_path, 'rayleigh_test_exp_' + str(timestamp) + '.png')
+    i = 0
+    for SNR in snrs:
+        # calculate theoretical BER for BPSK
+        mean_BER_theoretical[i] = get_theo_ber(SNR)
+        i += 1
+
+    plt.semilogy(snrs, ber, 'o-',snrs,awgn,'o-',snrs,rayleigh,'o-',snrs,mod.calcTheoreticalBER(snrs))
+    plt.grid()
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.xticks(snrs)
+    # plt.yticks((0.1,0.01))
+    plt.title('test-awgn-simulated rayleigh SNR-BER')
+    plt.legend(('test rayleigh snr-ber','awgn snr-ber','sim rayleigh snr-ber','theo snr-ber'))
+    plt.savefig(test_file_path, format='png', bbox_inches='tight',
+                 dpi=1200)
+    plt.show()
+
+    fig, ax = plt.subplots(figsize=(12,8))
+    ax.semilogy(snrs, mod.calcTheoreticalBER(snrs), "--", label="Theoretical")
+    ax.semilogy(snrs, awgn,
+                label="AWGN")
+    ax.semilogy(snrs, ber, "o-", linewidth=3, markersize=8,
+                label="Rayleigh with ML")
+
+    ax.semilogy(snrs, rayleigh,"o-",
+                label="Rayleigh")
+
+    ax.set_title("16-QAM Error Probability")
+    ax.set_ylabel("Bit Error Rate (BER)")
+    new_list = range(math.floor(min(snrs)), math.ceil(max(snrs)) + 1)
+    ax.set_xticks(new_list)
+    ax.set_xlabel("SNR (dB)")
+    ax.legend()
+    plt.savefig(test_file_path_exp, format='png', bbox_inches='tight',
+                dpi=1200)
+    plt.show()
+
+    plt.semilogy(snrs, ber, 'o-')
+    plt.grid()
+    plt.xticks(snrs)
+    # plt.yticks((0,0.1, 0.01))
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.title('test rayleigh SNR-BER')
+    plt.legend('test snr-ber')
+    plt.savefig(test_file_path_act, format='png', bbox_inches='tight',
+                 dpi=1200)
+    plt.show()
+
+    plt.semilogy( snrs, awgn, 'o-')
+    plt.grid()
+    plt.xticks(snrs)
+    # plt.yticks((0,0.1, 0.01))
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.title('awgn SNR-BER')
+    plt.legend( 'awgn snr-ber')
+    plt.savefig(test_file_path_awgn, format='png', bbox_inches='tight',
+                dpi=1200)
+    plt.show()
+
+    plt.plot(snrs, rayleigh, 'o-')
+    plt.grid()
+    plt.yscale('symlog')
+    plt.xticks(snrs)
+    # plt.yticks((0,0.1, 0.01))
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.title('simulated rayleigh SNR-BER')
+    plt.legend('sim rayleigh snr-ber')
+    plt.savefig(test_file_path_ray, format='png', bbox_inches='tight',
+               dpi=1200)
+    plt.show()
+
+
+def plot_snr(filename, legend):
+>>>>>>> Stashed changes
     data = np.loadtxt(filename)
     X = data[:, 0]
     Y = data[:, 3]

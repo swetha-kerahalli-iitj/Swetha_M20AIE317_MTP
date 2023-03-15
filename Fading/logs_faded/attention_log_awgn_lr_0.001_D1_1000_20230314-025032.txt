@@ -1,0 +1,54 @@
+Namespace(channel='awgn', vv=5, radar_prob=0.05, radar_power=5.0, train_enc_channel_low=-2.0, train_enc_channel_high=1.0, train_dec_channel_low=-1.5, train_dec_channel_high=2.0, init_nw_weight='default', code_rate_k=1, code_rate_n=3, enc_rnn='gru', dec_rnn='gru', enc_num_layer=2, dec_num_layer=2, dec_num_unit=100, enc_num_unit=25, enc_act='elu', dec_act='linear', num_train_dec=5, num_train_enc=1, dropout=0.0, snr_test_start=-1.5, snr_test_end=4.0, snr_points=12, batch_size=100, num_epoch=2, test_ratio=1, block_len=100, block_len_low=10, block_len_high=200, is_variable_block_len=False, num_block=1000, test_channel_mode='block_norm', train_channel_mode='block_norm', enc_truncate_limit=0, no_code_norm=False, enc_quantize_level=2, enc_value_limit=1.0, enc_grad_limit=0.01, enc_clipping='both', optimizer='adam', dec_lr=0.001, enc_lr=0.001, no_cuda=False, rec_quantize=False, print_pos_ber=False, print_pos_power=False, print_test_traj=False, precompute_norm_stats=False, D=1, BASE_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading', LOG_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\logs_faded', DATA_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\data_faded', MODEL_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\model_faded', PLOT_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\plots_faded')
+use_cuda:  False
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(1, 25, num_layers=2, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=3, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(3, 100, num_layers=2, batch_first=True)
+    (dec2_rnns): GRU(3, 100, num_layers=2, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=1, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69329981  running time 97.35269260406494
+====> Epoch: 1 Average loss: 0.69595335  running time 96.81371974945068
+====> Epoch: 1 Average loss: 0.69320888  running time 96.16133522987366
+====> Epoch: 1 Average loss: 0.69263009  running time 95.98494958877563
+====> Epoch: 1 Average loss: 0.69261621  running time 96.17494249343872
+====> Epoch: 1 Average loss: 0.69251271  running time 105.86868977546692
+====> Test set BCE loss 0.692481517791748 Custom Loss 0.692481517791748 with ber  0.4856800436973572 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded\attention_model_1_awgn_lr_0.001_D1_1000_20230314-025032.pt
+each epoch training time: 594.5790283679962s
+====> Epoch: 2 Average loss: 0.68862699  running time 97.10379362106323
+====> Epoch: 2 Average loss: 0.66740169  running time 104.42023873329163
+====> Epoch: 2 Average loss: 0.64072361  running time 103.2968909740448
+====> Epoch: 2 Average loss: 0.63616989  running time 101.63499212265015
+====> Epoch: 2 Average loss: 0.63476159  running time 95.44230651855469
+====> Epoch: 2 Average loss: 0.63379481  running time 94.005117893219
+====> Test set BCE loss 0.6362590193748474 Custom Loss 0.6362590193748474 with ber  0.36616000533103943 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded\attention_model_2_awgn_lr_0.001_D1_1000_20230314-025032.pt
+each epoch training time: 602.2605059146881s
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\model_faded\attention_model_awgn_lr_0.001_D1_1000.pt
+SNRS [-2  0  2  4  6  8 10 12 14 16 18]
+Test SNR -2 with ber  0.3625999987125397 with awgn ber  0.35113 with rayleigh ber  0.25688 with bler 1.0
+Test SNR 0 with ber  0.3567500114440918 with awgn ber  0.31110000000000004 with rayleigh ber  0.25871 with bler 1.0
+Test SNR 2 with ber  0.36173999309539795 with awgn ber  0.26985 with rayleigh ber  0.25912999999999997 with bler 1.0
+Test SNR 4 with ber  0.3887600004673004 with awgn ber  0.22764 with rayleigh ber  0.25810999999999995 with bler 1.0
+Test SNR 6 with ber  0.4154800474643707 with awgn ber  0.19254 with rayleigh ber  0.25941000000000003 with bler 1.0
+Test SNR 8 with ber  0.43198999762535095 with awgn ber  0.15805 with rayleigh ber  0.25946 with bler 1.0
+Test SNR 10 with ber  0.44731998443603516 with awgn ber  0.13279 with rayleigh ber  0.25599 with bler 1.0
+Test SNR 12 with ber  0.45051997900009155 with awgn ber  0.11423000000000001 with rayleigh ber  0.25863 with bler 1.0
+Test SNR 14 with ber  0.45903998613357544 with awgn ber  0.10221 with rayleigh ber  0.25794 with bler 1.0
+Test SNR 16 with ber  0.4671500325202942 with awgn ber  0.09530000000000001 with rayleigh ber  0.25831000000000004 with bler 1.0
+Test SNR 18 with ber  0.47024005651474 with awgn ber  0.09372 with rayleigh ber  0.25814000000000004 with bler 1.0
+final results on SNRs  [-2  0  2  4  6  8 10 12 14 16 18]
+BER [0.3625999987125397, 0.3567500114440918, 0.36173999309539795, 0.3887600004673004, 0.4154800474643707, 0.43198999762535095, 0.44731998443603516, 0.45051997900009155, 0.45903998613357544, 0.4671500325202942, 0.47024005651474]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+encoder power is 1.0
+adjusted SNR should be [-2.000000180303801, -0.0, 2.0000002404171053, 3.999999717024358, 6.0000004906757844, 7.999999988978487, 10.00000005838476, 12.000000253286988, 13.999999827421783, 16.000000139434217, 18.00000043655487]

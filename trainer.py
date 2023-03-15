@@ -2,7 +2,10 @@ import torch
 import time
 import torch.nn.functional as F
 
-from utils import snr_sigma2db, snr_db2sigma, code_power, errors_ber_pos, errors_ber, errors_bler, generate_noise, customized_loss
+
+from utils import snr_sigma2db, snr_db2sigma, code_power, errors_ber_pos, errors_ber, errors_bler, generate_noise, \
+    customized_loss, generate_Rayleigh_noise_SNR, get_modem, simulate_noise
+
 
 import numpy as np
 from numpy.random import mtrand
@@ -22,7 +25,7 @@ def train(epoch, model, optimizer, args, use_cuda = False, verbose = True, mode 
     start_time = time.time()
     train_loss = 0.0
     k_same_code_counter = 0
-
+    SNR = args.train_enc_channel_low
 
     for batch_idx in range(int(args.num_block/args.batch_size)):
 
@@ -33,15 +36,25 @@ def train(epoch, model, optimizer, args, use_cuda = False, verbose = True, mode 
             block_len = args.block_len
 
         optimizer.zero_grad()
-        
+
         X_train    = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
+
+        # X_train    = torch.randint(0, 2, (args.batch_size, block_len, args.code_rate_k), dtype=torch.float)
 
         noise_shape = (args.batch_size, args.block_len, args.code_rate_n)
         # train encoder/decoder with different SNR... seems to be a good practice.
         if mode == 'encoder':
-            fwd_noise  = generate_noise(noise_shape, args, snr_low=args.train_enc_channel_low, snr_high=args.train_enc_channel_high, mode = 'encoder')
+
+            fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR(SNR, noise_shape,args,'rayleigh')
         else:
-            fwd_noise  = generate_noise(noise_shape, args, snr_low=args.train_dec_channel_low, snr_high=args.train_dec_channel_high, mode = 'decoder')
+            fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR( SNR, noise_shape,args,'rayleigh')
+
+        # X_train, fwd_noise, encoded_input = X_train.to(device), fwd_noise.to(device), encoded_input.to(device)
+        noise = fwd_noise.to(device)
+        X_train = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+        # mod_input = gen_mod(input_msg,noise_shape,mod)
+        # X_train = mod_input[:,:,:args.code_rate_k]
+        fwd_noise = noise.real.float()
 
         X_train, fwd_noise = X_train.to(device), fwd_noise.to(device)
 
@@ -84,7 +97,21 @@ def validate(model, optimizer, args, use_cuda = False, verbose = True):
                                         snr_low=args.train_enc_channel_low,
                                         snr_high=args.train_enc_channel_low)
 
-            X_test, fwd_noise= X_test.to(device), fwd_noise.to(device)
+
+            # train encoder/decoder with different SNR... seems to be a good practice.
+            SNR = args.train_enc_channel_low
+            code_rate = args.code_rate_k / args.code_rate_n
+            fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR( SNR, noise_shape, args,'rayleigh')
+            noise = fwd_noise.to(device)
+            # X_test = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+            # X_test = X_test.type(torch.FloatTensor).to(device)
+            fwd_noise = noise.real.float()
+            X_test = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+            # mod_input = gen_mod(input_msg, noise_shape, mod)
+            # X_test = mod_input[:, :, :args.code_rate_k].to(device)
+            X_test, fwd_noise = X_test.to(device), fwd_noise.to(device)
+            optimizer.zero_grad()
+
 
             optimizer.zero_grad()
             output, codes = model(X_test, fwd_noise)
@@ -140,13 +167,17 @@ def test(model, args, block_len = 'default',use_cuda = False):
             print('Pre-computed norm statistics mean ',model.enc.mean_scalar, 'std ', model.enc.std_scalar)
 
     ber_res, bler_res = [], []
-    snr_interval = (args.snr_test_end - args.snr_test_start)* 1.0 /  (args.snr_points-1)
-    snrs = [snr_interval* item + args.snr_test_start for item in range(args.snr_points)]
+
+    # snr_interval = (args.snr_test_end - args.snr_test_start)* 1.0 /  (args.snr_points-1)
+    # snrs = [snr_interval* item + args.snr_test_start for item in range(args.snr_points)]
+    mod = get_modem()
+    snrs = np.linspace(-2, 20, 11)
+
     print('SNRS', snrs)
     sigmas = snrs
 
     for sigma, this_snr in zip(sigmas, snrs):
-        test_ber, test_bler = .0, .0
+        test_ber, awgn_test_ber,rayleigh_test,test_bler = .0, .0, .0,.0
         with torch.no_grad():
             num_test_batch = int(args.num_block/(args.batch_size))
             for batch_idx in range(num_test_batch):
@@ -155,11 +186,23 @@ def test(model, args, block_len = 'default',use_cuda = False):
                 fwd_noise  = generate_noise(noise_shape, args, test_sigma=sigma)
 
                 X_test, fwd_noise= X_test.to(device), fwd_noise.to(device)
+                # train encoder/decoder with different SNR... seems to be a good practice.
+                code_rate = args.code_rate_k / args.code_rate_n
+                fwd_noise, encoded_input,input_msg = generate_Rayleigh_noise_SNR(this_snr, noise_shape,args,'rayleigh')
+                noise = fwd_noise.to(device)
+                X_test = torch.randint(0, 2, (args.batch_size, args.block_len, args.code_rate_k), dtype=torch.float)
+                # X_test = X_test.type(torch.FloatTensor).to(device)
+                # mod_input = gen_mod(input_msg, noise_shape, mod)
+                # X_test = mod_input[:, :, :args.code_rate_k].to(device)
 
+                fwd_noise = noise.real.float()
+                X_test, fwd_noise = X_test.to(device), fwd_noise.to(device)
                 X_hat_test, the_codes = model(X_test, fwd_noise)
 
-                test_ber  += errors_ber(X_hat_test,X_test)
-                test_bler += errors_bler(X_hat_test,X_test)
+                test_ber += errors_ber(X_hat_test, X_test)
+                test_bler += errors_bler(X_hat_test, X_test)
+                awgn_test_ber += simulate_noise(mod,this_snr,input_msg,encoded_input,False)
+                rayleigh_test += simulate_noise(mod,this_snr,input_msg,encoded_input,True)
 
                 if batch_idx == 0:
                     test_pos_ber = errors_ber_pos(X_hat_test,X_test)
