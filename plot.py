@@ -89,28 +89,30 @@ legend_snr = {
     'markevery': 0.5
 }
 
-def plot_snr_test(filename, plot_path,timestamp):
+def plot_snr_test(args,filename, timestamp):
     test_data = np.loadtxt(filename).T
     snrs = test_data[0, :]
     ber = test_data[1, :]
     awgn = test_data[2, :]
     rayleigh =test_data[3, :]
-    bler = test_data[4, :]
+    rician = test_data[4, :]
+    bler = test_data[5, :]
     mod = get_modem()
+    plot_path = args.PLOT_PATH
     test_file_path = os.path.join(plot_path, 'rayleigh_test_both'+str(timestamp)+'.png')
     test_file_path_act = os.path.join(plot_path, 'rayleigh_test_act_'+str(timestamp)+'.png')
     test_file_path_awgn = os.path.join(plot_path, 'rayleigh_test_awgn_'+str(timestamp)+'.png')
     test_file_path_ray = os.path.join(plot_path, 'rayleigh_test_ray_' + str(timestamp) + '.png')
     test_file_path_exp = os.path.join(plot_path, 'rayleigh_test_exp_' + str(timestamp) + '.png')
 
-    plt.semilogy(snrs, ber, 'o-',snrs,awgn,'o-',snrs,rayleigh,'o-',snrs,mod.calcTheoreticalBER(snrs))
+    plt.semilogy(snrs, ber, 'o-',snrs,awgn,'o-',snrs,rayleigh,'o-',snrs,rician,'o-',snrs,mod.calcTheoreticalBER(snrs))
     plt.grid()
     plt.xlabel('Signal to Noise Ration (dB)')
     plt.ylabel('Bit Error Rate')
     plt.xticks(snrs)
     # plt.yticks((0.1,0.01))
-    plt.title('test-awgn-simulated rayleigh SNR-BER')
-    plt.legend(('test rayleigh snr-ber','awgn snr-ber','sim rayleigh snr-ber','theo snr-ber'))
+    plt.title('test-simulated {} SNR-BER'.format(args.Simulate))
+    plt.legend(('test {} snr-ber'.format(args.Simulate),'AWGN snr-ber','sim Rayleigh snr-ber','sim Rician snr-ber','theo snr-ber'))
     plt.savefig(test_file_path, format='png', bbox_inches='tight',
                  dpi=1200)
     plt.show()
@@ -120,10 +122,12 @@ def plot_snr_test(filename, plot_path,timestamp):
     ax.semilogy(snrs, awgn,
                 label="AWGN")
     ax.semilogy(snrs, ber, "o-", linewidth=3, markersize=8,
-                label="Rayleigh with ML")
+                label="{} with ML".format(args.Simulate))
 
     ax.semilogy(snrs, rayleigh,"o-",
                 label="Rayleigh")
+    ax.semilogy(snrs, rician, "o-",
+                label="Rician")
 
     ax.set_title("16-QAM Error Probability")
     ax.set_ylabel("Bit Error Rate (BER)")
@@ -141,7 +145,7 @@ def plot_snr_test(filename, plot_path,timestamp):
     # plt.yticks((0,0.1, 0.01))
     plt.xlabel('Signal to Noise Ration (dB)')
     plt.ylabel('Bit Error Rate')
-    plt.title('test rayleigh SNR-BER')
+    plt.title('test {} SNR-BER'.format(args.Simulate))
     plt.legend('test snr-ber')
     plt.savefig(test_file_path_act, format='png', bbox_inches='tight',
                  dpi=1200)
@@ -172,6 +176,19 @@ def plot_snr_test(filename, plot_path,timestamp):
                dpi=1200)
     plt.show()
 
+    plt.plot(snrs, rician, 'o-')
+    plt.grid()
+    plt.yscale('symlog')
+    plt.xticks(snrs)
+    # plt.yticks((0,0.1, 0.01))
+    plt.xlabel('Signal to Noise Ration (dB)')
+    plt.ylabel('Bit Error Rate')
+    plt.title('simulated rician SNR-BER')
+    plt.legend('sim rician snr-ber')
+    plt.savefig(test_file_path_ray, format='png', bbox_inches='tight',
+                dpi=1200)
+    plt.show()
+
 
 def plot_snr(filename, legend):
     data = np.loadtxt(filename)
@@ -190,14 +207,14 @@ def plot_snr(filename, legend):
     plt.savefig(legend['savepath'])
     plt.show()
 
-def get_plots(path, filename='None', test_file_name='None',timestamp='00'):
-    legend_snr['savepath'] = os.path.join(path, 'rayleigh_snr_bler_'+timestamp+'.png')
-    legend['savepath'] = os.path.join(path, 'rayleigh_epoch_'+timestamp+'.png')
+def get_plots(args, filename='None', test_file_name='None',timestamp='00'):
+    legend_snr['savepath'] = os.path.join(args.PLOT_PATH, 'rayleigh_snr_bler_'+timestamp+'.png')
+    legend['savepath'] = os.path.join(args.PLOT_PATH, 'rayleigh_epoch_'+timestamp+'.png')
 
     if filename != 'None':
         # plot(filename, legend)
         plot_attn(0.01, 1, filename, legend)
         plot_snr(filename, legend_snr)
     if test_file_name != 'None':
-        plot_snr_test(test_file_name, path,timestamp)
+        plot_snr_test(args,test_file_name, timestamp)
 

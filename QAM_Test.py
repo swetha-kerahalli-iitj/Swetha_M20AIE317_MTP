@@ -8,6 +8,7 @@ from pyphysim.modulators.fundamental import BPSK, QAM, QPSK, Modulator
 from pyphysim.util.conversion import dB2Linear
 from pyphysim.util.misc import pretty_time, randn_c, count_bit_errors
 
+from get_args import get_args
 from utils import simulate_noise
 
 # def simulate_noise(mod, SNR,data,modulated_data,simulate_with_rayleigh=False):
@@ -50,41 +51,48 @@ if __name__ == '__main__':
     # input_msg = np.random.choice((0, 1), noise_shape[0] * noise_shape[1] * noise_shape[2] * 4)
     msg = np.random.randint(0, mod.M, size=noise_shape[0] * noise_shape[1] * noise_shape[2] * 4)
     symbs = mod.modulate(msg)
-
-    input_array = np.random.uniform(0, 2, len(symbs))
-
-    input_raleigh = symbs + input_array
+    args = get_args()
+    # args.code_rate_k = 1
+    # input_array = np.random.uniform(0, 2, len(symbs))
+    #
+    # input_raleigh = symbs + input_array
     idx = 0
     awgn_bers = np.zeros_like(SNRS, dtype=float)
     rayleigh_bers = np.zeros_like(SNRS, dtype=float)
-
+    rician_bers = np.zeros_like(SNRS, dtype=float)
     for SNR in SNRS:
         # noise_shape = (100, 100, 3)
         rayleigh_ber = 0.0
         awgn_ber = 0.0
+        rician_ber= 0.0
         iteration = 10
         for iter in range(iteration):
             # print('executing iteration {} for SNR {}'.format(iter,SNR))
             SNR_dB = 20
             snr_linear = dB2Linear(SNR_dB)
             noise_power = 1 / snr_linear
-            awgn_ber += simulate_noise(mod,SNR,msg,symbs,False)
-            rayleigh_ber += simulate_noise(mod, SNR, msg, symbs,True)
+            awgn_ber += simulate_noise(mod,SNR,msg,symbs,args)
+            rayleigh_ber += simulate_noise(mod, SNR, msg, symbs,args,'rayleigh')
+            rician_ber += simulate_noise(mod, SNR, msg, symbs,args, 'rician')
 
         awgn_bers[idx] = awgn_ber/iteration
         rayleigh_bers[idx] = rayleigh_ber / iteration
+        rician_bers[idx] = rician_ber / iteration
         idx += 1
     # Now let's plot the results
-    fig, ax = plt.subplots(figsize=(5, 5))
+    fig, ax = plt.subplots(figsize=(10, 8))
     print('SNRS',SNRS)
     print ('theo',mod.calcTheoreticalBER(SNRS))
     print('awgn', awgn_bers)
     print('rayleigh_bers', rayleigh_bers)
+    print('rician_bers', rician_bers)
     ax.semilogy(SNRS, mod.calcTheoreticalBER(SNRS), "--", label="Theoretical")
     ax.semilogy(SNRS,awgn_bers,
                 label="Simulated awgn")
-    ax.semilogy(SNRS, rayleigh_bers,
+    ax.semilogy(SNRS, rayleigh_bers,'o--',
                 label="Simulated rayleigh")
+    ax.semilogy(SNRS, rician_bers,'o-',
+                label="Simulated rician")
     ax.set_title("QAM-16 Symbol Error Rate ")
     ax.set_ylabel("Symbol Error Rate")
     ax.set_xlabel("SNR (dB)")

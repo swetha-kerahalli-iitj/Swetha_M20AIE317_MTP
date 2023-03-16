@@ -92,7 +92,7 @@ def get_modem(mod_type=16):
     else:
         return BPSK()
 
-def simulate_noise(mod, SNR,data,modulated_data,simulate_with_rayleigh=False):
+def simulate_noise(mod, SNR,data,modulated_data,args,simulate):
     """Return the symbol error rate"""
     symbol_error_rate = 0.0
     # data = np.random.randint(0, modulator.M, size=num_symbols)
@@ -104,9 +104,8 @@ def simulate_noise(mod, SNR,data,modulated_data,simulate_with_rayleigh=False):
     noise_power = 1 / snr_linear
     num_symbols = len(data)
     n = math.sqrt(noise_power) * randn_c(num_symbols)
-
     # received_data_qam = su_channel.corrupt_data(modulated_data_qam)
-    if simulate_with_rayleigh:
+    if simulate=='Rayleigh':
         # Rayleigh channel
         h = randn_c(modulated_data.size)
 
@@ -115,7 +114,17 @@ def simulate_noise(mod, SNR,data,modulated_data,simulate_with_rayleigh=False):
 
         # Equalization
         received_data /= h
+    elif simulate=='Rician':
+        K_dB = args.code_rate_k  # K factor in dB
+        K = 10 ** (K_dB / 10)  # K factor in linear scale
+        mu = math.sqrt(K / (2 * (K + 1)))  # mean
+        sigma = math.sqrt(1 / (2 * (K + 1)))  # sigma
+        h = (sigma * standard_normal(num_symbols) + mu) + 1j * (sigma * standard_normal(num_symbols) + mu)
+        # Receive the corrupted data
+        received_data = h * modulated_data + n
 
+        # Equalization
+        received_data /= h
     else:
         # Receive the corrupted data
         received_data = modulated_data + n
@@ -146,8 +155,9 @@ def gen_mod(input_msg,noise_shape,mod):
     resized_output = torch.from_numpy(np.array(output).reshape(noise_shape)).real.float()
     return  resized_output
 
-def generate_Rayleigh_noise_SNR(SNR,noise_shape,args,simulate='rayleigh'):
+def generate_noise_SNR(SNR,noise_shape,args):
     mod = get_modem()
+    simulate = args.Simulate
     input_msg = np.random.randint(0, mod.M, size=noise_shape[0] * noise_shape[1] * noise_shape[2])
 
     modulated_bits = mod.modulate(input_msg)
@@ -164,7 +174,7 @@ def generate_Rayleigh_noise_SNR(SNR,noise_shape,args,simulate='rayleigh'):
     n = math.sqrt(noise_power) * randn_c(num_symbols)
 
     # received_data_qam = su_channel.corrupt_data(modulated_data_qam)
-    if simulate== 'rayleigh':
+    if simulate== 'Rayleigh':
         # Rayleigh channel
         h = randn_c(modulated_bits.size)
 
@@ -174,7 +184,7 @@ def generate_Rayleigh_noise_SNR(SNR,noise_shape,args,simulate='rayleigh'):
 
         # Equalization
         received_data /= h
-    elif simulate == 'rician':
+    elif simulate == 'Rician':
         K_dB = args.code_rate_k # K factor in dB
         K = 10 ** (K_dB / 10)  # K factor in linear scale
         mu = math.sqrt(K / (2 * (K + 1)))  # mean

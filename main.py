@@ -3,19 +3,12 @@ import torch.optim as optim
 import sys, os
 import time
 from get_args import get_args
-from plot import plot_attn, plot, plot_snr,legend, legend_snr
+from plot import get_plots
 from trainer import train, validate, test
 
 from encoder import ENC
 from decoder import DEC
 
-BASE_PATH = r'C:\WorkSpace\Swetha_M20AIE317_MTP'
-LOG_PATH = os.path.join(BASE_PATH, r'logs_test')
-DATA_PATH = os.path.join(BASE_PATH, r'data_test')
-MODEL_PATH = os.path.join(BASE_PATH, r'model_test')
-for path in (LOG_PATH,DATA_PATH,MODEL_PATH):
-    if not os.path.isdir(path):
-        os.makedirs(path)
 attnFilename=[]
 # utils for logger
 class Logger(object):
@@ -38,7 +31,14 @@ if __name__ == '__main__':
     start_time = time.time()
 
     args = get_args()
-
+    BASE_PATH = args.BASE_PATH
+    LOG_PATH = args.LOG_PATH
+    DATA_PATH = args.DATA_PATH
+    MODEL_PATH = args.MODEL_PATH
+    PLOT_PATH = args.PLOT_PATH
+    for path in (LOG_PATH, DATA_PATH, MODEL_PATH, PLOT_PATH):
+        if not os.path.isdir(path):
+            os.makedirs(path)
     # put all printed things to log file
     if args.init_nw_weight == 'default':
         start_epoch = 1
@@ -56,7 +56,8 @@ if __name__ == '__main__':
 
     filename = os.path.join(DATA_PATH, 'attention_data_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(
         args.D) + '_' + str(args.num_block) + '_' + timestamp + '.txt')
-
+    test_filename = os.path.join(DATA_PATH, 'attention_data_test_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(
+        args.D) + '_' + str(args.num_block) + '_' + timestamp + '.txt')
     attnFilename.append(filename)
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     print("use_cuda: ", use_cuda)
@@ -156,26 +157,26 @@ if __name__ == '__main__':
 
     if args.is_variable_block_len:
         print('testing block length', args.block_len_low)
-        test(model, args, block_len=args.block_len_low, use_cuda=use_cuda)
+        test(model,test_filename, args, block_len=args.block_len_low, use_cuda=use_cuda)
         print('testing block length', args.block_len)
-        test(model, args, block_len=args.block_len, use_cuda=use_cuda)
+        test(model,test_filename, args, block_len=args.block_len, use_cuda=use_cuda)
         print('testing block length', args.block_len_high)
-        test(model, args, block_len=args.block_len_high, use_cuda=use_cuda)
+        test(model,test_filename, args, block_len=args.block_len_high, use_cuda=use_cuda)
 
     else:
-        test(model, args, use_cuda=use_cuda)
+        test(model, test_filename,args, use_cuda=use_cuda)
 
-    # get_plots(attnFilename,args.enc_lr)
-    lr = 0.01
-    filenamed1 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
-    filenamed10 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
-    plot_attn(lr, 1, filenamed1, filenamed10)
-    plot(filenamed1, legend)
-    plot_snr(filenamed1, legend_snr)
-    plot_attn(lr, 10, filenamed1, filenamed10)
-    plot(filenamed10, legend)
-    plot_snr(filenamed10, legend_snr)
-    print("Training Time: {}s".format(time.time() - start_time))
+    get_plots(args,filename,test_filename,timestamp)
+    # lr = 0.01
+    # filenamed1 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
+    # filenamed10 = './data/data_awgn_lr_' + str(lr) + '_D1_10000.txt'
+    # plot_attn(lr, 1, filenamed1, filenamed10)
+    # plot(filenamed1, legend)
+    # plot_snr(filenamed1, legend_snr)
+    # plot_attn(lr, 10, filenamed1, filenamed10)
+    # plot(filenamed10, legend)
+    # plot_snr(filenamed10, legend_snr)
+    # print("Training Time: {}s".format(time.time() - start_time))
 
 
 

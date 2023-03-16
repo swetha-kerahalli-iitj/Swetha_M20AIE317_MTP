@@ -24,10 +24,12 @@ from commpy.modulation import QAMModem, kbest, best_first_detector
 from scipy import special
 from scipy.special import erfc
 
+from get_args import get_args
 from plot import get_plots
 from utils import get_theo_ber, get_modem, snr_db2sigma
 
 if __name__ == '__main__':
+    args = get_args()
     # SNRS =np.arange(-2, 20, 2)
     # idx = 0
     # awgn_bers =np.zeros_like(SNRS, dtype=float)
@@ -83,10 +85,10 @@ if __name__ == '__main__':
     # print(':, :, 0',a[:, :, 0:1])
     # exit()
     path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading'
-    filename = os.path.join(path,r'data_faded',r'attention_data_awgn_lr_0.01_D1_1000_20230315-214014.txt')
-    # test_filename = os.path.join(path,r'data_faded', r'attention_data_test_awgn_lr_0.01_D1_1000_20230315-214014.txt')
+    # filename = os.path.join(path,r'data_faded',r'attention_data_awgn_lr_0.01_D1_1000_20230315-214014.txt')
+    test_filename = os.path.join(path,r'data_faded', r'attention_data_test_awgn_lr_0.01_D1_1000_20230316-084948.txt')
     timestamp = '20230315-214014'
-    get_plots(path, filename=filename, test_file_name='None', timestamp=timestamp)
+    get_plots(args,filename='None', test_file_name=test_filename, timestamp=timestamp)
     exit()
 #     test_data = np.loadtxt(test_filename, usecols=[0, 1, 2]).T
 #     snrs = test_data[0, :]
