@@ -54,10 +54,10 @@ marker_types = ['o', 's', 'v', '^', '*', 'h']
 # A copy of this dictionary will be generated (deepcopy),
 # in case the default values are lost
 legend = {
-    'title': 'Delay=10 num_block=50000 lr=0.01',
+    'title': 'Delay=1 num_block=5000 lr=0.01',
     'xlabel': 'Epoch',
     'ylabel': 'BER',
-    'savepath': './data/plots/awgn_lr0.01_D10_50000.png',
+    'savepath': './data/plots/awgn_lr0.01_D1_5000.png',
     'fig_size': (9,6),
     'label_fontsize': 15,
     'markersize': 10,
@@ -72,10 +72,10 @@ legend = {
 }
 
 legend_snr = {
-    'title': 'Delay=10 num_block=50000 lr=0.01',
+    'title': 'Delay=1 num_block=5000 lr=0.01',
     'xlabel': 'SNR',
     'ylabel': 'BLER',
-    'savepath': 'rayleigh_lr0.01_D10_50000_snr.png',
+    'savepath': 'rayleigh_lr0.01_D1_5000_snr.png',
     'fig_size': (9, 6),
     'label_fontsize': 15,
     'markersize': 10,
