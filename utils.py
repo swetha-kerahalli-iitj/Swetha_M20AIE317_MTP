@@ -3,6 +3,17 @@ import numpy as np
 import math
 import torch.nn.functional as F
 
+from numpy.random import standard_normal
+# import commpy.modulation as mod
+# import commpy.channels as chan
+# from commpy.modulation import QAMModem, kbest, best_first_detector
+from pyphysim.modulators.fundamental import BPSK, QAM, QPSK, Modulator
+# from pyphysim.simulations import Result, SimulationResults, SimulationRunner
+from pyphysim.util.conversion import dB2Linear
+from pyphysim.util.misc import pretty_time, randn_c, count_bit_errors
+from pyphysim.channels import fading,fading_generators
+
+
 def errors_ber(y_true, y_pred, positions = 'default'):
     y_true = y_true.view(y_true.shape[0], -1, 1)
     y_pred = y_pred.view(y_pred.shape[0], -1, 1)
@@ -74,6 +85,124 @@ def snr_sigma2db(train_sigma):
         return -20.0 * math.log(train_sigma, 10)
     except:
         return -20.0 * torch.log10(train_sigma)
+
+def get_modem(mod_type=16):
+    if mod_type >2:
+        return QAM(mod_type)
+    else:
+        return BPSK()
+
+def simulate_noise(mod, SNR,data,modulated_data,args,simulate):
+    """Return the symbol error rate"""
+    symbol_error_rate = 0.0
+    # data = np.random.randint(0, modulator.M, size=num_symbols)
+    # modulated_data = modulator.modulate(data)
+
+    # Noise vector
+    EbN0_linear = dB2Linear(SNR)
+    snr_linear = EbN0_linear * math.log2(mod.M)
+    noise_power = 1 / snr_linear
+    num_symbols = len(data)
+    n = math.sqrt(noise_power) * randn_c(num_symbols)
+    # received_data_qam = su_channel.corrupt_data(modulated_data_qam)
+    if simulate=='Rayleigh':
+        # Rayleigh channel
+        h = randn_c(modulated_data.size)
+
+        # Receive the corrupted data
+        received_data = h * modulated_data + n
+
+        # Equalization
+        received_data /= h
+    elif simulate=='Rician':
+        K_dB = args.code_rate_k  # K factor in dB
+        K = 10 ** (K_dB / 10)  # K factor in linear scale
+        mu = math.sqrt(K / (2 * (K + 1)))  # mean
+        sigma = math.sqrt(1 / (2 * (K + 1)))  # sigma
+        h = (sigma * standard_normal(num_symbols) + mu) + 1j * (sigma * standard_normal(num_symbols) + mu)
+        # Receive the corrupted data
+        received_data = h * modulated_data + n
+
+        # Equalization
+        received_data /= h
+    else:
+        # Receive the corrupted data
+        received_data = modulated_data + n
+
+    demodulated_data = mod.demodulate(received_data)
+    num_bit_errors = count_bit_errors(data, demodulated_data)
+    return num_bit_errors/num_symbols
+
+def get_theo_ber(SNR,M=16):
+    k = math.log2(M);
+    SNRLin = 10 ** (SNR / 10);
+    gamma_c = SNRLin * k;
+
+    if M == 4:
+        # 4 - QAM
+        ber = 1 / 2 * (1 - math.sqrt(gamma_c / k/ (1 + gamma_c / k)));
+    elif M == 16 :
+        # 16 - QAM
+        ber = 3 / 8 * (1 - math.sqrt(2 / 5 * gamma_c / k / (1 + 2 / 5 * gamma_c / k)));
+    elif M == 64:
+        # 64 - QAM
+        ber = 7 / 24 * (1 - math.sqrt(1 / 7 * gamma_c / k/ (1 + 1 / 7 * gamma_c / k)));
+    return ber
+def gen_mod(input_msg,noise_shape,mod):
+    symbs = mod.modulate(input_msg)
+    input_array = np.random.uniform(0, 2, len(symbs))
+    output = symbs +input_array
+    resized_output = torch.from_numpy(np.array(output).reshape(noise_shape)).real.float()
+    return  resized_output
+
+def generate_noise_SNR(SNR,noise_shape,args):
+    mod = get_modem()
+    simulate = args.Simulate
+    input_msg = np.random.randint(0, mod.M, size=noise_shape[0] * noise_shape[1] * noise_shape[2])
+
+    modulated_bits = mod.modulate(input_msg)
+
+    # input_array = np.random.uniform(0,2,len(symbs))
+    #
+    # input_raleigh = symbs + input_array
+    # input_raleigh = input_array
+
+    EbN0_linear = dB2Linear(SNR)
+    snr_linear = EbN0_linear * math.log2(mod.M)
+    noise_power = 1 / snr_linear
+    num_symbols = len(input_msg)
+    n = math.sqrt(noise_power) * randn_c(num_symbols)
+
+    # received_data_qam = su_channel.corrupt_data(modulated_data_qam)
+    if simulate== 'Rayleigh':
+        # Rayleigh channel
+        h = randn_c(modulated_bits.size)
+
+        # Receive the corrupted data
+        received_data = h * modulated_bits + n
+
+
+        # Equalization
+        received_data /= h
+    elif simulate == 'Rician':
+        K_dB = args.code_rate_k # K factor in dB
+        K = 10 ** (K_dB / 10)  # K factor in linear scale
+        mu = math.sqrt(K / (2 * (K + 1)))  # mean
+        sigma = math.sqrt(1 / (2 * (K + 1)))  # sigma
+        h = (sigma * standard_normal(num_symbols) + mu) + 1j * (sigma * standard_normal(num_symbols) + mu)
+        # Receive the corrupted data
+        received_data = h * modulated_bits + n
+
+        # Equalization
+        received_data /= h
+    else:
+        # Receive the corrupted data
+        received_data = modulated_bits + n
+    # channel_output = np.random.rayleigh(abs(SNR),size=noise_shape) + resized_input
+    resized_noise_output = torch.from_numpy(np.array(received_data).reshape(noise_shape))
+
+    return resized_noise_output,modulated_bits,input_msg
+
 
 def generate_noise(noise_shape, args, test_sigma = 'default', snr_low = 0.0, snr_high = 0.0, mode = 'encoder'):
     # SNRs at training
