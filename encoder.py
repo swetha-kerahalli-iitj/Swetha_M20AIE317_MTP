@@ -4,13 +4,15 @@ import torch.nn.functional as F
 from utils import STEQuantize 
     
 class ENC(torch.nn.Module):
-    def __init__(self, args):
+    def __init__(self, args,coderate_k=1,coderate_n=3):
         super(ENC, self).__init__()
 
         use_cuda = not args.no_cuda and torch.cuda.is_available()
         self.this_device = torch.device("cuda" if use_cuda else "cpu")
 
         self.args = args
+        self.coderate_k = coderate_k
+        self.coderate_n = coderate_n
         self.reset_precomp()
 
         # Encoder
@@ -23,11 +25,11 @@ class ENC(torch.nn.Module):
             RNN_MODEL = torch.nn.RNN
 
 
-        self.enc_rnn       = RNN_MODEL(1, args.enc_num_unit,
+        self.enc_rnn       = RNN_MODEL(coderate_k, args.enc_num_unit,
                                            num_layers=args.enc_num_layer, bias=True, batch_first=True,
                                            dropout=0)
 
-        self.enc_linear    = torch.nn.Linear(args.enc_num_unit, int(args.code_rate_n/args.code_rate_k))
+        self.enc_linear    = torch.nn.Linear(args.enc_num_unit, int(coderate_n/coderate_k))
 
     def set_precomp(self, mean_scalar, std_scalar):
         self.mean_scalar = mean_scalar.to(self.this_device)
@@ -81,7 +83,26 @@ class ENC(torch.nn.Module):
             return x_input_norm
 
     def forward(self, inputs):
+        # print('Encoder:',
+        #       'inputs.shape =>',inputs.shape,
+        #       'enc_act =>', code.shape,
+        #       'codes =>', codes.shape,
+        #       'enc_rnn =>',output.shape,
+        #       'enc_linear =>', self.enc_linear(output).shape,
+        #       'coderate_k  =>',self.coderate_k ,
+        #       'coderate_n  =>',self.coderate_n
+        #       )
         output, hidden = self.enc_rnn(inputs)
         code = self.enc_act(self.enc_linear(output))
+
         codes = self.power_constraint(code)
+        # print('Encoder:',
+        #       'inputs.shape =>',inputs.shape,
+        #       'enc_act =>', code.shape,
+        #       'codes =>', codes.shape,
+        #       'enc_rnn =>',output.shape,
+        #       'enc_linear =>', self.enc_linear(output).shape,
+        #       'coderate_k  =>',self.coderate_k ,
+        #       'coderate_n  =>',self.coderate_n
+        #       )
         return codes

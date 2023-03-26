@@ -1,4 +1,6 @@
 import argparse
+import os
+import time
 
 def get_args():
     ################################
@@ -21,16 +23,12 @@ def get_args():
     parser.add_argument('-radar_power',type=float, default=5.0, help ='only for radar distribution channel')
 
     # continuous channels training algorithms
-    parser.add_argument('-train_enc_channel_low', type=float, default  = 1.0)
+    parser.add_argument('-train_enc_channel_low', type=float, default  = 0.0)
     parser.add_argument('-train_enc_channel_high', type=float, default = 1.0)
     parser.add_argument('-train_dec_channel_low', type=float, default  = -1.5)
     parser.add_argument('-train_dec_channel_high', type=float, default = 2.0)
 
     parser.add_argument('-init_nw_weight', type=str, default='default')
-
-    # code rate is k/n, so that enable multiple code rates. This has to match the encoder/decoder nw structure.
-    parser.add_argument('-code_rate_k', type=int, default=1)
-    parser.add_argument('-code_rate_n', type=int, default=3)
 
     ################################################################
     # TurboAE encoder/decoder parameters
@@ -39,8 +37,8 @@ def get_args():
     parser.add_argument('-dec_rnn', choices=['gru', 'lstm', 'rnn'], default='gru')
 
     # CNN/RNN related
-    parser.add_argument('-enc_num_layer', type=int, default=2)
-    parser.add_argument('-dec_num_layer', type=int, default=2)
+    parser.add_argument('-enc_num_layer', type=int, default=3)
+    parser.add_argument('-dec_num_layer', type=int, default=3)
 
 
     parser.add_argument('-dec_num_unit', type=int, default=100, help = 'This is CNN number of filters, and RNN units')
@@ -62,16 +60,20 @@ def get_args():
     parser.add_argument('-snr_points', type=int, default=12)
 
     parser.add_argument('-batch_size', type=int, default=100)
-    parser.add_argument('-num_epoch', type=int, default=1)
+    parser.add_argument('-num_epoch', type=int, default=2)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
-    parser.add_argument('-block_len', type=int, default=100)
+    parser.add_argument('-block_len',type = tuple , default=(10,20))
+    # code rate is k/n, so that enable multiple code rates. This has to match the encoder/decoder nw structure.
+    parser.add_argument('-code_rate_k', type = tuple , default=(1,2))
+    parser.add_argument('-code_rate_n', type = tuple , default=(3,3))
+    parser.add_argument('-modtype', type = tuple , default=('QPSK16','QPSK64'))
     parser.add_argument('-block_len_low', type=int, default=10)
     parser.add_argument('-block_len_high', type=int, default=200)
     parser.add_argument('--is_variable_block_len', action='store_true', default=False,
                         help='training with different block length')
 
-    parser.add_argument('-num_block', type=int, default=1000)
+    parser.add_argument('-num_block', type=int, default=500)
 
     parser.add_argument('-test_channel_mode',
                         choices=['block_norm','block_norm_ste'],
@@ -99,8 +101,8 @@ def get_args():
     # Optimizer related parameters
     ################################################################
     parser.add_argument('-optimizer', choices=['adam', 'lookahead', 'sgd'], default='adam', help = '....:)')
-    parser.add_argument('-dec_lr', type = float, default=0.001, help='decoder leanring rate')
-    parser.add_argument('-enc_lr', type = float, default=0.001, help='encoder leanring rate')
+    parser.add_argument('-dec_lr', type = float, default=0.01, help='decoder leanring rate')
+    parser.add_argument('-enc_lr', type = float, default=0.01, help='encoder leanring rate')
 
     ################################################################
     # MISC
@@ -120,8 +122,14 @@ def get_args():
     parser.add_argument('--precompute_norm_stats', action='store_true', default=False,
                         help='Use pre-computed mean/std statistics')
 
-    parser.add_argument('-D', type = int, default=1, help = 'delay')
+    parser.add_argument('-Simulate',  choices=['Rayleigh','Rician','AWGN'], default='Rayleigh', help = 'delay')
+    parser.add_argument('-D', type=int, default=1, help='delay')
 
+    parser.add_argument('-BASE_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading')
+    parser.add_argument('-LOG_PATH', default= os.path.join(r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading',time.strftime('%Y%m%d_%H%M%S', time.localtime()),r'logs_faded'))
+    parser.add_argument('-DATA_PATH', default= os.path.join(r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading',time.strftime('%Y%m%d_%H%M%S', time.localtime()),r'data_faded'))
+    parser.add_argument('-MODEL_PATH', default= os.path.join(r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading',time.strftime('%Y%m%d_%H%M%S', time.localtime()),r'model_faded'))
+    parser.add_argument('-PLOT_PATH', default= os.path.join(r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading',time.strftime('%Y%m%d_%H%M%S', time.localtime()),r'plot_faded'))
     args = parser.parse_args()
 
     return args

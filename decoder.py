@@ -19,10 +19,10 @@ class Attention(nn.Module):
 
 
 class DEC(torch.nn.Module):
-    def __init__(self, args):
+    def __init__(self, args,block_len=10,coderate_k=1,coderate_n=3):
         super(DEC, self).__init__()
         self.args = args
-
+        self.block_len = block_len
         use_cuda = not args.no_cuda and torch.cuda.is_available()
         self.this_device = torch.device("cuda" if use_cuda else "cpu")
 
@@ -39,15 +39,15 @@ class DEC(torch.nn.Module):
         self.attention = Attention(args.enc_num_unit, args.dec_num_unit)
         self.fc = torch.nn.Linear(2*args.dec_num_unit, args.dec_num_unit)
 
-        self.dec1_rnns = RNN_MODEL(int(args.code_rate_n/args.code_rate_k),  args.dec_num_unit,
+        self.dec1_rnns = RNN_MODEL(int(coderate_n),  args.dec_num_unit,
                                                     num_layers=args.dec_num_layer, bias=True, batch_first=True,
                                                     dropout=args.dropout)
 
-        self.dec2_rnns = RNN_MODEL(int(args.code_rate_n/args.code_rate_k),  args.dec_num_unit,
+        self.dec2_rnns = RNN_MODEL(int(coderate_n),  args.dec_num_unit,
                                         num_layers=args.dec_num_layer, bias=True, batch_first=True,
                                         dropout=args.dropout)
 
-        self.dec_outputs = torch.nn.Linear(2*args.dec_num_unit, 1)
+        self.dec_outputs = torch.nn.Linear(2*args.dec_num_unit, coderate_k)
 
     
     def dec_act(self, inputs):
@@ -76,7 +76,7 @@ class DEC(torch.nn.Module):
         rnn_out1[:,0,:] = out1[:,0,:]
         rnn_out2[:,0,:] = out2[:,0,:]
 
-        for i in range(self.args.block_len):
+        for i in range(self.block_len):
             if i>0 and i<5:
                 rnn_out1[:,i,:] = out1[:,i,:]
                 rnn_out2[:,i,:] = out2[:,i,:]
@@ -93,9 +93,9 @@ class DEC(torch.nn.Module):
                 rnn_out1[:,i,:] = ith_out1
                 rnn_out2[:,i,:] = ith_out2
 
-        for i in range(self.args.block_len):
-            if (i>=self.args.block_len-self.args.D-1):
-                rt_d = rnn_out2[:,self.args.block_len-1:self.args.block_len,:]
+        for i in range(self.block_len):
+            if (i>=self.block_len-self.args.D-1):
+                rt_d = rnn_out2[:,self.block_len-1:self.block_len,:]
             else:
                 rt_d = rnn_out2[:,i+self.args.D:i+self.args.D+1,:]
             rt = rnn_out1[:,i:i+1,:]
