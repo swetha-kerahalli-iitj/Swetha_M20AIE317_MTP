@@ -26,10 +26,48 @@ from scipy.special import erfc
 
 from get_args import get_args
 from plot import get_plots
-from utils import get_theo_ber, get_modem, snr_db2sigma
+from utils import get_theo_ber, get_modem, snr_db2sigma, generate_noise_SNR, generate_noise_SNR_Sim
 
 if __name__ == '__main__':
     args = get_args()
+    SNR=0.0
+    coderate_k =7
+    coderate_n=8
+    noise_shape=(100,20,coderate_n)
+    mod_type ="LDPC"
+
+    # generate_noise_SNR(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
+    # generate_noise_SNR(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
+    # generate_noise_SNR(SNR, noise_shape, args, "Rician", coderate_k, coderate_n, mod_type)
+    # fwd_noise, encoded_input, input_msg, sim_ber = generate_noise_SNR_Sim(SNR, noise_shape, args, "AWGN", coderate_k,
+    #                                                                       coderate_n, mod_type)
+    # print("{} AWGN ber: {}".format(mod_type, sim_ber))
+    # generate_noise_SNR_Sim(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
+    # print("{} Rayleigh ber: {}".format(mod_type, sim_ber))
+    # generate_noise_SNR_Sim(SNR, noise_shape, args, "Rician", coderate_k, coderate_n, mod_type)
+    # print("{} Rician ber: {}".format(mod_type, sim_ber))
+    mod_type = "POLAR"
+    # generate_noise_SNR(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
+    # generate_noise_SNR(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
+    # generate_noise_SNR(SNR, noise_shape, args, "Rician", coderate_k, coderate_n, mod_type)
+    # fwd_noise, encoded_input, input_msg, sim_ber = generate_noise_SNR_Sim(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
+    # print("{} AWGN ber: {}".format(mod_type,sim_ber))
+    # fwd_noise, encoded_input, input_msg, sim_ber = generate_noise_SNR_Sim(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
+    # print("{} Rayleigh ber: {}".format(mod_type,sim_ber))
+    # fwd_noise, encoded_input, input_msg, sim_ber = generate_noise_SNR_Sim(SNR, noise_shape, args, "Rician", coderate_k, coderate_n, mod_type)
+    # print("{} Rician ber: {}".format(mod_type,sim_ber))
+    # exit()
+    # coderate_k = 8
+    # coderate_n = 9
+    # noise_shape = (100, 10, coderate_n)
+    #
+    # mod_type = "LDPC"
+    # generate_noise_SNR(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
+    # mod_type = "POLAR"
+    # generate_noise_SNR(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
+    #
+    #
+    # exit()
     # SNRS =np.arange(-2, 20, 2)
     # idx = 0
     # awgn_bers =np.zeros_like(SNRS, dtype=float)
@@ -69,7 +107,7 @@ if __name__ == '__main__':
     # #             transparent=True, dpi=800)
     # plt.show()
     #
-    # plt.semilogy(SNRS, awgn_bers, 'o-',SNRS,rayleigh_bers,'o-',SNRS,QPSK().calcTheoreticalSER)
+    # plt.semilogy(SNRS, awgn_bers, 'o-',SNRS,rayleigh_bers,'o-',SNRS,QAM().calcTheoreticalSER)
     # # plt.grid()
     # plt.xlabel('Signal to Noise Ration (dB)')
     # plt.ylabel('Bit Error Rate')
@@ -84,9 +122,9 @@ if __name__ == '__main__':
     # print(':,:,1',a[:,:,1:])
     # print(':, :, 0',a[:, :, 0:1])
     # exit()
-    path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230327_032052\data_faded'
-    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230327_032052\plot_faded'
-    filename = os.path.join(path,r'attention_data_awgn_lr_0.01_D1All_20230327_032052.txt')
+    path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230405_130200\data_faded'
+    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230405_130200'
+    filename = os.path.join(path,r'attention_data_awgn_lr_0.01_D1All_20230405_130200.txt')
 
     get_plots(plot_path,filename)
     # test_data = np.loadtxt(os.path.join(path,r'bl_20__k_2_n_3',r'attention_data_test_awgn_lr_0.01_D1bl_20__k_2_n_3_500_20230325_180459.txt')).T
@@ -222,7 +260,7 @@ if __name__ == '__main__':
     # Complete example using Commpy features and compare hard and soft demodulation. Example with code 1
     # ==================================================================================================
 
-    # Modem : QPSK
+    # Modem : QAM
     # modem = mod.QAMModem(4)
     QAM16 =  mod.QAMModem(16)
     RayleighChannel =  chan.MIMOFlatChannel(3,3)

@@ -1,26 +1,32 @@
+import pyphysim.modulators
 import torch
 import numpy as np
 import math
 import torch.nn.functional as F
 
 from numpy.random import standard_normal
-# import commpy.modulation as mod
+import commpy.channelcoding.ldpc as mod
 # import commpy.channels as chan
 # from commpy.modulation import QAMModem, kbest, best_first_detector
-from pyphysim.modulators.fundamental import BPSK, QAM, QPSK, Modulator
+from pyphysim.modulators.fundamental import BPSK, QAM, QAM, Modulator
 # from pyphysim.simulations import Result, SimulationResults, SimulationRunner
 from pyphysim.util.conversion import dB2Linear
 from pyphysim.util.misc import pretty_time, randn_c, count_bit_errors
-from pyphysim.channels import fading,fading_generators
+from pyphysim.channels import fading, fading_generators
+# from python_polar_coding.channels import SimpleBPSKModulationAWGN
+# from python_polar_coding.polar_codes import FastSSCPolarCodec
+
+from polarcodes import *
+from pyldpc import make_ldpc, encode,decode, binaryproduct,get_message
 
 
-def errors_ber(y_true, y_pred, positions = 'default'):
+def errors_ber(y_true, y_pred, positions='default'):
     y_true = y_true.view(y_true.shape[0], -1, 1)
     y_pred = y_pred.view(y_pred.shape[0], -1, 1)
 
     myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred)).float()
     if positions == 'default':
-        res = sum(sum(myOtherTensor))/(myOtherTensor.shape[0]*myOtherTensor.shape[1])
+        res = sum(sum(myOtherTensor)) / (myOtherTensor.shape[0] * myOtherTensor.shape[1])
     else:
         res = torch.mean(myOtherTensor, dim=0).type(torch.FloatTensor)
         for pos in positions:
@@ -28,57 +34,61 @@ def errors_ber(y_true, y_pred, positions = 'default'):
         res = torch.mean(res)
     return res
 
+
 def errors_ber_list(y_true, y_pred):
     block_len = y_true.shape[1]
     y_true = y_true.view(y_true.shape[0], -1)
     y_pred = y_pred.view(y_pred.shape[0], -1)
 
     myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred))
-    res_list_tensor = torch.sum(myOtherTensor, dim = 1).type(torch.FloatTensor)/block_len
+    res_list_tensor = torch.sum(myOtherTensor, dim=1).type(torch.FloatTensor) / block_len
 
     return res_list_tensor
 
 
-def errors_ber_pos(y_true, y_pred, discard_pos = []):
+def errors_ber_pos(y_true, y_pred, discard_pos=[]):
     y_true = y_true.view(y_true.shape[0], -1, 1)
     y_pred = y_pred.view(y_pred.shape[0], -1, 1)
 
     myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred)).float()
 
-    tmp =  myOtherTensor.sum(0)/myOtherTensor.shape[0]
+    tmp = myOtherTensor.sum(0) / myOtherTensor.shape[0]
     res = tmp.squeeze(1)
     return res
 
+
 def code_power(the_codes):
     the_codes = the_codes.cpu().numpy()
-    the_codes = np.abs(the_codes)**2
-    the_codes = the_codes.sum(2)/the_codes.shape[2]
-    tmp =  the_codes.sum(0)/the_codes.shape[0]
+    the_codes = np.abs(the_codes) ** 2
+    the_codes = the_codes.sum(2) / the_codes.shape[2]
+    tmp = the_codes.sum(0) / the_codes.shape[0]
     res = tmp
     return res
 
-def errors_bler(y_true, y_pred, positions = 'default'):
 
+def errors_bler(y_true, y_pred, positions='default'):
     y_true = y_true.view(y_true.shape[0], -1, 1)
     y_pred = y_pred.view(y_pred.shape[0], -1, 1)
 
     decoded_bits = torch.round(y_pred)
-    X_test       = torch.round(y_true)
-    tp0 = (abs(decoded_bits-X_test)).view([X_test.shape[0],X_test.shape[1]])
+    X_test = torch.round(y_true)
+    tp0 = (abs(decoded_bits - X_test)).view([X_test.shape[0], X_test.shape[1]])
     tp0 = tp0.cpu().numpy()
 
     if positions == 'default':
-        bler_err_rate = sum(np.sum(tp0,axis=1)>0)*1.0/(X_test.shape[0])
+        bler_err_rate = sum(np.sum(tp0, axis=1) > 0) * 1.0 / (X_test.shape[0])
     else:
         for pos in positions:
             tp0[:, pos] = 0.0
-        bler_err_rate = sum(np.sum(tp0,axis=1)>0)*1.0/(X_test.shape[0])
+        bler_err_rate = sum(np.sum(tp0, axis=1) > 0) * 1.0 / (X_test.shape[0])
 
     return bler_err_rate
 
+
 # note there are a few definitions of SNR. In our result, we stick to the following SNR setup.
 def snr_db2sigma(train_snr):
-    return 10**(-train_snr*1.0/20)
+    return 10 ** (-train_snr * 1.0 / 20)
+
 
 def snr_sigma2db(train_sigma):
     try:
@@ -86,13 +96,15 @@ def snr_sigma2db(train_sigma):
     except:
         return -20.0 * torch.log10(train_sigma)
 
+
 def get_modem(mod_type=16):
-    if mod_type== 'QAM16':
+    if mod_type == 'QAM16':
         return QAM(16)
     elif mod_type == 'QAM64':
         return QAM(64)
     else:
         return BPSK()
+
 
 # def simulate_noise(mod, SNR,data,modulated_data,args,simulate):
 #     """Return the symbol error rate"""
@@ -135,81 +147,157 @@ def get_modem(mod_type=16):
 #     num_bit_errors = count_bit_errors(data, demodulated_data)
 #     return num_bit_errors/num_symbols
 
-def get_theo_ber(SNR,M=16):
+def get_theo_ber(SNR, M=16):
     k = math.log2(M);
     SNRLin = 10 ** (SNR / 10);
     gamma_c = SNRLin * k;
 
     if M == 4:
         # 4 - QAM
-        ber = 1 / 2 * (1 - math.sqrt(gamma_c / k/ (1 + gamma_c / k)));
-    elif M == 16 :
+        ber = 1 / 2 * (1 - math.sqrt(gamma_c / k / (1 + gamma_c / k)));
+    elif M == 16:
         # 16 - QAM
         ber = 3 / 8 * (1 - math.sqrt(2 / 5 * gamma_c / k / (1 + 2 / 5 * gamma_c / k)));
     elif M == 64:
         # 64 - QAM
-        ber = 7 / 24 * (1 - math.sqrt(1 / 7 * gamma_c / k/ (1 + 1 / 7 * gamma_c / k)));
+        ber = 7 / 24 * (1 - math.sqrt(1 / 7 * gamma_c / k / (1 + 1 / 7 * gamma_c / k)));
     return ber
-def gen_mod(input_msg,noise_shape,mod):
+
+
+def gen_mod(input_msg, noise_shape, mod):
     symbs = mod.modulate(input_msg)
     input_array = np.random.uniform(0, 2, len(symbs))
-    output = symbs +input_array
+    output = symbs + input_array
     resized_output = torch.from_numpy(np.array(output).reshape(noise_shape)).real.float()
-    return  resized_output
+    return resized_output
+def generate_decode(received_data, received_data_orig,input_msg,mod,parity_message_H,parity_message_G,SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+    simulated_ber =0.0
+    num_symbols = noise_shape[0] * noise_shape[1]
+    if mod_type =="LDPC":
+        H = parity_message_H
+        G = parity_message_G
+        # device = torch.device("cuda" if use_cuda else "cpu")
+        decode_message = np.asarray(received_data_orig,dtype=np.float64)
+        # print("After np H:{}".format(H.shape()))
+        print("After np")
+        decoded_bits = decode(H, decode_message, SNR,2)
+        # print("After decode decode_message:{}, decoded_bits:{}".format(decode_message.shape(),decoded_bits.shape()))
+        print("After decode")
+        error=0.0
+        n_trials=noise_shape[0]*noise_shape[2]
+        for i in range(n_trials):
+            x = get_message(G[:, 0:noise_shape[1]], decoded_bits[i, :])
+            error += abs(input_msg - x).sum() / (noise_shape[2] * n_trials)
+        message_decoded = error
+        # print("After get_message message_decoded:{}".format(message_decoded.shape()))
+        print("After get_message")
+        num_bit_errors = count_bit_errors(input_msg, message_decoded)
+        simulated_ber = num_bit_errors / num_symbols
+    elif mod_type == "POLAR":
+        mod.likelihoods = received_data_orig
+        Decode(mod)
+        demodulated_data = mod.message_received
+        num_bit_errors = count_bit_errors(input_msg, demodulated_data)
+        simulated_ber = num_bit_errors / num_symbols
+    else :
+        demodulated_data = mod.demodulate(received_data_orig)
+        num_bit_errors = count_bit_errors(input_msg, demodulated_data)
+        simulated_ber = num_bit_errors / num_symbols
+    return simulated_ber
+def generate_noise_SNR_Sim(SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+    fwd_noise,received_data, encoded_input, input_msg,mod,H,G = generate_noise_SNR(SNR, noise_shape, args, noise_type,
+                                                                          coderate_k, coderate_n, mod_type)
 
-def generate_noise_SNR(SNR,noise_shape,args,noise_type="AWGN",coderate_k=1,mod_type="QPSK16"):
-    mod = get_modem(mod_type)
-    input_msg = np.random.randint(0, mod.M, size=noise_shape[0] * noise_shape[1] * noise_shape[2])
+    sim_ber =  generate_decode(fwd_noise,received_data, input_msg,mod,H,G,SNR, noise_shape, args,noise_type, coderate_k, coderate_n, mod_type)
+    return fwd_noise, encoded_input, input_msg,sim_ber
 
-    modulated_bits = mod.modulate(input_msg)
+def generate_noise_SNR(SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+    num_symbols = noise_shape[0] * noise_shape[1]
+    parity_h, parity_g =[],[]
+    mod = get_modem(mod_type )
+    if mod_type !="LDPC" and  mod_type !="POLAR":
+        mod = get_modem(mod_type )
+        M = mod.M
+    else:
+        M = 2
+    input_msg = np.random.randint(0, M, size=(num_symbols*coderate_n))
+    if mod_type == "POLAR" :
+        shorten_params = ('shorten', 'brs', None, None, False)
+        k_rate = noise_shape[1] * noise_shape[0] * coderate_k
+        n_rate = noise_shape[1] * noise_shape[0] * coderate_n
 
-    # input_array = np.random.uniform(0,2,len(symbs))
+        mod = PolarCode(k_rate,n_rate)
+        mod.construction_type = 'bb'
+        Construct(mod, SNR)
+
+        mod.set_message(input_msg)
+        # encode message
+        Encode(mod)
+        modulated_bits =  mod.get_codeword()
+    elif mod_type == "LDPC" :
+        input_msg = np.random.randint(0, M, size=(coderate_n, noise_shape[1]))
+        H, G = make_ldpc( noise_shape[0]*coderate_n , coderate_n*noise_shape[1],noise_shape[0]*coderate_n, systematic=True, sparse=True)
+        d = binaryproduct(G[:,0:coderate_n], input_msg)
+        modulated_bits = (-1) ** d
+        parity_h = H
+        parity_g = G
+    else:
+        modulated_bits = mod.modulate(input_msg)
+    # u = self.source([batch_size, self.k])  # generate random data
+    # c = self.encoder(u)  # explicitly encode
     #
-    # input_raleigh = symbs + input_array
-    # input_raleigh = input_array
+    # x = self.mapper(c)  # map c to symbols x
 
     EbN0_linear = dB2Linear(SNR)
-    snr_linear = EbN0_linear * math.log2(mod.M)
+    snr_linear = EbN0_linear * math.log2(M)
     noise_power = 1 / snr_linear
-    num_symbols = len(input_msg)
-    n = math.sqrt(noise_power) * randn_c(num_symbols)
+
+    n = math.sqrt(noise_power) * randn_c(modulated_bits.size)
 
     # received_data_qam = su_channel.corrupt_data(modulated_data_qam)
-    if noise_type== 'Rayleigh':
+    if noise_type == 'Rayleigh':
         # Rayleigh channel
         h = randn_c(modulated_bits.size)
 
         # Receive the corrupted data
-        received_data = h * modulated_bits + n
-
-
-        # Equalization
-        received_data /= h
+        if mod_type == "LDPC":
+            received_data = h.reshape(modulated_bits.shape) * modulated_bits + n.reshape(modulated_bits.shape)
+            # Equalization
+            received_data /= h.reshape(modulated_bits.shape)
+        else:
+            received_data = h * modulated_bits + n
+            # Equalization
+            received_data /= h
     elif noise_type == 'Rician':
-        K_dB = coderate_k # K factor in dB
+        K_dB = coderate_k  # K factor in dB
         K = 10 ** (K_dB / 10)  # K factor in linear scale
         mu = math.sqrt(K / (2 * (K + 1)))  # mean
         sigma = math.sqrt(1 / (2 * (K + 1)))  # sigma
-        h = (sigma * standard_normal(num_symbols) + mu) + 1j * (sigma * standard_normal(num_symbols) + mu)
+        h = (sigma * standard_normal(modulated_bits.size) + mu) + 1j * (sigma * standard_normal(modulated_bits.size) + mu)
         # Receive the corrupted data
-        received_data = h * modulated_bits + n
-
-        # Equalization
-        received_data /= h
+        if mod_type == "LDPC":
+            received_data = h.reshape(modulated_bits.shape) * modulated_bits + n.reshape(modulated_bits.shape)
+            # Equalization
+            received_data /= h.reshape(modulated_bits.shape)
+        else:
+            received_data = h * modulated_bits + n
+            # Equalization
+            received_data /= h
     else:
         # Receive the corrupted data
-        n = snr_db2sigma(SNR) *randn_c(num_symbols)
+        n = snr_db2sigma(SNR) * randn_c(modulated_bits.size).reshape(modulated_bits.shape)
         received_data = modulated_bits + n
     # channel_output = np.random.rayleigh(abs(SNR),size=noise_shape) + resized_input
-    resized_noise_output = torch.from_numpy(np.array(received_data).reshape(noise_shape))
+    resized_noise_output = torch.from_numpy(np.array(received_data[0:noise_shape[1]*noise_shape[0]*coderate_n]).reshape(noise_shape))
 
-    return resized_noise_output,modulated_bits,input_msg
+    return resized_noise_output, received_data,modulated_bits, input_msg,mod,parity_h,parity_g
 
-def generate_noise(noise_shape, args, test_sigma = 'default', snr_low = 0.0, snr_high = 0.0, mode = 'encoder'):
+
+def generate_noise(noise_shape, args, test_sigma='default', snr_low=0.0, snr_high=0.0, mode='encoder'):
     # SNRs at training
     if test_sigma == 'default':
         this_sigma_low = snr_db2sigma(snr_low)
-        this_sigma_high= snr_db2sigma(snr_high)
+        this_sigma_high = snr_db2sigma(snr_high)
         # mixture of noise sigma.
         this_sigma = (this_sigma_low - this_sigma_high) * torch.rand(noise_shape) + this_sigma_high
 
@@ -218,26 +306,28 @@ def generate_noise(noise_shape, args, test_sigma = 'default', snr_low = 0.0, snr
 
     # SNRs at testing
     if args.channel == 'awgn':
-        fwd_noise  = this_sigma * torch.randn(noise_shape, dtype=torch.float)
+        fwd_noise = this_sigma * torch.randn(noise_shape, dtype=torch.float)
 
     elif args.channel == 't-dist':
-        fwd_noise  = this_sigma * torch.from_numpy(np.sqrt((args.vv-2)/args.vv) * np.random.standard_t(args.vv, size = noise_shape)).type(torch.FloatTensor)
+        fwd_noise = this_sigma * torch.from_numpy(
+            np.sqrt((args.vv - 2) / args.vv) * np.random.standard_t(args.vv, size=noise_shape)).type(torch.FloatTensor)
 
     elif args.channel == 'radar':
-        add_pos     = np.random.choice([0.0, 1.0], noise_shape,
-                                       p=[1 - args.radar_prob, args.radar_prob])
+        add_pos = np.random.choice([0.0, 1.0], noise_shape,
+                                   p=[1 - args.radar_prob, args.radar_prob])
 
-        corrupted_signal = args.radar_power* np.random.standard_normal( size = noise_shape ) * add_pos
-        fwd_noise = this_sigma * torch.randn(noise_shape, dtype=torch.float) +\
+        corrupted_signal = args.radar_power * np.random.standard_normal(size=noise_shape) * add_pos
+        fwd_noise = this_sigma * torch.randn(noise_shape, dtype=torch.float) + \
                     torch.from_numpy(corrupted_signal).type(torch.FloatTensor)
 
     else:
         # Unspecific channel, use AWGN channel.
-        fwd_noise  = this_sigma * torch.randn(noise_shape, dtype=torch.float)
+        fwd_noise = this_sigma * torch.randn(noise_shape, dtype=torch.float)
 
     return fwd_noise
 
-def customized_loss(output, X_train, args, size_average = True, noise = None, code = None):
+
+def customized_loss(output, X_train, args, size_average=True, noise=None, code=None):
     output = torch.clamp(output, 0.0, 1.0)
     if size_average == True:
         loss = F.binary_cross_entropy(output, X_train)
@@ -245,6 +335,8 @@ def customized_loss(output, X_train, args, size_average = True, noise = None, co
         return [F.binary_cross_entropy(item1, item2) for item1, item2 in zip(output, X_train)]
 
     return loss
+
+
 class STEQuantize(torch.autograd.Function):
     @staticmethod
     def forward(ctx, inputs, args):
@@ -252,14 +344,16 @@ class STEQuantize(torch.autograd.Function):
         ctx.save_for_backward(inputs)
         ctx.args = args
 
-        x_lim_abs  = args.enc_value_limit
+        x_lim_abs = args.enc_value_limit
         x_lim_range = 2.0 * x_lim_abs
-        x_input_norm =  torch.clamp(inputs, -x_lim_abs, x_lim_abs)
+        x_input_norm = torch.clamp(inputs, -x_lim_abs, x_lim_abs)
 
         if args.enc_quantize_level == 2:
             outputs_int = torch.sign(x_input_norm)
         else:
-            outputs_int  = torch.round((x_input_norm +x_lim_abs) * ((args.enc_quantize_level - 1.0)/x_lim_range)) * x_lim_range/(args.enc_quantize_level - 1.0) - x_lim_abs
+            outputs_int = torch.round(
+                (x_input_norm + x_lim_abs) * ((args.enc_quantize_level - 1.0) / x_lim_range)) * x_lim_range / (
+                                      args.enc_quantize_level - 1.0) - x_lim_abs
 
         return outputs_int
 
@@ -267,8 +361,8 @@ class STEQuantize(torch.autograd.Function):
     def backward(ctx, grad_output):
         if ctx.args.enc_clipping in ['inputs', 'both']:
             input, = ctx.saved_tensors
-            grad_output[input>ctx.args.enc_value_limit]=0
-            grad_output[input<-ctx.args.enc_value_limit]=0
+            grad_output[input > ctx.args.enc_value_limit] = 0
+            grad_output[input < -ctx.args.enc_value_limit] = 0
 
         if ctx.args.enc_clipping in ['gradient', 'both']:
             grad_output = torch.clamp(grad_output, -ctx.args.enc_grad_limit, ctx.args.enc_grad_limit)
@@ -278,8 +372,8 @@ class STEQuantize(torch.autograd.Function):
         else:
             # Experimental pass gradient noise to encoder.
             grad_noise = snr_db2sigma(ctx.args.fb_noise_snr) * torch.randn(grad_output[0].shape, dtype=torch.float)
-            ave_temp   = grad_output.mean(dim=0) + grad_noise
-            ave_grad   = torch.stack([ave_temp for _ in range(ctx.args.batch_size)], dim=2).permute(2,0,1)
+            ave_temp = grad_output.mean(dim=0) + grad_noise
+            ave_grad = torch.stack([ave_temp for _ in range(ctx.args.batch_size)], dim=2).permute(2, 0, 1)
             grad_input = ave_grad + grad_noise
 
         return grad_input, None

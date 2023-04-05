@@ -63,17 +63,20 @@ def get_args():
     parser.add_argument('-num_epoch', type=int, default=2)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
-    parser.add_argument('-block_len',type = tuple , default=(10,20))
+    # parser.add_argument('-block_len',type = tuple , default=(10,20,50,100))
+    parser.add_argument('-block_len', type=tuple, default=(10, 20))
     # code rate is k/n, so that enable multiple code rates. This has to match the encoder/decoder nw structure.
-    parser.add_argument('-code_rate_k', type = tuple , default=(1,2))
-    parser.add_argument('-code_rate_n', type = tuple , default=(3,3))
-    parser.add_argument('-modtype', type = tuple , default=('QPSK16','QPSK64'))
+    # parser.add_argument('-code_rate_k', type = tuple , default=(3,5,7))
+    # parser.add_argument('-code_rate_n', type = tuple , default=(4,6,8))
+    parser.add_argument('-code_rate_k', type=tuple, default=(3, 5, 7))
+    parser.add_argument('-code_rate_n', type=tuple, default=(4, 6, 8))
+    parser.add_argument('-modtype', type = tuple , default=('QAM16','QAM64','POLAR')) #'LDPC',
     parser.add_argument('-block_len_low', type=int, default=10)
     parser.add_argument('-block_len_high', type=int, default=200)
     parser.add_argument('--is_variable_block_len', action='store_true', default=False,
                         help='training with different block length')
 
-    parser.add_argument('-num_block', type=int, default=500)
+    parser.add_argument('-num_block', type=int, default=100)
 
     parser.add_argument('-test_channel_mode',
                         choices=['block_norm','block_norm_ste'],
@@ -122,7 +125,6 @@ def get_args():
     parser.add_argument('--precompute_norm_stats', action='store_true', default=False,
                         help='Use pre-computed mean/std statistics')
 
-    parser.add_argument('-Simulate',  choices=['Rayleigh','Rician','AWGN'], default='Rayleigh', help = 'delay')
     parser.add_argument('-D', type=int, default=1, help='delay')
 
     parser.add_argument('-BASE_PATH', default=r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading')

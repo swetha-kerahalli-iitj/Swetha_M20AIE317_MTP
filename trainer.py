@@ -11,8 +11,7 @@ from decoder import DEC
 from encoder import ENC
 
 from utils import snr_sigma2db, snr_db2sigma, code_power, errors_ber_pos, errors_ber, errors_bler, generate_noise, \
-    customized_loss, generate_noise_SNR, get_modem
-
+    customized_loss, generate_noise_SNR, get_modem, generate_noise_SNR_Sim
 
 import numpy as np
 from numpy.random import mtrand
@@ -22,7 +21,7 @@ from numpy.random import mtrand
 # Trainer, validation, and test for AE code design
 #
 ######################################################################################
-def train_model(args,timestamp,store_files,start_epoch=1,use_cuda=False,blocklen =10,coderate_k=1,coderate_n=3,mod_type='QPSK16'):
+def train_model(args,timestamp,store_files,start_epoch=1,use_cuda=False,blocklen =10,coderate_k=1,coderate_n=3,mod_type='QAM16'):
     datafile = store_files[0]
     testfile = store_files[1]
     #################################################
@@ -123,14 +122,14 @@ def train_model(args,timestamp,store_files,start_epoch=1,use_cuda=False,blocklen
 
     else:
         test(model, testfile, args,blocklen,coderate_k,coderate_n,mod_type, use_cuda=use_cuda)
-def train_noise (model,optimizer,X_train,args,SNR,noise_shape,use_cuda,noise_type,mode,coderate_k,mod_type='QPSK16'):
+def train_noise (model,optimizer,X_train,args,SNR,noise_shape,use_cuda,noise_type,mode,coderate_k,coderate_n,mod_type='QAM16'):
     device = torch.device("cuda" if use_cuda else "cpu")
     if mode == 'encoder':
 
-        fwd_noise, encoded_input,input_msg = generate_noise_SNR(SNR, noise_shape,args, noise_type,coderate_k,mod_type)
+        fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR(SNR, noise_shape,args, noise_type,coderate_k,coderate_n,mod_type)
 
     else:
-        fwd_noise, encoded_input, input_msg = generate_noise_SNR( SNR, noise_shape,args,noise_type,coderate_k,mod_type)
+        fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR( SNR, noise_shape,args,noise_type,coderate_k,coderate_n,mod_type)
 
     noise = fwd_noise.to(device)
     fwd_noise = noise.real.float()
@@ -156,44 +155,46 @@ def train_noise (model,optimizer,X_train,args,SNR,noise_shape,use_cuda,noise_typ
     optimizer.step()
     return train_loss
 
-def train(epoch, model, optimizer, args,block_len=10,coderate_k=1,coderate_n=3,mod_type='QPSK16', use_cuda = False, verbose = True, mode = 'encoder'):
+def train(epoch, model, optimizer, args,block_len=10,coderate_k=1,coderate_n=3,mod_type='QAM16', use_cuda = False, verbose = True, mode = 'encoder'):
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
     model.train()
     start_time = time.time()
     train_loss_awgn,train_loss_ray,train_loss_rici = 0.0, 0.0, 0.0
-    mod = get_modem(mod_type)
-    k_same_code_counter = 0
 
     for batch_idx in range(int(args.num_block/args.batch_size)):
 
         optimizer.zero_grad()
-
-        X_train    = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
-        X_train = X_train.to(device)
+        if mod_type != "LDPC" or mod_type != "POLAR":
+            mod = get_modem( mod_type)
+            X_train    = torch.randint(0, mod.M, (args.batch_size, block_len, coderate_k), dtype=torch.float)
+            X_train = X_train.to(device)
+        else:
+            X_train = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
+            X_train = X_train.to(device)
         noise_shape = (args.batch_size, block_len, coderate_n)
         # train encoder/decoder with different SNR... seems to be a good practice.
         SNR = args.train_enc_channel_low
         code_rate = coderate_k / coderate_n
-        train_loss_awgn += train_noise(model,optimizer,X_train,args,SNR,noise_shape,use_cuda,"AWGN",mode,coderate_k,mod_type)
-        train_loss_ray += train_noise(model,optimizer,X_train,args,SNR,noise_shape,use_cuda,"Rayleigh",mode,coderate_k,mod_type)
-        train_loss_rici += train_noise(model,optimizer,X_train,args,SNR,noise_shape,use_cuda,"Rician",mode,coderate_k,mod_type)
+        train_loss_awgn += train_noise(model,optimizer,X_train,args,SNR,noise_shape,use_cuda,"AWGN",mode,coderate_k,coderate_n,mod_type)
+        train_loss_ray += train_noise(model,optimizer,X_train,args,SNR,noise_shape,use_cuda,"Rayleigh",mode,coderate_k,coderate_n,mod_type)
+        train_loss_rici += train_noise(model,optimizer,X_train,args,SNR,noise_shape,use_cuda,"Rician",mode,coderate_k,coderate_n,mod_type)
 
     end_time = time.time()
     train_loss_awgn = train_loss_awgn /(args.num_block/args.batch_size)
     train_loss_ray = train_loss_ray / (args.num_block / args.batch_size)
     train_loss_rici = train_loss_rici / (args.num_block / args.batch_size)
     if verbose:
-        print('====> Epoch: {} Average loss AWGN: {:.8f} loss Rayleigh: {:.8f} loss Ricin: {:.8f} '.format(epoch, train_loss_awgn,train_loss_ray,train_loss_rici), \
+        print('====> Epoch: {} Average loss AWGN: {:.8f} loss Rayleigh: {:.8f} loss Rician: {:.8f} '.format(epoch, train_loss_awgn,train_loss_ray,train_loss_rici), \
             ' running time', str(end_time - start_time))
 
     return train_loss_awgn,train_loss_ray,train_loss_rici
 
-def validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,noise_type,coderate_k=1,mod_type="QPSK16"):
+def validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,noise_type,coderate_k=1,coderate_n=3,mod_type="QAM16"):
     device = torch.device("cuda" if use_cuda else "cpu")
     test_bce_loss, test_custom_loss, test_ber, test_bler = 0.0, 0.0, 0.0, 0.0
-    fwd_noise, encoded_input, input_msg = generate_noise_SNR(SNR, noise_shape, args,noise_type ,coderate_k,mod_type)
+    fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR(SNR, noise_shape, args,noise_type ,coderate_k,coderate_n,mod_type)
     # print('train:',
     #             'noise_shape =>',noise_shape,
     #             'coderate_k  =>',coderate_k ,
@@ -216,11 +217,10 @@ def validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,noise_
     test_ber = errors_ber(output, X_test)
     test_bler = errors_bler(output, X_test)
     return test_bce_loss,test_custom_loss,test_ber,test_bler
-def validate(model, optimizer, args, block_len=10, coderate_k=1, coderate_n=3,mod_type="QPSK16", use_cuda = False, verbose = True,
+def validate(model, optimizer, args, block_len=10, coderate_k=1, coderate_n=3,mod_type="QAM16", use_cuda = False, verbose = True,
             ):
 
     model.eval()
-    mod = get_modem()
     test_bce_loss_awgn, test_custom_loss_awgn, test_ber_awgn, test_bler_awgn = 0.0, 0.0, 0.0, 0.0
     test_bce_loss_ray, test_custom_loss_ray, test_ber_ray, test_bler_ray = 0.0, 0.0, 0.0, 0.0
     test_bce_loss_rici, test_custom_loss_rici, test_ber_rici, test_bler_rici = 0.0, 0.0, 0.0, 0.0
@@ -228,26 +228,31 @@ def validate(model, optimizer, args, block_len=10, coderate_k=1, coderate_n=3,mo
     with torch.no_grad():
         num_test_batch = int(args.num_block/args.batch_size * args.test_ratio)
         for batch_idx in range(num_test_batch):
-            X_test     = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
+
             noise_shape = (args.batch_size,block_len, coderate_n)
+            if mod_type != "LDPC" or mod_type != "POLAR":
+                mod = get_modem( mod_type)
+                X_test = torch.randint(0, mod.M, (args.batch_size, block_len, coderate_k), dtype=torch.float)
+            else:
+                X_test = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
 
             # train encoder/decoder with different SNR... seems to be a good practice.
             SNR = args.train_enc_channel_low
             code_rate = coderate_k/ coderate_n
             test_bce_loss, test_custom_loss, test_ber, test_bler = \
-                validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,"AWGN",coderate_k,mod_type)
+                validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,"AWGN",coderate_k,coderate_n,mod_type)
             test_bce_loss_awgn +=test_bce_loss
             test_custom_loss_awgn +=test_custom_loss
             test_ber_awgn +=test_ber
             test_bler_awgn += test_bler
             test_bce_loss, test_custom_loss, test_ber, test_bler = \
-                validate_noise(model, optimizer, X_test, args, SNR, noise_shape,use_cuda,"Rayleigh", coderate_k,mod_type)
+                validate_noise(model, optimizer, X_test, args, SNR, noise_shape,use_cuda,"Rayleigh", coderate_k,coderate_n,mod_type)
             test_bce_loss_ray += test_bce_loss
             test_custom_loss_ray += test_custom_loss
             test_ber_ray += test_ber
             test_bler_ray += test_bler
             test_bce_loss, test_custom_loss, test_ber, test_bler = \
-                validate_noise(model, optimizer, X_test, args, SNR, noise_shape,use_cuda,"Rician", coderate_k,mod_type)
+                validate_noise(model, optimizer, X_test, args, SNR, noise_shape,use_cuda,"Rician", coderate_k,coderate_n,mod_type)
             test_bce_loss_rici += test_bce_loss
             test_custom_loss_rici += test_custom_loss
             test_ber_rici += test_ber
@@ -288,10 +293,10 @@ def validate(model, optimizer, args, block_len=10, coderate_k=1, coderate_n=3,mo
 
     return report_loss, report_ber, report_bler
 
-def test_noise(model, X_test, args,SNR,noise_shape,batch_idx, use_cuda,noise_type,coderate_k=1,coderate_n=3,mod_type="QPSK16"):
+def test_noise(model, X_test, args,SNR,noise_shape,batch_idx, use_cuda,noise_type,coderate_k=1,coderate_n=3,mod_type="QAM16"):
     device = torch.device("cuda" if use_cuda else "cpu")
     code_rate = coderate_k / coderate_n
-    fwd_noise, encoded_input, input_msg = generate_noise_SNR(SNR, noise_shape,args,noise_type ,coderate_k,mod_type)
+    fwd_noise, encoded_input, input_msg ,sim_ber = generate_noise_SNR_Sim(SNR, noise_shape,args,noise_type ,coderate_k,coderate_n,mod_type)
     noise = fwd_noise.to(device)
     
     fwd_noise = noise.real.float()
@@ -308,9 +313,9 @@ def test_noise(model, X_test, args,SNR,noise_shape,batch_idx, use_cuda,noise_typ
         test_pos_ber = errors_ber_pos(X_hat_test, X_test)
         codes_power = code_power(the_codes)
         
-    return test_ber,test_bler,codes_power,test_pos_ber
+    return test_ber,test_bler,codes_power,test_pos_ber,sim_ber
 
-def test(model, filename, args, block_len=10, coderate_k=1, coderate_n=3,mod_type="QPSK16", use_cuda=False):
+def test(model, filename, args, block_len=10, coderate_k=1, coderate_n=3,mod_type="QAM16", use_cuda=False):
     device = torch.device("cuda" if use_cuda else "cpu")
     model.eval()
 
@@ -324,7 +329,8 @@ def test(model, filename, args, block_len=10, coderate_k=1, coderate_n=3,mod_typ
                 _      = model.enc(X_test)
             print('Pre-computed norm statistics mean ',model.enc.mean_scalar, 'std ', model.enc.std_scalar)
 
-    awgn_ber,ray_ber,rici_ber = [], [],[]
+    LC_awgn_ber,LC_ray_ber,LC_rici_ber = [], [],[]
+    Sim_awgn_ber, Sim_ray_ber, Sim_rici_ber = [], [], []
 
     # snr_interval = (args.snr_test_end - args.snr_test_start)* 1.0 /  (args.snr_points-1)
     # snrs = [snr_interval* item + args.snr_test_start for item in range(args.snr_points)]
@@ -334,34 +340,44 @@ def test(model, filename, args, block_len=10, coderate_k=1, coderate_n=3,mod_typ
     sigmas = snrs
     data_file = open(filename, 'a')
     for sigma, this_snr in zip(sigmas, snrs):
-        awgn_test_ber, awgn_test_bler, awgn_codes_power, awgn_test_pos_ber = .0, .0, .0,.0
-        ray_test_ber, ray_test_bler, ray_codes_power ,ray_test_pos_ber = .0, .0, .0, .0
-        rici_test_ber, rici_test_bler, rici_codes_power, rici_test_pos_ber = .0, .0, .0, .0
+        LC_awgn_test_ber, LC_awgn_test_bler, LC_awgn_codes_power, LC_awgn_test_pos_ber = .0, .0, .0,.0
+        LC_ray_test_ber, LC_ray_test_bler, LC_ray_codes_power ,LC_ray_test_pos_ber = .0, .0, .0, .0
+        LC_rici_test_ber, LC_rici_test_bler, LC_rici_codes_power,LC_rici_test_pos_ber = .0, .0, .0, .0
+        awgn_test_sim_ber,ray_test_sim_ber,rici_test_sim_ber =.0,.0,.0
         noise_shape = (args.batch_size, block_len, coderate_n)
         with torch.no_grad():
             num_test_batch = int(args.num_block/(args.batch_size))
             for batch_idx in range(num_test_batch):
-                X_test = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
-                test_ber,test_bler,codes_power,test_pos_ber = test_noise(model, X_test, args,this_snr,noise_shape,batch_idx, use_cuda,"AWGN",coderate_k,coderate_n,mod_type)
+                if mod_type != "LDPC" or mod_type != "POLAR":
+                    mod = get_modem( mod_type)
+                    X_test = torch.randint(0, mod.M, (args.batch_size, block_len, coderate_k), dtype=torch.float)
 
-                awgn_test_ber += test_ber
-                awgn_test_bler += test_bler
-                awgn_codes_power += codes_power
-                awgn_test_pos_ber += test_pos_ber
-                test_ber, test_bler, codes_power, test_pos_ber = test_noise(model, X_test, args, this_snr, noise_shape,
+                else:
+                    X_test = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
+
+                test_ber,test_bler,codes_power,test_pos_ber,test_sim_ber = test_noise(model, X_test, args,this_snr,noise_shape,batch_idx, use_cuda,"AWGN",coderate_k,coderate_n,mod_type)
+
+                LC_awgn_test_ber += test_ber
+                LC_awgn_test_bler += test_bler
+                LC_awgn_codes_power += codes_power
+                LC_awgn_test_pos_ber += test_pos_ber
+                awgn_test_sim_ber += test_sim_ber
+                test_ber, test_bler, codes_power, test_pos_ber,test_sim_ber = test_noise(model, X_test, args, this_snr, noise_shape,
                                                                             batch_idx, use_cuda, "Rayleigh", coderate_k,
                                                                             coderate_n,mod_type)
-                ray_test_ber += test_ber
-                ray_test_bler += test_bler
-                ray_codes_power += codes_power
-                ray_test_pos_ber += test_pos_ber
-                test_ber, test_bler, codes_power, test_pos_ber = test_noise(model, X_test, args, this_snr, noise_shape,
+                LC_ray_test_ber += test_ber
+                LC_ray_test_bler += test_bler
+                LC_ray_codes_power += codes_power
+                LC_ray_test_pos_ber += test_pos_ber
+                ray_test_sim_ber += test_sim_ber
+                test_ber, test_bler, codes_power, test_pos_ber,test_sim_ber = test_noise(model, X_test, args, this_snr, noise_shape,
                                                                             batch_idx, use_cuda, "Rician", coderate_k,
                                                                             coderate_n,mod_type)
-                rici_test_ber += test_ber
-                rici_test_bler += test_bler
-                rici_codes_power += codes_power
-                rici_test_pos_ber += test_pos_ber
+                LC_rici_test_ber += test_ber
+                LC_rici_test_bler += test_bler
+                LC_rici_codes_power += codes_power
+                LC_rici_test_pos_ber += test_pos_ber
+                rici_test_sim_ber += test_sim_ber
                 
             if args.print_pos_power:
                 print('code power', codes_power/num_test_batch)
@@ -372,38 +388,51 @@ def test(model, filename, args, block_len=10, coderate_k=1, coderate_n=3,mod_typ
                 print('positional ber', res_pos)
                 print('positional argmax',res_pos_arg)
 
-        awgn_test_ber  /= num_test_batch
-        awgn_test_bler /= num_test_batch
-        ray_test_ber  /= num_test_batch 
-        ray_test_bler  /= num_test_batch 
-        rici_test_ber /= num_test_batch 
-        rici_test_bler /= num_test_batch 
-        
-        
-        print('Test SNR',this_snr ,'ber with awgn ', float(awgn_test_ber),
-              'ber with rayleigh ', float(ray_test_ber),
-              'ber with rician ', float(rici_test_ber))
-        data_file.write(str(block_len)+' '+str(coderate_k)+' '+str(coderate_n)+' '+str(sigma) + ' ' + str(float(awgn_test_ber)) + ' ' +
-                        str(float(ray_test_ber)) + ' ' +str(float(rici_test_ber)) + "\n")
+        LC_awgn_test_ber  /= num_test_batch
+        LC_awgn_test_bler /= num_test_batch
+        LC_ray_test_ber  /= num_test_batch 
+        LC_ray_test_bler  /= num_test_batch 
+        LC_rici_test_ber /= num_test_batch 
+        LC_rici_test_bler /= num_test_batch
+        awgn_test_sim_ber /= num_test_batch
+        ray_test_sim_ber /= num_test_batch
+        rici_test_sim_ber /= num_test_batch
 
-        awgn_ber.append( float(awgn_test_ber))
-        ray_ber.append(float(ray_test_ber))
-        rici_ber.append(float(rici_test_ber))
+
+        print('Test SNR',this_snr ,'learn codes ber with awgn ', float(LC_awgn_test_ber),
+              'learn codes ber with rayleigh ', float(LC_ray_test_ber),
+              'learn codes ber with rician ', float(LC_rici_test_ber),
+              'ber with awgn ', float(awgn_test_sim_ber),
+              'ber with rayleigh ', float(ray_test_sim_ber),
+              'ber with rician ', float(rici_test_sim_ber))
+        data_file.write(str(block_len)+' '+str(coderate_k)+' '+str(coderate_n)+' '+str(sigma) + ' ' + str(float(LC_awgn_test_ber)) + ' ' +
+                        str(float(LC_ray_test_ber)) + ' ' +str(float(LC_rici_test_ber))
+                        + ' ' +str(float(awgn_test_sim_ber))+ ' ' +str(float(ray_test_sim_ber))+ ' ' +str(float(rici_test_sim_ber))+ "\n")
+
+        LC_awgn_ber.append( float(LC_awgn_test_ber))
+        LC_ray_ber.append(float(LC_ray_test_ber))
+        LC_rici_ber.append(float(LC_rici_test_ber))
+        Sim_awgn_ber.append(float(awgn_test_sim_ber))
+        Sim_ray_ber.append(float(ray_test_sim_ber))
+        Sim_rici_ber.append(float(rici_test_sim_ber))
     data_file.close()
     print('final results on SNRs ', snrs)
-    print('AWGN', awgn_ber)
-    print('rayleigh', ray_ber)
-    print('rician', rici_ber)
+    print('Learn Codes AWGN', LC_awgn_ber)
+    print('Learn Codes rayleigh', LC_ray_ber)
+    print('Learn Codes rician', LC_rici_ber)
+    print('AWGN', Sim_awgn_ber)
+    print('rayleigh', Sim_ray_ber)
+    print('rician', Sim_rici_ber)
 
-    # compute adjusted SNR. (some quantization might make power!=1.0)
-    enc_power = 0.0
-    with torch.no_grad():
-        for idx in range(num_test_batch):
-            X_test     = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
-            X_test     = X_test.to(device)
-            X_code     = model.enc(X_test)
-            enc_power +=  torch.std(X_code)
-    enc_power /= float(num_test_batch)
-    print('encoder power is',enc_power.item())
-    adj_snrs = [snr_sigma2db(snr_db2sigma(item)/enc_power) for item in snrs]
-    print('adjusted SNR should be',adj_snrs)
+    # # compute adjusted SNR. (some quantization might make power!=1.0)
+    # enc_power = 0.0
+    # with torch.no_grad():
+    #     for idx in range(num_test_batch):
+    #         X_test     = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
+    #         X_test     = X_test.to(device)
+    #         X_code     = model.enc(X_test)
+    #         enc_power +=  torch.std(X_code)
+    # enc_power /= float(num_test_batch)
+    # print('encoder power is',enc_power.item())
+    # adj_snrs = [snr_sigma2db(snr_db2sigma(item)/enc_power) for item in snrs]
+    # print('adjusted SNR should be',adj_snrs)

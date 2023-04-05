@@ -3,7 +3,7 @@ import math
 import numpy as np
 from matplotlib import pyplot as plt
 
-from pyphysim.modulators.fundamental import BPSK, QAM, QPSK, Modulator
+from pyphysim.modulators.fundamental import BPSK, QAM, QAM, Modulator
 # from pyphysim.simulations import Result, SimulationResults, SimulationRunner
 from pyphysim.util.conversion import dB2Linear
 from pyphysim.util.misc import pretty_time, randn_c, count_bit_errors
@@ -46,7 +46,7 @@ from get_args import get_args
 if __name__ == '__main__':
     SNRS = np.linspace(-5, 15, 9)
     noise_shape = (100, 100, 3)
-    mod = QPSK()
+    mod = QAM()
     msg = np.random.randint(0, mod.M, size=noise_shape[0] * noise_shape[1] * noise_shape[2] * 4)
     symbs = mod.modulate(msg)
     args = get_args()
