@@ -31,11 +31,11 @@ def get_plots_all(plot_path,filename):
         legend.append('LC_AWGN_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
         legend.append('LC_Rayleigh_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
         legend.append('LC_Rician_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
-        legend.append('AWGN_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
-        legend.append('Rayleigh_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
-        legend.append('Rician_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
-        ax.semilogy(snrs, LC_awgn_bers, '--', snrs, LC_ray_bers, 'x-', snrs, LC_rici_bers, 'o-',
-                    snrs, awgn_bers, '-<', snrs, ray_bers, '->', snrs, rici_bers, '-|')
+        legend.append('SIM_AWGN_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
+        legend.append('SIM_Rayleigh_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
+        legend.append('SIM_Rician_{}_{}/{}_{}'.format(blocklen, coderate_k, coderate_n, mod_type))
+        ax.semilogy(snrs, LC_awgn_bers, '--', snrs, LC_ray_bers, '--', snrs, LC_rici_bers, '--',
+                    snrs, awgn_bers, '--', snrs, ray_bers, '--', snrs, rici_bers, '--')
 
     plt.grid()
     plt.xticks(snrs)
@@ -63,7 +63,8 @@ def get_plots_custom(plot_path,filename):
     legend, blocklens, coderates, mod_types = [], [], [], []
     semlogy={}
     test_file_path = os.path.join(plot_path, 'Noise_SNR_BER')
-
+    color_legend= ("#02052D","#042E02","#100337","#4D030D","#04633F","#D78009","#690466","#06758C","#F1EE09",
+                   "#08BAEF","#46F30A","#C6B5F9","#F8AEB8","#C8FCE9","#F7D7AB","#F508EE","#8BE6F9","#F2F196")
     for test_row in file_data:
         blocklen, coderate_k, coderate_n, coderate, mod_type, filename, testfilename = test_row
         blocklens.append(blocklen)
@@ -94,6 +95,8 @@ def get_plots_custom(plot_path,filename):
             fig = plt.figure()
             ax = plt.subplot(111)
             legend=[]
+            i=0
+            marker=0
             for mod_type in np.unique(mod_types):
                 key_snrs = '{}_{}_{}_{}'.format(blocklen, coderate, mod_type, 'SNRS')
                 key_awgn_lc = '{}_{}_{}_{}'.format(blocklen, coderate, mod_type, 'LC_AWGN')
@@ -109,14 +112,20 @@ def get_plots_custom(plot_path,filename):
                 awgn_bers=semlogy[key_awgn]
                 ray_bers=semlogy[key_ray]
                 rici_bers=semlogy[key_rician]
-                ax.semilogy(snrs, LC_awgn_bers, '--', snrs, LC_ray_bers, 'x-', snrs, LC_rici_bers, 'o-',
-                            snrs, awgn_bers, '<-', snrs, ray_bers, '>-', snrs, rici_bers, '|-')
+                ax.semilogy(snrs, LC_awgn_bers,color= color_legend[i] ,linewidth = 2,marker = 'o',markersize = marker+2)
+                ax.semilogy(snrs, LC_ray_bers,color= color_legend[i+1] ,linewidth = 2,marker = 'x',markersize = marker)
+                ax.semilogy(snrs, LC_rici_bers,color= color_legend[i+2] ,linewidth = 2,marker = '>',markersize = marker+2)
+                ax.semilogy(snrs, awgn_bers,color= color_legend[i+3] ,linewidth = 1,marker = 'o',markersize = marker)
+                ax.semilogy(snrs, ray_bers,color= color_legend[i+4] ,linewidth = 1,marker = 'x',markersize = marker)
+                ax.semilogy(snrs, rici_bers,color= color_legend[i+5] ,linewidth = 1,marker = '>',markersize = marker)
+                i = i+6
+                marker += 1
                 legend.append('LC_AWGN_{}_{}_{}'.format(blocklen, coderate, mod_type))
                 legend.append('LC_Rayleigh_{}_{}_{}'.format(blocklen, coderate, mod_type))
                 legend.append('LC_Rician_{}_{}_{}'.format(blocklen, coderate, mod_type))
-                legend.append('AWGN_{}_{}_{}'.format(blocklen, coderate, mod_type))
-                legend.append('Rayleigh_{}_{}_{}'.format(blocklen, coderate, mod_type))
-                legend.append('Rician_{}_{}_{}'.format(blocklen, coderate, mod_type))
+                legend.append('SIM_AWGN_{}_{}_{}'.format(blocklen, coderate, mod_type))
+                legend.append('SIM_Rayleigh_{}_{}_{}'.format(blocklen, coderate, mod_type))
+                legend.append('SIM_Rician_{}_{}_{}'.format(blocklen, coderate, mod_type))
 
             plt.grid()
             plt.xticks(snrs)

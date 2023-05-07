@@ -19,20 +19,30 @@ from pyphysim.channels import fading, fading_generators
 from polarcodes import *
 from pyldpc import make_ldpc, encode,decode, binaryproduct,get_message
 
-
+def count_bits(n):
+    count = 0
+    n_all = n.reshape(n.shape[0]*n.shape[1]*n.shape[2]).detach().cpu().numpy()
+    count = np.count_nonzero(n_all==1)
+    return count
 def errors_ber(y_true, y_pred, positions='default'):
     y_true = y_true.view(y_true.shape[0], -1, 1)
     y_pred = y_pred.view(y_pred.shape[0], -1, 1)
 
-    myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred)).float()
-    if positions == 'default':
-        res = sum(sum(myOtherTensor)) / (myOtherTensor.shape[0] * myOtherTensor.shape[1])
-    else:
-        res = torch.mean(myOtherTensor, dim=0).type(torch.FloatTensor)
-        for pos in positions:
-            res[pos] = 0.0
-        res = torch.mean(res)
-    return res
+    different_bits = torch.logical_xor(y_true, y_pred)
+    different_bits_int = different_bits.bool().int()
+    num_bit_errors =  count_bits(different_bits_int)  # type: ignore
+    num_symbols = y_pred.shape[0] *  y_pred.shape[1]
+    return num_bit_errors / num_symbols
+    # myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred)).float()
+    # torch.__xor__()
+    # if positions == 'default':
+    #     res = sum(sum(myOtherTensor)) / (myOtherTensor.shape[0] * myOtherTensor.shape[1])
+    # else:
+    #     res = torch.mean(myOtherTensor, dim=0).type(torch.FloatTensor)
+    #     for pos in positions:
+    #         res[pos] = 0.0
+    #     res = torch.mean(res)
+    # return res
 
 
 def errors_ber_list(y_true, y_pred):
@@ -170,57 +180,62 @@ def gen_mod(input_msg, noise_shape, mod):
     output = symbs + input_array
     resized_output = torch.from_numpy(np.array(output).reshape(noise_shape)).real.float()
     return resized_output
-def generate_decode(received_data, received_data_orig,input_msg,mod,parity_message_H,parity_message_G,SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+def generate_decode(received_data,input_msg,mod,SNR, noise_shape, mod_type="QAM16",ber_reqd =1):
     simulated_ber =0.0
+    parity_message_H, parity_message_G =[],[]
     num_symbols = noise_shape[0] * noise_shape[1]
+    received_data_orig=[]
     if mod_type =="LDPC":
         H = parity_message_H
         G = parity_message_G
-        # device = torch.device("cuda" if use_cuda else "cpu")
         decode_message = np.asarray(received_data_orig,dtype=np.float64)
-        # print("After np H:{}".format(H.shape()))
-        print("After np")
         decoded_bits = decode(H, decode_message, SNR,2)
-        # print("After decode decode_message:{}, decoded_bits:{}".format(decode_message.shape(),decoded_bits.shape()))
-        print("After decode")
         error=0.0
-        n_trials=noise_shape[0]*noise_shape[2]
-        for i in range(n_trials):
-            x = get_message(G[:, 0:noise_shape[1]], decoded_bits[i, :])
-            error += abs(input_msg - x).sum() / (noise_shape[2] * n_trials)
-        message_decoded = error
-        # print("After get_message message_decoded:{}".format(message_decoded.shape()))
-        print("After get_message")
-        num_bit_errors = count_bit_errors(input_msg, message_decoded)
-        simulated_ber = num_bit_errors / num_symbols
+        if ber_reqd == 1:
+            n_trials=noise_shape[0]*noise_shape[2]
+            for i in range(n_trials):
+                x = get_message(G[:, 0:noise_shape[1]], decoded_bits[i, :])
+                error += abs(input_msg - x).sum() / (noise_shape[2] * n_trials)
+            message_decoded = error
+
+            num_bit_errors = count_bit_errors(input_msg, message_decoded)
+            simulated_ber = num_bit_errors / num_symbols
     elif mod_type == "POLAR":
+        received_data_orig = np.zeros(mod.N)
+        received_data_orig[0:mod.K] = received_data.detach().numpy().reshape(mod.K)
         mod.likelihoods = received_data_orig
+        # mod.N = mod.K
         Decode(mod)
         demodulated_data = mod.message_received
-        num_bit_errors = count_bit_errors(input_msg, demodulated_data)
-        simulated_ber = num_bit_errors / num_symbols
+        if ber_reqd == 1 :
+            num_bit_errors = count_bit_errors(input_msg, demodulated_data)
+            simulated_ber = num_bit_errors / num_symbols
     else :
+        received_data_orig_np = received_data.detach().cpu().numpy()
+        received_data_orig = received_data_orig_np.reshape(num_symbols*noise_shape[2])
         demodulated_data = mod.demodulate(received_data_orig)
-        num_bit_errors = count_bit_errors(input_msg, demodulated_data)
-        simulated_ber = num_bit_errors / num_symbols
-    return simulated_ber
-def generate_noise_SNR_Sim(SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
-    fwd_noise,received_data, encoded_input, input_msg,mod,H,G = generate_noise_SNR(SNR, noise_shape, args, noise_type,
+        if ber_reqd == 1:
+            num_bit_errors = count_bit_errors(input_msg, demodulated_data)
+            simulated_ber = num_bit_errors / num_symbols
+    return simulated_ber,demodulated_data
+def generate_noise_SNR_Sim(SNR,X_Input, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+    fwd_noise,received_data, encoded_input, input_msg,mod,H,G = generate_noise_SNR(SNR,X_Input,noise_shape, args, noise_type,
                                                                           coderate_k, coderate_n, mod_type)
 
-    sim_ber =  generate_decode(fwd_noise,received_data, input_msg,mod,H,G,SNR, noise_shape, args,noise_type, coderate_k, coderate_n, mod_type)
-    return fwd_noise, encoded_input, input_msg,sim_ber
+    sim_ber,decoded_bits =  generate_decode(fwd_noise, input_msg,mod,SNR, noise_shape,  mod_type,ber_reqd = 1)
+    return fwd_noise, encoded_input, input_msg,sim_ber,mod
 
-def generate_noise_SNR(SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+def generate_noise_SNR(SNR,X_Input, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
     num_symbols = noise_shape[0] * noise_shape[1]
     parity_h, parity_g =[],[]
     mod = get_modem(mod_type )
     if mod_type !="LDPC" and  mod_type !="POLAR":
         mod = get_modem(mod_type )
-        M = mod.M
+        M = 2
     else:
         M = 2
-    input_msg = np.random.randint(0, M, size=(num_symbols*coderate_n))
+    input_msg_123 = np.random.randint(0, M, size=(num_symbols * coderate_n))
+    input_msg = torch.flatten(X_Input).int().detach().cpu().numpy()
     if mod_type == "POLAR" :
         shorten_params = ('shorten', 'brs', None, None, False)
         k_rate = noise_shape[1] * noise_shape[0] * coderate_k

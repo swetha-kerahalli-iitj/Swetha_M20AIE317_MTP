@@ -30,11 +30,25 @@ from utils import get_theo_ber, get_modem, snr_db2sigma, generate_noise_SNR, gen
 
 if __name__ == '__main__':
     args = get_args()
-    SNR=0.0
-    coderate_k =7
-    coderate_n=8
-    noise_shape=(100,20,coderate_n)
-    mod_type ="LDPC"
+    # snrs = np.arange(0, 100, 5)
+    # val_loss =(0.9,0.8,0.7)
+    # val_ber = (0.6, 0.5, 0.4)
+    # val_bler = (1.0,1.0, 1.0)
+    # val_loss_fin =[0.0,0.0,0.0]
+    # val_ber_fin = [0.0,0.0,0.0]
+    # val_bler_fin = [0.0,0.0,0.0]
+    # print (snrs.size)
+    # for i in range(3):
+    #     val_loss_fin[i] =val_loss[i]/snrs.size
+    #     val_ber_fin[i] = val_ber[i] / snrs.size
+    #     val_bler_fin[i] = val_bler[i] / snrs.size
+    #
+    # exit()
+    # SNR = 19
+    # coderate_k = 7
+    # coderate_n = 8
+    # noise_shape = (100, 10, coderate_n)
+    # mod_type ="LDPC"
 
     # generate_noise_SNR(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
     # generate_noise_SNR(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
@@ -45,17 +59,19 @@ if __name__ == '__main__':
     # generate_noise_SNR_Sim(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
     # print("{} Rayleigh ber: {}".format(mod_type, sim_ber))
     # generate_noise_SNR_Sim(SNR, noise_shape, args, "Rician", coderate_k, coderate_n, mod_type)
-    # print("{} Rician ber: {}".format(mod_type, sim_ber))
-    mod_type = "POLAR"
+    # # print("{} Rician ber: {}".format(mod_type, sim_ber))
+    # mod_type = "QAM16"
+    #
     # generate_noise_SNR(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
     # generate_noise_SNR(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
     # generate_noise_SNR(SNR, noise_shape, args, "Rician", coderate_k, coderate_n, mod_type)
-    # fwd_noise, encoded_input, input_msg, sim_ber = generate_noise_SNR_Sim(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
+    # fwd_noise, encoded_input, input_msg, sim_ber,mod = generate_noise_SNR_Sim(SNR, noise_shape, args, "AWGN", coderate_k, coderate_n, mod_type)
     # print("{} AWGN ber: {}".format(mod_type,sim_ber))
-    # fwd_noise, encoded_input, input_msg, sim_ber = generate_noise_SNR_Sim(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
+    # fwd_noise, encoded_input, input_msg, sim_ber,mod = generate_noise_SNR_Sim(SNR, noise_shape, args, "Rayleigh", coderate_k, coderate_n, mod_type)
     # print("{} Rayleigh ber: {}".format(mod_type,sim_ber))
-    # fwd_noise, encoded_input, input_msg, sim_ber = generate_noise_SNR_Sim(SNR, noise_shape, args, "Rician", coderate_k, coderate_n, mod_type)
+    # fwd_noise, encoded_input, input_msg, sim_ber,mod = generate_noise_SNR_Sim(SNR, noise_shape, args, "Rician", coderate_k, coderate_n,mod_type)
     # print("{} Rician ber: {}".format(mod_type,sim_ber))
+    #
     # exit()
     # coderate_k = 8
     # coderate_n = 9
@@ -123,7 +139,7 @@ if __name__ == '__main__':
     # print(':, :, 0',a[:, :, 0:1])
     # exit()
     path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230405_130200\data_faded'
-    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230405_130200'
+    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230405_130200\plot_faded'
     filename = os.path.join(path,r'attention_data_awgn_lr_0.01_D1All_20230405_130200.txt')
 
     get_plots(plot_path,filename)
