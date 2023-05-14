@@ -1,0 +1,29 @@
+Namespace(channel='awgn', vv=5, radar_prob=0.05, radar_power=5.0, train_enc_channel_low=0.0, train_enc_channel_high=1.0, train_dec_channel_low=-1.5, train_dec_channel_high=2.0, init_nw_weight='default', enc_rnn='gru', dec_rnn='gru', enc_num_layer=3, dec_num_layer=3, dec_num_unit=100, enc_num_unit=25, enc_act='elu', dec_act='linear', num_train_dec=5, num_train_enc=1, dropout=0.0, snr_test_start=-1.5, snr_test_end=4.0, snr_points=12, batch_size=100, num_epoch=2, test_ratio=1, block_len=(10, 20), code_rate_k=(3, 5, 7), code_rate_n=(4, 6, 8), modtype=('QAM16', 'QAM64'), block_len_low=10, block_len_high=200, is_variable_block_len=False, num_block=100, test_channel_mode='block_norm', train_channel_mode='block_norm', enc_truncate_limit=0, no_code_norm=False, enc_quantize_level=2, enc_value_limit=1.0, enc_grad_limit=0.01, enc_clipping='both', optimizer='adam', dec_lr=0.01, enc_lr=0.01, no_cuda=False, rec_quantize=False, print_pos_ber=False, print_pos_power=False, print_test_traj=False, precompute_norm_stats=False, D=1, BASE_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading', LOG_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230514_115429\\logs_faded', DATA_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230514_115429\\data_faded', MODEL_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230514_115429\\model_faded', PLOT_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230514_115429\\plot_faded')
+use_cuda:  False
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 3 coderate_n => 4 modulation_type => QAM16
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(3, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=3, bias=True)
+  )
+)
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69418067 loss Rayleigh: 0.69412434 loss Rician: 0.69411981   running time 0.486037015914917
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69402945 loss Rayleigh: 0.70993960 loss Rician: 0.71749604   running time 0.46343326568603516
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.71244329 loss Rayleigh: 0.69693065 loss Rician: 0.69490063   running time 0.45312070846557617
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69952875 loss Rayleigh: 0.69954884 loss Rician: 0.70540899   running time 0.4843862056732178
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.70018661 loss Rayleigh: 0.70476782 loss Rician: 0.69448918   running time 0.45311498641967773
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.70776212 loss Rayleigh: 0.69852954 loss Rician: 0.69728476   running time 0.4843783378601074
+Backend TkAgg is interactive backend. Turning interactive mode on.

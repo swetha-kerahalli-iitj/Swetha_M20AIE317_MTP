@@ -138,9 +138,9 @@ if __name__ == '__main__':
     # print(':,:,1',a[:,:,1:])
     # print(':, :, 0',a[:, :, 0:1])
     # exit()
-    path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230405_130200\data_faded'
-    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230405_130200\plot_faded'
-    filename = os.path.join(path,r'attention_data_awgn_lr_0.01_D1All_20230405_130200.txt')
+    path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_211438\data_faded'
+    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_211438\plot_faded'
+    filename = os.path.join(path,r'attention_data_awgn_lr_0.01_D1All_20230513_211438.txt')
 
     get_plots(plot_path,filename)
     # test_data = np.loadtxt(os.path.join(path,r'bl_20__k_2_n_3',r'attention_data_test_awgn_lr_0.01_D1bl_20__k_2_n_3_500_20230325_180459.txt')).T

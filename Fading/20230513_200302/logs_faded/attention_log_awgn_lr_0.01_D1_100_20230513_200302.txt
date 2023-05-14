@@ -1,0 +1,119 @@
+Namespace(channel='awgn', vv=5, radar_prob=0.05, radar_power=5.0, train_enc_channel_low=0.0, train_enc_channel_high=1.0, train_dec_channel_low=-1.5, train_dec_channel_high=2.0, init_nw_weight='default', enc_rnn='gru', dec_rnn='gru', enc_num_layer=3, dec_num_layer=3, dec_num_unit=100, enc_num_unit=25, enc_act='elu', dec_act='linear', num_train_dec=5, num_train_enc=1, dropout=0.0, snr_test_start=-1.5, snr_test_end=4.0, snr_points=12, batch_size=100, num_epoch=2, test_ratio=1, block_len=(10, 20), code_rate_k=(3, 5, 7), code_rate_n=(4, 6, 8), modtype=('QAM16', 'QAM64'), block_len_low=10, block_len_high=200, is_variable_block_len=False, num_block=100, test_channel_mode='block_norm', train_channel_mode='block_norm', enc_truncate_limit=0, no_code_norm=False, enc_quantize_level=2, enc_value_limit=1.0, enc_grad_limit=0.01, enc_clipping='both', optimizer='adam', dec_lr=0.01, enc_lr=0.01, no_cuda=False, rec_quantize=False, print_pos_ber=False, print_pos_power=False, print_test_traj=False, precompute_norm_stats=False, D=1, BASE_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading', LOG_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230513_200302\\logs_faded', DATA_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230513_200302\\data_faded', MODEL_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230513_200302\\model_faded', PLOT_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230513_200302\\plot_faded')
+use_cuda:  False
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 3 coderate_n => 4 modulation_type => QAM16
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(3, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=3, bias=True)
+  )
+)
+Backend TkAgg is interactive backend. Turning interactive mode on.
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69295299 loss Rayleigh: 0.69270778 loss Rician: 0.69240618   running time 71.09599900245667
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69302732 loss Rayleigh: 0.69841325 loss Rician: 0.71669537   running time 0.6830356121063232
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69864869 loss Rayleigh: 0.68319219 loss Rician: 0.67791754   running time 0.515613317489624
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.68293166 loss Rayleigh: 0.67563909 loss Rician: 0.67326760   running time 0.6218562126159668
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.66469294 loss Rayleigh: 0.67224437 loss Rician: 0.65094870   running time 0.5564560890197754
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.67408454 loss Rayleigh: 0.66636842 loss Rician: 0.66570324   running time 0.5401744842529297
+====> Test set BCE loss with SNR 0.0 for AWGN 0.6471585035324097 Custom Loss 0.6471585035324097 with ber  0.505 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rayleigh 0.6612080931663513 Custom Loss 0.6612080931663513 with ber  0.505 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rician 0.6582255959510803 Custom Loss 0.6582255959510803 with ber  0.505 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_200302\model_faded\bl_10__k_3_n_4_mod_QAM16\attention_model_1_awgn_lr_0.01_D1bl_10__k_3_n_4_mod_QAM16_100_20230513_200302.pt
+each epoch training time: 74.18501138687134s
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.65345669 loss Rayleigh: 0.67683196 loss Rician: 0.66735375   running time 0.48438262939453125
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.64490652 loss Rayleigh: 0.65903473 loss Rician: 0.64711916   running time 0.4843935966491699
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.66320485 loss Rayleigh: 0.66420513 loss Rician: 0.64968979   running time 0.4843780994415283
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.65052491 loss Rayleigh: 0.66016990 loss Rician: 0.63351911   running time 0.5264134407043457
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.64395469 loss Rayleigh: 0.65322727 loss Rician: 0.71327150   running time 0.5713100433349609
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.65284300 loss Rayleigh: 0.65219945 loss Rician: 0.65599525   running time 0.5000407695770264
+====> Test set BCE loss with SNR 0.0 for AWGN 0.623097836971283 Custom Loss 0.623097836971283 with ber  0.49366666666666664 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rayleigh 0.6450165510177612 Custom Loss 0.6450165510177612 with ber  0.49366666666666664 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rician 0.6252287030220032 Custom Loss 0.6252287030220032 with ber  0.49366666666666664 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_200302\model_faded\bl_10__k_3_n_4_mod_QAM16\attention_model_2_awgn_lr_0.01_D1bl_10__k_3_n_4_mod_QAM16_100_20230513_200302.pt
+each epoch training time: 3.234140157699585s
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_200302\model_faded\bl_10__k_3_n_4_mod_QAM16\attention_model_2_awgn_lr_0.01_D1bl_10__k_3_n_4_mod_QAM16_100_20230513_200302.pt
+SNRS [ 0  5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95]
+Test SNR 0 learn codes ber with awgn  0.4816666666666667 learn codes ber with rayleigh  0.4816666666666667 learn codes ber with rician  0.4816666666666667 ber with awgn  2.804 ber with rayleigh  4.195 ber with rician  4.1
+Test SNR 5 learn codes ber with awgn  0.48733333333333334 learn codes ber with rayleigh  0.48733333333333334 learn codes ber with rician  0.48733333333333334 ber with awgn  1.878 ber with rayleigh  2.912 ber with rician  2.705
+Test SNR 10 learn codes ber with awgn  0.503 learn codes ber with rayleigh  0.503 learn codes ber with rician  0.503 ber with awgn  0.969 ber with rayleigh  1.656 ber with rician  1.331
+Test SNR 15 learn codes ber with awgn  0.49366666666666664 learn codes ber with rayleigh  0.49366666666666664 learn codes ber with rician  0.49366666666666664 ber with awgn  0.235 ber with rayleigh  0.712 ber with rician  0.429
+Test SNR 20 learn codes ber with awgn  0.511 learn codes ber with rayleigh  0.511 learn codes ber with rician  0.511 ber with awgn  0.007 ber with rayleigh  0.272 ber with rician  0.147
+Test SNR 25 learn codes ber with awgn  0.498 learn codes ber with rayleigh  0.498 learn codes ber with rician  0.498 ber with awgn  0.0 ber with rayleigh  0.092 ber with rician  0.035
+Test SNR 30 learn codes ber with awgn  0.5 learn codes ber with rayleigh  0.5 learn codes ber with rician  0.5 ber with awgn  0.0 ber with rayleigh  0.027 ber with rician  0.012
+Test SNR 35 learn codes ber with awgn  0.5083333333333333 learn codes ber with rayleigh  0.5083333333333333 learn codes ber with rician  0.5083333333333333 ber with awgn  0.0 ber with rayleigh  0.008 ber with rician  0.005
+Test SNR 40 learn codes ber with awgn  0.49833333333333335 learn codes ber with rayleigh  0.49833333333333335 learn codes ber with rician  0.49833333333333335 ber with awgn  0.0 ber with rayleigh  0.002 ber with rician  0.0
+Test SNR 45 learn codes ber with awgn  0.4826666666666667 learn codes ber with rayleigh  0.4826666666666667 learn codes ber with rician  0.4826666666666667 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 50 learn codes ber with awgn  0.503 learn codes ber with rayleigh  0.503 learn codes ber with rician  0.503 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 55 learn codes ber with awgn  0.4796666666666667 learn codes ber with rayleigh  0.4796666666666667 learn codes ber with rician  0.4796666666666667 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 60 learn codes ber with awgn  0.49166666666666664 learn codes ber with rayleigh  0.49166666666666664 learn codes ber with rician  0.49166666666666664 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 65 learn codes ber with awgn  0.4886666666666667 learn codes ber with rayleigh  0.4886666666666667 learn codes ber with rician  0.4886666666666667 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 70 learn codes ber with awgn  0.495 learn codes ber with rayleigh  0.495 learn codes ber with rician  0.495 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 75 learn codes ber with awgn  0.519 learn codes ber with rayleigh  0.519 learn codes ber with rician  0.519 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 80 learn codes ber with awgn  0.502 learn codes ber with rayleigh  0.502 learn codes ber with rician  0.502 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 85 learn codes ber with awgn  0.509 learn codes ber with rayleigh  0.509 learn codes ber with rician  0.509 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 90 learn codes ber with awgn  0.504 learn codes ber with rayleigh  0.504 learn codes ber with rician  0.504 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+Test SNR 95 learn codes ber with awgn  0.49933333333333335 learn codes ber with rayleigh  0.49933333333333335 learn codes ber with rician  0.49933333333333335 ber with awgn  0.0 ber with rayleigh  0.0 ber with rician  0.0
+final results on SNRs  [ 0  5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95]
+Learn Codes AWGN [0.4816666666666667, 0.48733333333333334, 0.503, 0.49366666666666664, 0.511, 0.498, 0.5, 0.5083333333333333, 0.49833333333333335, 0.4826666666666667, 0.503, 0.4796666666666667, 0.49166666666666664, 0.4886666666666667, 0.495, 0.519, 0.502, 0.509, 0.504, 0.49933333333333335]
+Learn Codes rayleigh [0.4816666666666667, 0.48733333333333334, 0.503, 0.49366666666666664, 0.511, 0.498, 0.5, 0.5083333333333333, 0.49833333333333335, 0.4826666666666667, 0.503, 0.4796666666666667, 0.49166666666666664, 0.4886666666666667, 0.495, 0.519, 0.502, 0.509, 0.504, 0.49933333333333335]
+Learn Codes rician [0.4816666666666667, 0.48733333333333334, 0.503, 0.49366666666666664, 0.511, 0.498, 0.5, 0.5083333333333333, 0.49833333333333335, 0.4826666666666667, 0.503, 0.4796666666666667, 0.49166666666666664, 0.4886666666666667, 0.495, 0.519, 0.502, 0.509, 0.504, 0.49933333333333335]
+AWGN [2.804, 1.878, 0.969, 0.235, 0.007, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+rayleigh [4.195, 2.912, 1.656, 0.712, 0.272, 0.092, 0.027, 0.008, 0.002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+rician [4.1, 2.705, 1.331, 0.429, 0.147, 0.035, 0.012, 0.005, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 3 coderate_n => 4 modulation_type => QAM64
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(3, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=3, bias=True)
+  )
+)
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69318080 loss Rayleigh: 0.69316959 loss Rician: 0.69304198   running time 0.5347263813018799
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69300282 loss Rayleigh: 0.70719141 loss Rician: 0.71061409   running time 0.5622541904449463
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.69693947 loss Rayleigh: 0.68526679 loss Rician: 0.68297613   running time 0.5156242847442627
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.67019844 loss Rayleigh: 0.66556346 loss Rician: 0.65276384   running time 0.6586587429046631
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.66596037 loss Rayleigh: 0.68145710 loss Rician: 0.66048527   running time 0.5625033378601074
+====> Epoch: 1 with snr 0.0 Average loss AWGN: 0.64888120 loss Rayleigh: 0.65750855 loss Rician: 0.64185858   running time 0.5623724460601807
+====> Test set BCE loss with SNR 0.0 for AWGN 0.6724584102630615 Custom Loss 0.6724584102630615 with ber  0.489 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rayleigh 0.6877129077911377 Custom Loss 0.6877129077911377 with ber  0.489 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rician 0.6782352924346924 Custom Loss 0.6782352924346924 with ber  0.489 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_200302\model_faded\bl_10__k_3_n_4_mod_QAM64\attention_model_1_awgn_lr_0.01_D1bl_10__k_3_n_4_mod_QAM64_100_20230513_200302.pt
+each epoch training time: 3.5680196285247803s
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.66618717 loss Rayleigh: 0.69881350 loss Rician: 0.68367392   running time 0.45311856269836426
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.65860063 loss Rayleigh: 0.66466910 loss Rician: 0.64579183   running time 0.49457550048828125
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.63998139 loss Rayleigh: 0.65498918 loss Rician: 0.62554717   running time 0.4687671661376953
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.66958165 loss Rayleigh: 0.66382688 loss Rician: 0.63410997   running time 0.4687380790710449
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.62539434 loss Rayleigh: 0.67805982 loss Rician: 0.63032585   running time 0.5000247955322266
+====> Epoch: 2 with snr 0.0 Average loss AWGN: 0.63106573 loss Rayleigh: 0.65280044 loss Rician: 0.64588243   running time 0.5053715705871582
+====> Test set BCE loss with SNR 0.0 for AWGN 0.6781636476516724 Custom Loss 0.6781636476516724 with ber  0.5153333333333333 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rayleigh 0.6827331781387329 Custom Loss 0.6827331781387329 with ber  0.5153333333333333 with bler  1.0
+====> Test set BCE loss with SNR 0.0 for Rician 0.6797919273376465 Custom Loss 0.6797919273376465 with ber  0.5153333333333333 with bler  1.0
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_200302\model_faded\bl_10__k_3_n_4_mod_QAM64\attention_model_2_awgn_lr_0.01_D1bl_10__k_3_n_4_mod_QAM64_100_20230513_200302.pt
+each epoch training time: 3.0468287467956543s
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230513_200302\model_faded\bl_10__k_3_n_4_mod_QAM64\attention_model_2_awgn_lr_0.01_D1bl_10__k_3_n_4_mod_QAM64_100_20230513_200302.pt
+SNRS [ 0  5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95]
+Test SNR 0 learn codes ber with awgn  0.5113333333333333 learn codes ber with rayleigh  0.5113333333333333 learn codes ber with rician  0.5113333333333333 ber with awgn  3.871 ber with rayleigh  6.278 ber with rician  6.179

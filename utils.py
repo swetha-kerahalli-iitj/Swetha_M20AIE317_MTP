@@ -25,13 +25,14 @@ def count_bits(n):
     count = np.count_nonzero(n_all==1)
     return count
 def errors_ber(y_true, y_pred, positions='default'):
-    y_true = y_true.view(y_true.shape[0], -1, 1)
-    y_pred = y_pred.view(y_pred.shape[0], -1, 1)
+    num_symbols = y_pred.shape[0] *  y_pred.shape[1] *y_pred.shape[2]
+    y_true = y_true.view(num_symbols, -1, 1)
+    y_pred = y_pred.view(num_symbols, -1, 1)
 
     different_bits = torch.logical_xor(y_true, y_pred)
     different_bits_int = different_bits.bool().int()
     num_bit_errors =  count_bits(different_bits_int)  # type: ignore
-    num_symbols = y_pred.shape[0] *  y_pred.shape[1]
+
     return num_bit_errors / num_symbols
     # myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred)).float()
     # torch.__xor__()
@@ -214,18 +215,19 @@ def generate_decode(received_data,input_msg,mod,SNR, noise_shape, mod_type="QAM1
         received_data_orig_np = received_data.detach().cpu().numpy()
         received_data_orig = received_data_orig_np.reshape(num_symbols*noise_shape[2])
         demodulated_data = mod.demodulate(received_data_orig)
+        clamped_demod =  np.clip(demodulated_data, 0, 1)
         if ber_reqd == 1:
-            num_bit_errors = count_bit_errors(input_msg, demodulated_data)
-            simulated_ber = num_bit_errors / num_symbols
-    return simulated_ber,demodulated_data
-def generate_noise_SNR_Sim(SNR,X_Input, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
-    fwd_noise,received_data, encoded_input, input_msg,mod,H,G = generate_noise_SNR(SNR,X_Input,noise_shape, args, noise_type,
+            num_bit_errors = count_bit_errors(input_msg, clamped_demod)
+            simulated_ber = num_bit_errors / input_msg.size
+    return simulated_ber,clamped_demod
+def generate_noise_SNR_Sim(SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+    fwd_noise,received_data, encoded_input, input_msg,mod,H,G = generate_noise_SNR(SNR,noise_shape, args, noise_type,
                                                                           coderate_k, coderate_n, mod_type)
 
     sim_ber,decoded_bits =  generate_decode(fwd_noise, input_msg,mod,SNR, noise_shape,  mod_type,ber_reqd = 1)
     return fwd_noise, encoded_input, input_msg,sim_ber,mod
 
-def generate_noise_SNR(SNR,X_Input, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
+def generate_noise_SNR(SNR, noise_shape, args, noise_type="AWGN", coderate_k=1, coderate_n=3, mod_type="QAM16"):
     num_symbols = noise_shape[0] * noise_shape[1]
     parity_h, parity_g =[],[]
     mod = get_modem(mod_type )
@@ -234,8 +236,12 @@ def generate_noise_SNR(SNR,X_Input, noise_shape, args, noise_type="AWGN", codera
         M = 2
     else:
         M = 2
-    input_msg_123 = np.random.randint(0, M, size=(num_symbols * coderate_n))
-    input_msg = torch.flatten(X_Input).int().detach().cpu().numpy()
+    input_msg = np.random.randint(0, M, size=(num_symbols * coderate_n))
+    # snrval = snr_db2sigma(SNR)
+    # randcval = torch.randn(noise_shape, dtype=torch.float).detach().cpu().numpy().reshape(input_msg.shape)
+    # n = snrval * randcval
+    # input_msg = n
+    # # input_msg = torch.flatten(X_Input).int().detach().cpu().numpy()
     if mod_type == "POLAR" :
         shorten_params = ('shorten', 'brs', None, None, False)
         k_rate = noise_shape[1] * noise_shape[0] * coderate_k
@@ -258,6 +264,7 @@ def generate_noise_SNR(SNR,X_Input, noise_shape, args, noise_type="AWGN", codera
         parity_g = G
     else:
         modulated_bits = mod.modulate(input_msg)
+        mod_real = modulated_bits.real
     # u = self.source([batch_size, self.k])  # generate random data
     # c = self.encoder(u)  # explicitly encode
     #
@@ -268,8 +275,8 @@ def generate_noise_SNR(SNR,X_Input, noise_shape, args, noise_type="AWGN", codera
     noise_power = 1 / snr_linear
 
     n = math.sqrt(noise_power) * randn_c(modulated_bits.size)
-
-    # received_data_qam = su_channel.corrupt_data(modulated_data_qam)
+    # received_data = modulated_bits
+    # # received_data_qam = su_channel.corrupt_data(modulated_data_qam)
     if noise_type == 'Rayleigh':
         # Rayleigh channel
         h = randn_c(modulated_bits.size)
@@ -300,11 +307,13 @@ def generate_noise_SNR(SNR,X_Input, noise_shape, args, noise_type="AWGN", codera
             received_data /= h
     else:
         # Receive the corrupted data
-        n = snr_db2sigma(SNR) * randn_c(modulated_bits.size).reshape(modulated_bits.shape)
+        snrval = snr_db2sigma(SNR)
+        randcval = torch.randn(noise_shape, dtype=torch.float).detach().cpu().numpy().reshape(modulated_bits.shape)
+        n = snrval * randcval
         received_data = modulated_bits + n
     # channel_output = np.random.rayleigh(abs(SNR),size=noise_shape) + resized_input
     resized_noise_output = torch.from_numpy(np.array(received_data[0:noise_shape[1]*noise_shape[0]*coderate_n]).reshape(noise_shape))
-
+    resized_noise_output_real =resized_noise_output.real
     return resized_noise_output, received_data,modulated_bits, input_msg,mod,parity_h,parity_g
 
 

@@ -70,7 +70,7 @@ def get_args():
     # parser.add_argument('-code_rate_n', type = tuple , default=(4,6,8))
     parser.add_argument('-code_rate_k', type=tuple, default=(3, 5, 7))
     parser.add_argument('-code_rate_n', type=tuple, default=(4, 6, 8))
-    parser.add_argument('-modtype', type = tuple , default=('QAM16','QAM64','POLAR')) #'LDPC',
+    parser.add_argument('-modtype', type = tuple , default=('QAM16','QAM64')) #'LDPC',
     parser.add_argument('-block_len_low', type=int, default=10)
     parser.add_argument('-block_len_high', type=int, default=200)
     parser.add_argument('--is_variable_block_len', action='store_true', default=False,

@@ -129,10 +129,10 @@ def train_noise (model,optimizer,X_train,args,SNR,noise_shape,use_cuda,noise_typ
     device = torch.device("cuda" if use_cuda else "cpu")
     if mode == 'encoder':
 
-        fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR(SNR,X_train, noise_shape,args, noise_type,coderate_k,coderate_n,mod_type)
+        fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR(SNR, noise_shape,args, noise_type,coderate_k,coderate_n,mod_type)
 
     else:
-        fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR( SNR,X_train, noise_shape,args,noise_type,coderate_k,coderate_n,mod_type)
+        fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR( SNR, noise_shape,args,noise_type,coderate_k,coderate_n,mod_type)
 
     noise = fwd_noise.to(device)
     fwd_noise = noise.real.float()
@@ -145,13 +145,13 @@ def train_noise (model,optimizer,X_train,args,SNR,noise_shape,use_cuda,noise_typ
     #       'coderate_n  =>',coderate_n
     #       )
     output, code = model(X_train, fwd_noise,noise_type, mod,SNR, noise_shape,coderate_k , mod_type)
-    output = torch.clamp(output, 0.0, 1.0)
+    output = torch.clamp(output, 0, 1)
 
 
     if mode == 'encoder':
-        loss = customized_loss(output, X_train[:,:,0:coderate_k], args, noise=fwd_noise, code = mode)
+        loss = customized_loss(output, X_train, args, noise=fwd_noise, code = mode)
     else:
-        loss = customized_loss(output, X_train[:,:,0:coderate_k], args, noise=fwd_noise, code = mode)
+        loss = customized_loss(output, X_train, args, noise=fwd_noise, code = mode)
 
     loss.backward()
     train_loss = loss.item()
@@ -171,10 +171,10 @@ def train(epoch, model, optimizer, args,SNR,block_len=10,coderate_k=1,coderate_n
         optimizer.zero_grad()
         if mod_type != "LDPC" or mod_type != "POLAR":
             mod = get_modem( mod_type)
-            X_train    = torch.randint(0,2, (args.batch_size, block_len, coderate_n), dtype=torch.float)
+            X_train    = torch.randint(0,2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
             X_train = X_train.to(device)
         else:
-            X_train = torch.randint(0, 2, (args.batch_size, block_len, coderate_n), dtype=torch.float)
+            X_train = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
             X_train = X_train.to(device)
         noise_shape = (args.batch_size, block_len, coderate_n)
         # train encoder/decoder with different SNR... seems to be a good practice.
@@ -197,7 +197,7 @@ def train(epoch, model, optimizer, args,SNR,block_len=10,coderate_k=1,coderate_n
 def validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,noise_type,coderate_k=1,coderate_n=3,mod_type="QAM16"):
     device = torch.device("cuda" if use_cuda else "cpu")
     test_bce_loss, test_custom_loss, test_ber, test_bler = 0.0, 0.0, 0.0, 0.0
-    fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR(SNR, X_test,noise_shape, args,noise_type ,coderate_k,coderate_n,mod_type)
+    fwd_noise, received_data, encoded_input, input_msg, mod, parity_h, parity_g = generate_noise_SNR(SNR, noise_shape, args,noise_type ,coderate_k,coderate_n,mod_type)
     # print('train:',
     #             'noise_shape =>',noise_shape,
     #             'coderate_k  =>',coderate_k ,
@@ -211,15 +211,15 @@ def validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,noise_
 
     output, codes = model(X_test, fwd_noise,noise_type, mod,SNR, noise_shape,coderate_k ,  mod_type)
 
-    output = torch.clamp(output, 0.0, 1.0)
+    output = torch.clamp(output, 0, 1)
 
     output = output.detach()
     X_test = X_test.detach()
 
-    test_bce_loss = F.binary_cross_entropy(output, X_test[:,:,0:coderate_k])
-    test_custom_loss = customized_loss(output, X_test[:,:,0:coderate_k], noise=fwd_noise, args=args, code=codes)
-    test_ber = errors_ber(output, X_test[:,:,0:coderate_k])
-    test_bler = errors_bler(output, X_test[:,:,0:coderate_k])
+    test_bce_loss = F.binary_cross_entropy(output, X_test)
+    test_custom_loss = customized_loss(output, X_test, noise=fwd_noise, args=args, code=codes)
+    test_ber = errors_ber(output, X_test)
+    test_bler = errors_bler(output, X_test)
     return test_bce_loss,test_custom_loss,test_ber,test_bler
 
 
@@ -238,9 +238,9 @@ def validate(model, optimizer, args, SNR,block_len=10, coderate_k=1, coderate_n=
             noise_shape = (args.batch_size,block_len, coderate_n)
             if mod_type != "LDPC" or mod_type != "POLAR":
                 mod = get_modem( mod_type)
-                X_test = torch.randint(0,  2, (args.batch_size, block_len, coderate_n), dtype=torch.float)
+                X_test = torch.randint(0,  2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
             else:
-                X_test = torch.randint(0, 2, (args.batch_size, block_len, coderate_n), dtype=torch.float)
+                X_test = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
 
             # train encoder/decoder with different SNR... seems to be a good practice.
             # SNR = args.train_enc_channel_low
@@ -302,21 +302,21 @@ def validate(model, optimizer, args, SNR,block_len=10, coderate_k=1, coderate_n=
 def test_noise(model, X_test, args,SNR,noise_shape,batch_idx, use_cuda,noise_type,coderate_k=1,coderate_n=3,mod_type="QAM16"):
     device = torch.device("cuda" if use_cuda else "cpu")
     code_rate = coderate_k / coderate_n
-    fwd_noise, encoded_input, input_msg ,sim_ber,mod  = generate_noise_SNR_Sim(SNR, X_test,noise_shape,args,noise_type ,coderate_k,coderate_n,mod_type)
+    fwd_noise, encoded_input, input_msg ,sim_ber,mod  = generate_noise_SNR_Sim(SNR, noise_shape,args,noise_type ,coderate_k,coderate_n,mod_type)
     noise = fwd_noise.to(device)
 
     fwd_noise = noise.real.float()
     X_test, fwd_noise = X_test.to(device), fwd_noise.to(device)
     X_hat_test, the_codes = model(X_test, fwd_noise,noise_type, mod,SNR, noise_shape,coderate_k ,  mod_type)
 
-    test_ber = errors_ber(X_hat_test, X_test[:,:,0:coderate_k])
+    test_ber = errors_ber(X_hat_test, X_test)
     test_bler = errors_bler(X_hat_test, X_test)
 
     if batch_idx == 0:
-        test_pos_ber = errors_ber_pos(X_hat_test, X_test[:,:,0:coderate_k])
+        test_pos_ber = errors_ber_pos(X_hat_test, X_test)
         codes_power = code_power(the_codes)
     else:
-        test_pos_ber = errors_ber_pos(X_hat_test, X_test[:,:,0:coderate_k])
+        test_pos_ber = errors_ber_pos(X_hat_test, X_test)
         codes_power = code_power(the_codes)
 
     return test_ber,test_bler,codes_power,test_pos_ber,sim_ber
@@ -356,10 +356,10 @@ def test(model, filename, args, block_len=10, coderate_k=1, coderate_n=3,mod_typ
             for batch_idx in range(num_test_batch):
                 if mod_type != "LDPC" or mod_type != "POLAR":
                     mod = get_modem( mod_type)
-                    X_test = torch.randint(0,  2, (args.batch_size, block_len, coderate_n), dtype=torch.float)
+                    X_test = torch.randint(0,  2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
 
                 else:
-                    X_test = torch.randint(0, 2, (args.batch_size, block_len, coderate_n), dtype=torch.float)
+                    X_test = torch.randint(0, 2, (args.batch_size, block_len, coderate_k), dtype=torch.float)
 
                 test_ber,test_bler,codes_power,test_pos_ber,test_sim_ber = test_noise(model, X_test, args,this_snr,noise_shape,batch_idx, use_cuda,"AWGN",coderate_k,coderate_n,mod_type)
 

@@ -19,20 +19,20 @@ class Channel_AE(torch.nn.Module):
         self.dec = dec
 
     def forward(self, input, fwd_noise,noise_type, mod,SNR, noise_shape,coderate_k,  mod_type):
-        codes = self.enc(input[:,:,0:coderate_k])
+        codes = self.enc(input)
         codesshape = codes.shape
-        inputshape = input.shape
+        # received_codes = codes + fwd_noise
         if noise_type == "Rayleigh":
             h = torch.from_numpy(randn_c(codesshape[0]*codesshape[1]*codesshape[2])).reshape(codesshape)
             received_codes = h * codes + fwd_noise
             received_codes /= h
         elif noise_type == "Rician":
-            K_dB = inputshape[2] # K factor in dB
+            K_dB = noise_shape[2] # K factor in dB
             K = 10 ** (K_dB / 10)  # K factor in linear scale
             mu = math.sqrt(K / (2 * (K + 1)))  # mean
             sigma = math.sqrt(1 / (2 * (K + 1)))  # sigma
-            h = torch.from_numpy((sigma * standard_normal(codesshape[0]*codesshape[1]*codesshape[2]) + mu) + 1j * (
-                        sigma * standard_normal(codesshape[0]*codesshape[1]*codesshape[2]) + mu)).reshape(codesshape)
+            h = torch.from_numpy((sigma * standard_normal(noise_shape[0]*noise_shape[1]*noise_shape[2]) + mu) + 1j * (
+                        sigma * standard_normal(noise_shape[0]*noise_shape[1]*noise_shape[2]) + mu)).reshape(noise_shape)
             received_codes = h * codes + fwd_noise
             received_codes /= h
         else:

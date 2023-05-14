@@ -63,8 +63,8 @@ def get_plots_custom(plot_path,filename):
     legend, blocklens, coderates, mod_types = [], [], [], []
     semlogy={}
     test_file_path = os.path.join(plot_path, 'Noise_SNR_BER')
-    color_legend= ("#02052D","#042E02","#100337","#4D030D","#04633F","#D78009","#690466","#06758C","#F1EE09",
-                   "#08BAEF","#46F30A","#C6B5F9","#F8AEB8","#C8FCE9","#F7D7AB","#F508EE","#8BE6F9","#F2F196")
+    color_legend= ("#CBF296","#BDF296","#AEF296","#A3F296","#97F296","#96F2A4","#96F2B2","#96F2BA","#96F2CB")
+    color_legend_LC =( "#D296F2","#DC96F2","#EB96F2","#F296F1","#F296EE","#F296E3","#F296D8","#F296D2","#F296C5")
     for test_row in file_data:
         blocklen, coderate_k, coderate_n, coderate, mod_type, filename, testfilename = test_row
         blocklens.append(blocklen)
@@ -112,13 +112,13 @@ def get_plots_custom(plot_path,filename):
                 awgn_bers=semlogy[key_awgn]
                 ray_bers=semlogy[key_ray]
                 rici_bers=semlogy[key_rician]
-                ax.semilogy(snrs, LC_awgn_bers,color= color_legend[i] ,linewidth = 2,marker = 'o',markersize = marker+2)
-                ax.semilogy(snrs, LC_ray_bers,color= color_legend[i+1] ,linewidth = 2,marker = 'x',markersize = marker)
-                ax.semilogy(snrs, LC_rici_bers,color= color_legend[i+2] ,linewidth = 2,marker = '>',markersize = marker+2)
-                ax.semilogy(snrs, awgn_bers,color= color_legend[i+3] ,linewidth = 1,marker = 'o',markersize = marker)
-                ax.semilogy(snrs, ray_bers,color= color_legend[i+4] ,linewidth = 1,marker = 'x',markersize = marker)
-                ax.semilogy(snrs, rici_bers,color= color_legend[i+5] ,linewidth = 1,marker = '>',markersize = marker)
-                i = i+6
+                ax.semilogy(snrs, LC_awgn_bers,color= color_legend_LC[i] ,linewidth = 2,marker = 'o',markersize = marker+2)
+                ax.semilogy(snrs, LC_ray_bers,color= color_legend_LC[i+1] ,linewidth = 2,marker = 'o',markersize = marker)
+                ax.semilogy(snrs, LC_rici_bers,color= color_legend_LC[i+2] ,linewidth = 2,marker = 'o',markersize = marker+2)
+                ax.semilogy(snrs, awgn_bers,color= color_legend[i] ,linewidth = 1,marker = 'x',markersize = marker)
+                ax.semilogy(snrs, ray_bers,color= color_legend[i+1] ,linewidth = 1,marker = 'x',markersize = marker)
+                ax.semilogy(snrs, rici_bers,color= color_legend[i+2] ,linewidth = 1,marker = 'x',markersize = marker)
+                i = i+2
                 marker += 1
                 legend.append('LC_AWGN_{}_{}_{}'.format(blocklen, coderate, mod_type))
                 legend.append('LC_Rayleigh_{}_{}_{}'.format(blocklen, coderate, mod_type))
@@ -132,7 +132,7 @@ def get_plots_custom(plot_path,filename):
             plt.title('With blocklen - {}/ coderates {}/ modulation types {} snr-ber'.format(blocklen,
                                                                                              coderate,
                                                                                              np.unique(mod_types)),loc='left')
-            legend.sort()
+            # legend.sort()
             leg = ax.legend(legend, bbox_to_anchor=(1.04, 0.0, 0.2, 1), loc="upper left", ncol=1, fontsize='small'
                             # ,borderaxespad=0, mode='expand'
                             )
