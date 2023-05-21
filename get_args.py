@@ -60,7 +60,7 @@ def get_args():
     parser.add_argument('-snr_points', type=int, default=12)
 
     parser.add_argument('-batch_size', type=int, default=100)
-    parser.add_argument('-num_epoch', type=int, default=2)
+    parser.add_argument('-num_epoch', type=int, default=10)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
     # parser.add_argument('-block_len',type = tuple , default=(10,20,50,100))
@@ -76,7 +76,7 @@ def get_args():
     parser.add_argument('--is_variable_block_len', action='store_true', default=False,
                         help='training with different block length')
 
-    parser.add_argument('-num_block', type=int, default=100)
+    parser.add_argument('-num_block', type=int, default=1000)
 
     parser.add_argument('-test_channel_mode',
                         choices=['block_norm','block_norm_ste'],

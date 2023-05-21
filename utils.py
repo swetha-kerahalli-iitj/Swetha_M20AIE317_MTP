@@ -26,24 +26,26 @@ def count_bits(n):
     return count
 def errors_ber(y_true, y_pred, positions='default'):
     num_symbols = y_pred.shape[0] *  y_pred.shape[1] *y_pred.shape[2]
-    y_true = y_true.view(num_symbols, -1, 1)
-    y_pred = y_pred.view(num_symbols, -1, 1)
+    # y_true = y_true.view(num_symbols, -1, 1)
+    # y_pred = y_pred.view(num_symbols, -1, 1)
+    #
+    # different_bits = torch.logical_xor(y_true, y_pred)
+    # different_bits_int = different_bits.bool().int()
+    # num_bit_errors =  count_bits(different_bits_int)  # type: ignore
+    #
+    # return num_bit_errors / num_symbols
+    y_true = y_true.view(y_true.shape[0], -1, 1)
+    y_pred = y_pred.view(y_pred.shape[0], -1, 1)
 
-    different_bits = torch.logical_xor(y_true, y_pred)
-    different_bits_int = different_bits.bool().int()
-    num_bit_errors =  count_bits(different_bits_int)  # type: ignore
-
-    return num_bit_errors / num_symbols
-    # myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred)).float()
-    # torch.__xor__()
-    # if positions == 'default':
-    #     res = sum(sum(myOtherTensor)) / (myOtherTensor.shape[0] * myOtherTensor.shape[1])
-    # else:
-    #     res = torch.mean(myOtherTensor, dim=0).type(torch.FloatTensor)
-    #     for pos in positions:
-    #         res[pos] = 0.0
-    #     res = torch.mean(res)
-    # return res
+    myOtherTensor = torch.ne(torch.round(y_true), torch.round(y_pred)).float()
+    if positions == 'default':
+        res = sum(sum(myOtherTensor)) / (myOtherTensor.shape[0] * myOtherTensor.shape[1])
+    else:
+        res = torch.mean(myOtherTensor, dim=0).type(torch.FloatTensor)
+        for pos in positions:
+            res[pos] = 0.0
+        res = torch.mean(res)
+    return res
 
 
 def errors_ber_list(y_true, y_pred):
