@@ -25,7 +25,7 @@ def count_bits(n):
     count = np.count_nonzero(n_all==1)
     return count
 def errors_ber(y_true, y_pred, positions='default'):
-    num_symbols = y_pred.shape[0] *  y_pred.shape[1] *y_pred.shape[2]
+    # num_symbols = y_pred.shape[0] *  y_pred.shape[1] *y_pred.shape[2]
     # y_true = y_true.view(num_symbols, -1, 1)
     # y_pred = y_pred.view(num_symbols, -1, 1)
     #
