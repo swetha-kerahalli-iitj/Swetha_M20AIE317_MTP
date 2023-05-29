@@ -144,6 +144,9 @@ def train_noise (model,optimizer,X_train,args,SNR,noise_shape,use_cuda,noise_typ
     #       'coderate_k  =>',coderate_k ,
     #       'coderate_n  =>',coderate_n
     #       )
+    input_shape = (noise_shape[0],noise_shape[1],coderate_k)
+    X_train = torch.from_numpy(input_msg[0:(input_shape[0]*input_shape[1]*input_shape[2])]).reshape(input_shape)
+    X_train= X_train.float().to(device)
     output, code = model(X_train, fwd_noise,noise_type, mod,SNR, noise_shape,coderate_k , mod_type)
     output = torch.clamp(output, 0, 1)
 
@@ -208,7 +211,9 @@ def validate_noise(model, optimizer,X_test, args,SNR,noise_shape,use_cuda,noise_
 
     X_test, fwd_noise = X_test.to(device), fwd_noise.to(device)
     optimizer.zero_grad()
-
+    input_shape = (noise_shape[0], noise_shape[1], coderate_k)
+    X_test = torch.from_numpy(input_msg[0:(input_shape[0] * input_shape[1] * input_shape[2])]).reshape(input_shape)
+    X_test = X_test.float().to(device)
     output, codes = model(X_test, fwd_noise,noise_type, mod,SNR, noise_shape,coderate_k ,  mod_type)
 
     output = torch.clamp(output, 0, 1)
@@ -307,6 +312,9 @@ def test_noise(model, X_test, args,SNR,noise_shape,batch_idx, use_cuda,noise_typ
 
     fwd_noise = noise.real.float()
     X_test, fwd_noise = X_test.to(device), fwd_noise.to(device)
+    input_shape = (noise_shape[0], noise_shape[1], coderate_k)
+    X_test = torch.from_numpy(input_msg[0:(input_shape[0] * input_shape[1] * input_shape[2])]).reshape(input_shape)
+    X_test = X_test.float().to(device)
     X_hat_test, the_codes = model(X_test, fwd_noise,noise_type, mod,SNR, noise_shape,coderate_k ,  mod_type)
 
     test_ber = errors_ber(X_hat_test, X_test)

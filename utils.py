@@ -34,6 +34,8 @@ def errors_ber(y_true, y_pred, positions='default'):
     # num_bit_errors =  count_bits(different_bits_int)  # type: ignore
     #
     # return num_bit_errors / num_symbols
+
+    #
     y_true = y_true.view(y_true.shape[0], -1, 1)
     y_pred = y_pred.view(y_pred.shape[0], -1, 1)
 
