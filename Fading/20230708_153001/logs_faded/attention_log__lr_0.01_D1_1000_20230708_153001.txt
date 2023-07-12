@@ -1,0 +1,2090 @@
+Namespace(encoder='TurboAE_rate3_cnn', decoder='TurboAE_rate3_cnn', is_k_same_code=False, vv=5, radar_prob=0.05, radar_power=5.0, train_enc_channel_low=0.0, train_enc_channel_high=1.0, train_dec_channel_low=-1.5, train_dec_channel_high=2.0, init_nw_weight='default', joint_train=0, enc_rnn='gru', dec_rnn='gru', enc_num_layer=3, dec_num_layer=3, dec_num_unit=100, enc_num_unit=25, enc_act='elu', dec_act='linear', num_train_dec=5, num_train_enc=1, dropout=0.0, snr_test_start=0, snr_test_end=100, snr_points=20, batch_size=100, num_epoch=2, test_ratio=1, block_len=(10, 20), code_rate_k=(3, 5, 7), code_rate_n=(4, 6, 8), channel=('awgn', 'fading'), modtype=('QAM16', 'QAM64'), block_len_low=10, block_len_high=200, is_variable_block_len=False, num_block=1000, test_channel_mode='block_norm', train_channel_mode='block_norm', enc_truncate_limit=0, no_code_norm=False, enc_quantize_level=2, enc_value_limit=1.0, enc_grad_limit=0.01, enc_clipping='both', optimizer='adam', dec_lr=0.01, enc_lr=0.01, no_cuda=False, rec_quantize=False, print_pos_ber=False, print_pos_power=False, print_test_traj=False, precompute_norm_stats=False, D=1, BASE_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading', LOG_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230708_153001\\logs_faded', DATA_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230708_153001\\data_faded', MODEL_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230708_153001\\model_faded', PLOT_PATH='C:\\WorkSpace\\FadingChannels\\Swetha_M20AIE317_MTP\\Fading\\20230708_153001\\plot_faded')
+use_cuda:  False
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 3 coderate_n => 4 channel => awgn
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(3, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=3, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69331895  running time 1.659027338027954
+====> Epoch: 1 Average loss: 0.61754676  running time 1.8219003677368164
+====> Epoch: 1 Average loss: 0.55082259  running time 1.7026965618133545
+====> Epoch: 1 Average loss: 0.53974599  running time 1.6012346744537354
+====> Epoch: 1 Average loss: 0.53732776  running time 1.78786039352417
+====> Epoch: 1 Average loss: 0.53397956  running time 1.6914420127868652
+====> Test set BCE loss 0.5296725034713745 Custom Loss 0.5296725034713745 with ber  0.29966670274734497
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_3_n_4_chl_awgn\attention_model_1_awgn_lr_0.01_D1bl_10__k_3_n_4_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.3027666509151459 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.28706663846969604 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.28786665201187134 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.2891666293144226 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.28503331542015076 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.2885333299636841 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.28806665539741516 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.2885666787624359 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.28826668858528137 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.2867666780948639 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.28716665506362915 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.28839999437332153 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.28833335638046265 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.2892332971096039 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.2867000102996826 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.2897666394710541 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.28769999742507935 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.28940001130104065 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.2910333275794983 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.2878333330154419 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.3027666509151459, 0.28706663846969604, 0.28786665201187134, 0.2891666293144226, 0.28503331542015076, 0.2885333299636841, 0.28806665539741516, 0.2885666787624359, 0.28826668858528137, 0.2867666780948639, 0.28716665506362915, 0.28839999437332153, 0.28833335638046265, 0.2892332971096039, 0.2867000102996826, 0.2897666394710541, 0.28769999742507935, 0.28940001130104065, 0.2910333275794983, 0.2878333330154419]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.52214908  running time 1.7876033782958984
+====> Epoch: 2 Average loss: 0.51934585  running time 1.7168560028076172
+====> Epoch: 2 Average loss: 0.51892958  running time 1.629906415939331
+====> Epoch: 2 Average loss: 0.51340395  running time 1.7430784702301025
+====> Epoch: 2 Average loss: 0.51023278  running time 1.6713590621948242
+====> Epoch: 2 Average loss: 0.50589765  running time 1.5991151332855225
+====> Test set BCE loss 0.5033868551254272 Custom Loss 0.5033868551254272 with ber  0.2942666709423065
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_3_n_4_chl_awgn\attention_model_2_awgn_lr_0.01_D1bl_10__k_3_n_4_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.2914000153541565 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.2461666613817215 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.22599999606609344 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.20739999413490295 with bler 0.999
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.20313331484794617 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.2006000280380249 with bler 0.998
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.20150001347064972 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.20383334159851074 with bler 0.999
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.20069999992847443 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.2035333216190338 with bler 0.999
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.20170001685619354 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.2019333392381668 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.20003333687782288 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.20260000228881836 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.20239999890327454 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.20516666769981384 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.20116667449474335 with bler 0.999
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.2020999938249588 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.2022000104188919 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.2028999775648117 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.2914000153541565, 0.2461666613817215, 0.22599999606609344, 0.20739999413490295, 0.20313331484794617, 0.2006000280380249, 0.20150001347064972, 0.20383334159851074, 0.20069999992847443, 0.2035333216190338, 0.20170001685619354, 0.2019333392381668, 0.20003333687782288, 0.20260000228881836, 0.20239999890327454, 0.20516666769981384, 0.20116667449474335, 0.2020999938249588, 0.2022000104188919, 0.2028999775648117]
+BLER [1.0, 1.0, 1.0, 0.999, 1.0, 0.998, 1.0, 0.999, 1.0, 0.999, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 3 coderate_n => 4 channel => fading
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(3, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=3, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69294972  running time 1.8147451877593994
+====> Epoch: 1 Average loss: 0.64363760  running time 1.6593689918518066
+====> Epoch: 1 Average loss: 0.58094673  running time 1.791874885559082
+====> Epoch: 1 Average loss: 0.57367942  running time 1.7594289779663086
+====> Epoch: 1 Average loss: 0.57131625  running time 1.6323096752166748
+====> Epoch: 1 Average loss: 0.57283058  running time 1.732466459274292
+====> Test set BCE loss 0.569986879825592 Custom Loss 0.569986879825592 with ber  0.3537999987602234
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_3_n_4_chl_fading\attention_model_1_fading_lr_0.01_D1bl_10__k_3_n_4_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.34833335876464844 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3414333462715149 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.34076666831970215 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.33340001106262207 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.3380666673183441 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3370000720024109 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.34086668491363525 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.33666664361953735 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.33436664938926697 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.3364333212375641 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.33740001916885376 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.3394000232219696 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.3346666693687439 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3355333209037781 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.3349999785423279 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.32990002632141113 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3343333601951599 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.3374333083629608 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.3389666676521301 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.33766666054725647 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.34833335876464844, 0.3414333462715149, 0.34076666831970215, 0.33340001106262207, 0.3380666673183441, 0.3370000720024109, 0.34086668491363525, 0.33666664361953735, 0.33436664938926697, 0.3364333212375641, 0.33740001916885376, 0.3394000232219696, 0.3346666693687439, 0.3355333209037781, 0.3349999785423279, 0.32990002632141113, 0.3343333601951599, 0.3374333083629608, 0.3389666676521301, 0.33766666054725647]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.55410093  running time 1.6371948719024658
+====> Epoch: 2 Average loss: 0.55296392  running time 1.630253791809082
+====> Epoch: 2 Average loss: 0.55088007  running time 1.8253519535064697
+====> Epoch: 2 Average loss: 0.54589017  running time 1.640589714050293
+====> Epoch: 2 Average loss: 0.54799978  running time 1.6524848937988281
+====> Epoch: 2 Average loss: 0.54750105  running time 1.7974560260772705
+====> Test set BCE loss 0.5466523170471191 Custom Loss 0.5466523170471191 with ber  0.3494666516780853
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_3_n_4_chl_fading\attention_model_2_fading_lr_0.01_D1bl_10__k_3_n_4_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.35040003061294556 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.32196667790412903 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3040666878223419 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.29973334074020386 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.29466667771339417 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.29493334889411926 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.29686665534973145 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.29019999504089355 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.2926333248615265 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.30026665329933167 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.2962999939918518 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.3001333475112915 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.29866665601730347 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.2926666736602783 with bler 0.999
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.2930000424385071 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.29696664214134216 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.299699991941452 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.29776665568351746 with bler 0.999
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.29616662859916687 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3001999855041504 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.35040003061294556, 0.32196667790412903, 0.3040666878223419, 0.29973334074020386, 0.29466667771339417, 0.29493334889411926, 0.29686665534973145, 0.29019999504089355, 0.2926333248615265, 0.30026665329933167, 0.2962999939918518, 0.3001333475112915, 0.29866665601730347, 0.2926666736602783, 0.2930000424385071, 0.29696664214134216, 0.299699991941452, 0.29776665568351746, 0.29616662859916687, 0.3001999855041504]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999, 1.0, 1.0, 1.0, 0.999, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 5 coderate_n => 6 channel => awgn
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(5, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=5, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69349467  running time 1.6853828430175781
+====> Epoch: 1 Average loss: 0.66038342  running time 1.8020217418670654
+====> Epoch: 1 Average loss: 0.61864748  running time 1.5768976211547852
+====> Epoch: 1 Average loss: 0.61122803  running time 1.5991723537445068
+====> Epoch: 1 Average loss: 0.60757506  running time 1.7848026752471924
+====> Epoch: 1 Average loss: 0.60656083  running time 1.6564412117004395
+====> Test set BCE loss 0.6016722321510315 Custom Loss 0.6016722321510315 with ber  0.37860000133514404
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_5_n_6_chl_awgn\attention_model_1_awgn_lr_0.01_D1bl_10__k_5_n_6_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.3787200152873993 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.37154000997543335 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.37418001890182495 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.36941996216773987 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.37226003408432007 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.37070000171661377 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.37025997042655945 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.37067997455596924 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.37365996837615967 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.372979998588562 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.3702400028705597 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.37342000007629395 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.37210002541542053 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3692399859428406 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.3698599934577942 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.3714600205421448 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3710000216960907 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.37404003739356995 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.3733000159263611 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.373199999332428 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.3787200152873993, 0.37154000997543335, 0.37418001890182495, 0.36941996216773987, 0.37226003408432007, 0.37070000171661377, 0.37025997042655945, 0.37067997455596924, 0.37365996837615967, 0.372979998588562, 0.3702400028705597, 0.37342000007629395, 0.37210002541542053, 0.3692399859428406, 0.3698599934577942, 0.3714600205421448, 0.3710000216960907, 0.37404003739356995, 0.3733000159263611, 0.373199999332428]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.59131573  running time 1.7417423725128174
+====> Epoch: 2 Average loss: 0.58716182  running time 1.6905908584594727
+====> Epoch: 2 Average loss: 0.58092762  running time 1.6504814624786377
+====> Epoch: 2 Average loss: 0.57876028  running time 1.749861240386963
+====> Epoch: 2 Average loss: 0.57687505  running time 1.6336946487426758
+====> Epoch: 2 Average loss: 0.57756189  running time 1.6126494407653809
+====> Test set BCE loss 0.5748759508132935 Custom Loss 0.5748759508132935 with ber  0.3718799948692322
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_5_n_6_chl_awgn\attention_model_2_awgn_lr_0.01_D1bl_10__k_5_n_6_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.36768001317977905 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3427400290966034 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.32356002926826477 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.32186001539230347 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.31445997953414917 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.31779995560646057 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.31839999556541443 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.31831997632980347 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3175399899482727 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.3095000386238098 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.3144400119781494 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.31686002016067505 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.31644001603126526 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3178200125694275 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.31345999240875244 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.31633999943733215 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.31456002593040466 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.3181000053882599 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.31665998697280884 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.31501999497413635 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.36768001317977905, 0.3427400290966034, 0.32356002926826477, 0.32186001539230347, 0.31445997953414917, 0.31779995560646057, 0.31839999556541443, 0.31831997632980347, 0.3175399899482727, 0.3095000386238098, 0.3144400119781494, 0.31686002016067505, 0.31644001603126526, 0.3178200125694275, 0.31345999240875244, 0.31633999943733215, 0.31456002593040466, 0.3181000053882599, 0.31665998697280884, 0.31501999497413635]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 5 coderate_n => 6 channel => fading
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(5, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=5, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69340785  running time 1.6694746017456055
+====> Epoch: 1 Average loss: 0.66304854  running time 1.640765905380249
+====> Epoch: 1 Average loss: 0.63578739  running time 1.7323110103607178
+====> Epoch: 1 Average loss: 0.63073838  running time 1.7010047435760498
+====> Epoch: 1 Average loss: 0.62901736  running time 1.5733625888824463
+====> Epoch: 1 Average loss: 0.62920452  running time 1.735246181488037
+====> Test set BCE loss 0.6284794807434082 Custom Loss 0.6284794807434082 with ber  0.38307997584342957
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_5_n_6_chl_fading\attention_model_1_fading_lr_0.01_D1bl_10__k_5_n_6_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.38558000326156616 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.37445998191833496 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3726400136947632 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.364579975605011 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.36507999897003174 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3694000244140625 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3643600344657898 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.3677600026130676 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3649600148200989 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.37007999420166016 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.36847999691963196 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.36757999658584595 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.36434000730514526 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.36528000235557556 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.36956000328063965 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.36438000202178955 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3666599690914154 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.36483997106552124 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.3666599690914154 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3663400113582611 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.38558000326156616, 0.37445998191833496, 0.3726400136947632, 0.364579975605011, 0.36507999897003174, 0.3694000244140625, 0.3643600344657898, 0.3677600026130676, 0.3649600148200989, 0.37007999420166016, 0.36847999691963196, 0.36757999658584595, 0.36434000730514526, 0.36528000235557556, 0.36956000328063965, 0.36438000202178955, 0.3666599690914154, 0.36483997106552124, 0.3666599690914154, 0.3663400113582611]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.61856546  running time 1.586674451828003
+====> Epoch: 2 Average loss: 0.61893978  running time 1.7839818000793457
+====> Epoch: 2 Average loss: 0.61378304  running time 1.7001101970672607
+====> Epoch: 2 Average loss: 0.61441401  running time 1.5922808647155762
+====> Epoch: 2 Average loss: 0.61151384  running time 1.7486610412597656
+====> Epoch: 2 Average loss: 0.61502468  running time 1.692591905593872
+====> Test set BCE loss 0.6122130155563354 Custom Loss 0.6122130155563354 with ber  0.376259982585907
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_5_n_6_chl_fading\attention_model_2_fading_lr_0.01_D1bl_10__k_5_n_6_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.37692001461982727 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.36375999450683594 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.36249998211860657 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.359360009431839 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.35895997285842896 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3569999635219574 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3603000044822693 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.3614799976348877 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.35853999853134155 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.35806000232696533 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.35899999737739563 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.3584800064563751 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.359279990196228 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.35447999835014343 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.36059999465942383 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.3588399887084961 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.35721999406814575 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.35853999853134155 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.3608599901199341 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.35708004236221313 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.37692001461982727, 0.36375999450683594, 0.36249998211860657, 0.359360009431839, 0.35895997285842896, 0.3569999635219574, 0.3603000044822693, 0.3614799976348877, 0.35853999853134155, 0.35806000232696533, 0.35899999737739563, 0.3584800064563751, 0.359279990196228, 0.35447999835014343, 0.36059999465942383, 0.3588399887084961, 0.35721999406814575, 0.35853999853134155, 0.3608599901199341, 0.35708004236221313]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 7 coderate_n => 8 channel => awgn
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(7, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=7, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69311802  running time 1.7371830940246582
+====> Epoch: 1 Average loss: 0.67544602  running time 1.7010676860809326
+====> Epoch: 1 Average loss: 0.64650991  running time 1.6466071605682373
+====> Epoch: 1 Average loss: 0.63606387  running time 1.7729003429412842
+====> Epoch: 1 Average loss: 0.63468178  running time 1.7078371047973633
+====> Epoch: 1 Average loss: 0.63421832  running time 1.5755212306976318
+====> Test set BCE loss 0.6322251558303833 Custom Loss 0.6322251558303833 with ber  0.40621432662010193
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_7_n_8_chl_awgn\attention_model_1_awgn_lr_0.01_D1bl_10__k_7_n_8_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.4082428514957428 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.40128570795059204 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.39872854948043823 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.39497143030166626 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.39492860436439514 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.39721426367759705 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.39577144384384155 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.39578571915626526 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.39652857184410095 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.39637142419815063 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.3961999714374542 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.39472857117652893 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.39484289288520813 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.39500001072883606 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.395242840051651 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.39727139472961426 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.39567142724990845 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.394514262676239 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.39311426877975464 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3960428833961487 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.4082428514957428, 0.40128570795059204, 0.39872854948043823, 0.39497143030166626, 0.39492860436439514, 0.39721426367759705, 0.39577144384384155, 0.39578571915626526, 0.39652857184410095, 0.39637142419815063, 0.3961999714374542, 0.39472857117652893, 0.39484289288520813, 0.39500001072883606, 0.395242840051651, 0.39727139472961426, 0.39567142724990845, 0.394514262676239, 0.39311426877975464, 0.3960428833961487]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.63102304  running time 1.7286896705627441
+====> Epoch: 2 Average loss: 0.62347747  running time 1.6198523044586182
+====> Epoch: 2 Average loss: 0.62024067  running time 1.7485744953155518
+====> Epoch: 2 Average loss: 0.62188897  running time 1.7019312381744385
+====> Epoch: 2 Average loss: 0.61903375  running time 1.6417782306671143
+====> Epoch: 2 Average loss: 0.62111406  running time 1.7510690689086914
+====> Test set BCE loss 0.6202266812324524 Custom Loss 0.6202266812324524 with ber  0.4161714017391205
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_7_n_8_chl_awgn\attention_model_2_awgn_lr_0.01_D1bl_10__k_7_n_8_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.4196571409702301 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.4196999967098236 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.41654282808303833 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.41738566756248474 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.421271413564682 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.42085713148117065 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.41841429471969604 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.4172714352607727 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.42017143964767456 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.4164571762084961 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.41772857308387756 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.4211856722831726 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.4173857271671295 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.41921424865722656 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.4197142720222473 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.4189428389072418 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.41858571767807007 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.4190857410430908 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.4194571375846863 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.41748571395874023 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.4196571409702301, 0.4196999967098236, 0.41654282808303833, 0.41738566756248474, 0.421271413564682, 0.42085713148117065, 0.41841429471969604, 0.4172714352607727, 0.42017143964767456, 0.4164571762084961, 0.41772857308387756, 0.4211856722831726, 0.4173857271671295, 0.41921424865722656, 0.4197142720222473, 0.4189428389072418, 0.41858571767807007, 0.4190857410430908, 0.4194571375846863, 0.41748571395874023]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 10 coderate_k => 7 coderate_n => 8 channel => fading
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(7, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=7, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69384977  running time 1.5734012126922607
+====> Epoch: 1 Average loss: 0.67893090  running time 1.756441593170166
+====> Epoch: 1 Average loss: 0.65494501  running time 1.6990859508514404
+====> Epoch: 1 Average loss: 0.65174999  running time 1.6281108856201172
+====> Epoch: 1 Average loss: 0.65073829  running time 1.7210943698883057
+====> Epoch: 1 Average loss: 0.65255753  running time 1.6872169971466064
+====> Test set BCE loss 0.6508530378341675 Custom Loss 0.6508530378341675 with ber  0.4017142653465271
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_7_n_8_chl_fading\attention_model_1_fading_lr_0.01_D1bl_10__k_7_n_8_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.40212854743003845 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3935571610927582 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3911285400390625 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.38995712995529175 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.3945857286453247 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.39081427454948425 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3921285569667816 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.39184290170669556 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3929857313632965 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.39085716009140015 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.38991424441337585 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.3913714587688446 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.3904428780078888 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.39069998264312744 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.3904714286327362 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.39008569717407227 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3905285894870758 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.38988569378852844 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.390585720539093 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.391171395778656 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.40212854743003845, 0.3935571610927582, 0.3911285400390625, 0.38995712995529175, 0.3945857286453247, 0.39081427454948425, 0.3921285569667816, 0.39184290170669556, 0.3929857313632965, 0.39085716009140015, 0.38991424441337585, 0.3913714587688446, 0.3904428780078888, 0.39069998264312744, 0.3904714286327362, 0.39008569717407227, 0.3905285894870758, 0.38988569378852844, 0.390585720539093, 0.391171395778656]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.64746555  running time 1.7704274654388428
+====> Epoch: 2 Average loss: 0.64448911  running time 1.7106959819793701
+====> Epoch: 2 Average loss: 0.64271844  running time 1.603963851928711
+====> Epoch: 2 Average loss: 0.64371868  running time 1.7731459140777588
+====> Epoch: 2 Average loss: 0.64339186  running time 1.699498176574707
+====> Epoch: 2 Average loss: 0.64430419  running time 1.6039245128631592
+====> Test set BCE loss 0.6432590484619141 Custom Loss 0.6432590484619141 with ber  0.3962142765522003
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_10__k_7_n_8_chl_fading\attention_model_2_fading_lr_0.01_D1bl_10__k_7_n_8_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.39814281463623047 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3928285539150238 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.38790005445480347 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.38828569650650024 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.3863714337348938 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.387885719537735 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3879571557044983 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.3890143036842346 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3888428807258606 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.39092856645584106 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.3872142732143402 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.3868713974952698 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.38754284381866455 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.38860005140304565 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.38594287633895874 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.388785719871521 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.38339999318122864 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.38677144050598145 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.38602858781814575 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.38690000772476196 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.39814281463623047, 0.3928285539150238, 0.38790005445480347, 0.38828569650650024, 0.3863714337348938, 0.387885719537735, 0.3879571557044983, 0.3890143036842346, 0.3888428807258606, 0.39092856645584106, 0.3872142732143402, 0.3868713974952698, 0.38754284381866455, 0.38860005140304565, 0.38594287633895874, 0.388785719871521, 0.38339999318122864, 0.38677144050598145, 0.38602858781814575, 0.38690000772476196]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 20 coderate_k => 3 coderate_n => 4 channel => awgn
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(3, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=3, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69313570  running time 4.166032075881958
+====> Epoch: 1 Average loss: 0.65958085  running time 3.924729824066162
+====> Epoch: 1 Average loss: 0.60332232  running time 4.0291430950164795
+====> Epoch: 1 Average loss: 0.57903175  running time 4.042850732803345
+====> Epoch: 1 Average loss: 0.57518708  running time 4.009874105453491
+====> Epoch: 1 Average loss: 0.57318977  running time 3.899254083633423
+====> Test set BCE loss 0.5722175240516663 Custom Loss 0.5722175240516663 with ber  0.32144996523857117
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_3_n_4_chl_awgn\attention_model_1_awgn_lr_0.01_D1bl_20__k_3_n_4_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.3226333260536194 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.30568334460258484 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.30063334107398987 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.30285000801086426 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.30043333768844604 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3012000024318695 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.2981000244617462 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.2962000072002411 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3012833297252655 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.2973499894142151 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.298550009727478 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.29965001344680786 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.29786667227745056 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.29596665501594543 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.2983333468437195 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.2988666892051697 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.29604998230934143 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.29840001463890076 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.29891666769981384 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.2965499758720398 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.3226333260536194, 0.30568334460258484, 0.30063334107398987, 0.30285000801086426, 0.30043333768844604, 0.3012000024318695, 0.2981000244617462, 0.2962000072002411, 0.3012833297252655, 0.2973499894142151, 0.298550009727478, 0.29965001344680786, 0.29786667227745056, 0.29596665501594543, 0.2983333468437195, 0.2988666892051697, 0.29604998230934143, 0.29840001463890076, 0.29891666769981384, 0.2965499758720398]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.55695651  running time 4.022876024246216
+====> Epoch: 2 Average loss: 0.54939631  running time 3.906287670135498
+====> Epoch: 2 Average loss: 0.54860491  running time 3.857379198074341
+====> Epoch: 2 Average loss: 0.54377503  running time 4.019261360168457
+====> Epoch: 2 Average loss: 0.54579009  running time 4.022295713424683
+====> Epoch: 2 Average loss: 0.54163432  running time 4.006234884262085
+====> Test set BCE loss 0.5419174432754517 Custom Loss 0.5419174432754517 with ber  0.312749981880188
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_3_n_4_chl_awgn\attention_model_2_awgn_lr_0.01_D1bl_20__k_3_n_4_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.31443336606025696 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3024333119392395 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.29934996366500854 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.2968166470527649 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.2962999939918518 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.29776665568351746 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.2963666617870331 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.2973000109195709 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.29789999127388 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.2967999577522278 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.297816663980484 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.2972666621208191 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.30121666193008423 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.29829999804496765 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.2955833077430725 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.29598331451416016 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.29723334312438965 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.2974333167076111 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.29604998230934143 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.29786667227745056 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.31443336606025696, 0.3024333119392395, 0.29934996366500854, 0.2968166470527649, 0.2962999939918518, 0.29776665568351746, 0.2963666617870331, 0.2973000109195709, 0.29789999127388, 0.2967999577522278, 0.297816663980484, 0.2972666621208191, 0.30121666193008423, 0.29829999804496765, 0.2955833077430725, 0.29598331451416016, 0.29723334312438965, 0.2974333167076111, 0.29604998230934143, 0.29786667227745056]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 20 coderate_k => 3 coderate_n => 4 channel => fading
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(3, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(4, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=3, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69334145  running time 4.033065557479858
+====> Epoch: 1 Average loss: 0.68416637  running time 3.9548473358154297
+====> Epoch: 1 Average loss: 0.65571387  running time 4.035012722015381
+====> Epoch: 1 Average loss: 0.64539524  running time 3.9510107040405273
+====> Epoch: 1 Average loss: 0.64505010  running time 3.843026638031006
+====> Epoch: 1 Average loss: 0.64325750  running time 3.96049165725708
+====> Test set BCE loss 0.6420072317123413 Custom Loss 0.6420072317123413 with ber  0.40480002760887146
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_3_n_4_chl_fading\attention_model_1_fading_lr_0.01_D1bl_20__k_3_n_4_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.40948328375816345 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.38655000925064087 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.38126665353775024 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.37538331747055054 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.37573331594467163 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3771666884422302 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.37408334016799927 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.37584999203681946 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.37476667761802673 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.37771669030189514 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.37903332710266113 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.37941664457321167 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.3774999976158142 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.37496668100357056 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.378033310174942 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.37665000557899475 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3776666522026062 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.3762500286102295 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.38021665811538696 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3750166594982147 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.40948328375816345, 0.38655000925064087, 0.38126665353775024, 0.37538331747055054, 0.37573331594467163, 0.3771666884422302, 0.37408334016799927, 0.37584999203681946, 0.37476667761802673, 0.37771669030189514, 0.37903332710266113, 0.37941664457321167, 0.3774999976158142, 0.37496668100357056, 0.378033310174942, 0.37665000557899475, 0.3776666522026062, 0.3762500286102295, 0.38021665811538696, 0.3750166594982147]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.61486115  running time 3.8679730892181396
+====> Epoch: 2 Average loss: 0.59041234  running time 4.0183751583099365
+====> Epoch: 2 Average loss: 0.57836825  running time 4.032232046127319
+====> Epoch: 2 Average loss: 0.57597605  running time 4.036978483200073
+====> Epoch: 2 Average loss: 0.57259817  running time 3.9578585624694824
+====> Epoch: 2 Average loss: 0.57371213  running time 3.903836965560913
+====> Test set BCE loss 0.5718318223953247 Custom Loss 0.5718318223953247 with ber  0.3652666509151459
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_3_n_4_chl_fading\attention_model_2_fading_lr_0.01_D1bl_20__k_3_n_4_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.3649999797344208 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.34931665658950806 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3423500061035156 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.33746665716171265 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.3348333239555359 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3402999937534332 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.34138330817222595 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.3391833007335663 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3354833424091339 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.3377666473388672 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.3391999900341034 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.33934998512268066 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.3382333517074585 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.34025004506111145 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.3363499939441681 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.33713334798812866 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.34068334102630615 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.33614999055862427 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.33764997124671936 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.33789998292922974 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.3649999797344208, 0.34931665658950806, 0.3423500061035156, 0.33746665716171265, 0.3348333239555359, 0.3402999937534332, 0.34138330817222595, 0.3391833007335663, 0.3354833424091339, 0.3377666473388672, 0.3391999900341034, 0.33934998512268066, 0.3382333517074585, 0.34025004506111145, 0.3363499939441681, 0.33713334798812866, 0.34068334102630615, 0.33614999055862427, 0.33764997124671936, 0.33789998292922974]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 20 coderate_k => 5 coderate_n => 6 channel => awgn
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(5, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=5, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69303881  running time 4.019591331481934
+====> Epoch: 1 Average loss: 0.64894640  running time 4.0001561641693115
+====> Epoch: 1 Average loss: 0.60168914  running time 3.9970991611480713
+====> Epoch: 1 Average loss: 0.59449411  running time 3.920409679412842
+====> Epoch: 1 Average loss: 0.59171324  running time 3.8280892372131348
+====> Epoch: 1 Average loss: 0.59014202  running time 4.0121169090271
+====> Test set BCE loss 0.5883625745773315 Custom Loss 0.5883625745773315 with ber  0.36017999053001404
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_5_n_6_chl_awgn\attention_model_1_awgn_lr_0.01_D1bl_20__k_5_n_6_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.3626300096511841 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.35787996649742126 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3540699779987335 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.35526999831199646 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.3534200191497803 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.35492998361587524 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3535899817943573 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.35381001234054565 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3541499972343445 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.3550800085067749 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.3544899821281433 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.352899968624115 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.35339000821113586 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.353300005197525 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.3526500165462494 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.3538999855518341 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3529500365257263 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.3519599735736847 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.35489001870155334 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3521699905395508 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.3626300096511841, 0.35787996649742126, 0.3540699779987335, 0.35526999831199646, 0.3534200191497803, 0.35492998361587524, 0.3535899817943573, 0.35381001234054565, 0.3541499972343445, 0.3550800085067749, 0.3544899821281433, 0.352899968624115, 0.35339000821113586, 0.353300005197525, 0.3526500165462494, 0.3538999855518341, 0.3529500365257263, 0.3519599735736847, 0.35489001870155334, 0.3521699905395508]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.58209289  running time 3.8986034393310547
+====> Epoch: 2 Average loss: 0.57897772  running time 3.8559303283691406
+====> Epoch: 2 Average loss: 0.57374831  running time 3.985598564147949
+====> Epoch: 2 Average loss: 0.57373322  running time 4.022022247314453
+====> Epoch: 2 Average loss: 0.57055983  running time 3.992201328277588
+====> Epoch: 2 Average loss: 0.57201325  running time 3.9158129692077637
+====> Test set BCE loss 0.5729690790176392 Custom Loss 0.5729690790176392 with ber  0.36594003438949585
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_5_n_6_chl_awgn\attention_model_2_awgn_lr_0.01_D1bl_20__k_5_n_6_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.36660000681877136 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3476800322532654 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3478100001811981 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.3489600121974945 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.34561997652053833 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3441699743270874 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.343779981136322 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.34696000814437866 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3458400368690491 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.34544000029563904 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.34645000100135803 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.3449699878692627 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.34480997920036316 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.34400999546051025 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.3440600037574768 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.342849999666214 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3432199954986572 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.345490038394928 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.34602001309394836 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3458099961280823 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.36660000681877136, 0.3476800322532654, 0.3478100001811981, 0.3489600121974945, 0.34561997652053833, 0.3441699743270874, 0.343779981136322, 0.34696000814437866, 0.3458400368690491, 0.34544000029563904, 0.34645000100135803, 0.3449699878692627, 0.34480997920036316, 0.34400999546051025, 0.3440600037574768, 0.342849999666214, 0.3432199954986572, 0.345490038394928, 0.34602001309394836, 0.3458099961280823]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 20 coderate_k => 5 coderate_n => 6 channel => fading
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(5, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(6, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=5, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69360416  running time 3.9343249797821045
+====> Epoch: 1 Average loss: 0.67702832  running time 3.8980231285095215
+====> Epoch: 1 Average loss: 0.65794338  running time 3.9922826290130615
+====> Epoch: 1 Average loss: 0.65375447  running time 3.904874563217163
+====> Epoch: 1 Average loss: 0.64829475  running time 4.023353576660156
+====> Epoch: 1 Average loss: 0.64757891  running time 4.047964572906494
+====> Test set BCE loss 0.6480377912521362 Custom Loss 0.6480377912521362 with ber  0.41026997566223145
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_5_n_6_chl_fading\attention_model_1_fading_lr_0.01_D1bl_20__k_5_n_6_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.4097300171852112 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.40365999937057495 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.401669979095459 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.39817002415657043 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.40042001008987427 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.39702001214027405 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3999900221824646 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.40067005157470703 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.399619996547699 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.3969799876213074 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.39754003286361694 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.39858999848365784 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.39976999163627625 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3991900086402893 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.39872002601623535 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.39600998163223267 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.39980000257492065 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.39774999022483826 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.3972099721431732 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.39789000153541565 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.4097300171852112, 0.40365999937057495, 0.401669979095459, 0.39817002415657043, 0.40042001008987427, 0.39702001214027405, 0.3999900221824646, 0.40067005157470703, 0.399619996547699, 0.3969799876213074, 0.39754003286361694, 0.39858999848365784, 0.39976999163627625, 0.3991900086402893, 0.39872002601623535, 0.39600998163223267, 0.39980000257492065, 0.39774999022483826, 0.3972099721431732, 0.39789000153541565]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.63467122  running time 3.9654555320739746
+====> Epoch: 2 Average loss: 0.62224639  running time 3.9590375423431396
+====> Epoch: 2 Average loss: 0.61846189  running time 4.040649175643921
+====> Epoch: 2 Average loss: 0.61538504  running time 3.9116079807281494
+====> Epoch: 2 Average loss: 0.61433540  running time 3.8597452640533447
+====> Epoch: 2 Average loss: 0.61280228  running time 3.997530937194824
+====> Test set BCE loss 0.61322420835495 Custom Loss 0.61322420835495 with ber  0.4058400094509125
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_5_n_6_chl_fading\attention_model_2_fading_lr_0.01_D1bl_20__k_5_n_6_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.40150994062423706 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.39590001106262207 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.39003998041152954 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.3847200274467468 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.3904699683189392 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.38909998536109924 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3857699930667877 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.38933998346328735 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3880099654197693 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.38607004284858704 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.39083999395370483 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.38693001866340637 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.389350026845932 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3886600136756897 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.38771000504493713 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.38742998242378235 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3878699839115143 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.38679999113082886 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.38840997219085693 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3868800103664398 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.40150994062423706, 0.39590001106262207, 0.39003998041152954, 0.3847200274467468, 0.3904699683189392, 0.38909998536109924, 0.3857699930667877, 0.38933998346328735, 0.3880099654197693, 0.38607004284858704, 0.39083999395370483, 0.38693001866340637, 0.389350026845932, 0.3886600136756897, 0.38771000504493713, 0.38742998242378235, 0.3878699839115143, 0.38679999113082886, 0.38840997219085693, 0.3868800103664398]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 20 coderate_k => 7 coderate_n => 8 channel => awgn
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(7, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=7, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69313912  running time 3.8698811531066895
+====> Epoch: 1 Average loss: 0.67428642  running time 3.854870080947876
+====> Epoch: 1 Average loss: 0.64130409  running time 4.046066045761108
+====> Epoch: 1 Average loss: 0.63436293  running time 4.038170099258423
+====> Epoch: 1 Average loss: 0.63128934  running time 4.018756628036499
+====> Epoch: 1 Average loss: 0.62834829  running time 3.945878267288208
+====> Test set BCE loss 0.6293015480041504 Custom Loss 0.6293015480041504 with ber  0.3744428753852844
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_7_n_8_chl_awgn\attention_model_1_awgn_lr_0.01_D1bl_20__k_7_n_8_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.37500715255737305 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3698499798774719 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3652285933494568 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.36540716886520386 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.36478573083877563 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.36572855710983276 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.36420708894729614 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.3662499785423279 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.36769285798072815 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.36730000376701355 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.3665500283241272 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.36821430921554565 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.36712855100631714 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3641500174999237 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.36776426434516907 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.3668143153190613 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.3662428855895996 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.36596426367759705 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.36549288034439087 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.36540716886520386 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.37500715255737305, 0.3698499798774719, 0.3652285933494568, 0.36540716886520386, 0.36478573083877563, 0.36572855710983276, 0.36420708894729614, 0.3662499785423279, 0.36769285798072815, 0.36730000376701355, 0.3665500283241272, 0.36821430921554565, 0.36712855100631714, 0.3641500174999237, 0.36776426434516907, 0.3668143153190613, 0.3662428855895996, 0.36596426367759705, 0.36549288034439087, 0.36540716886520386]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.62824277  running time 3.985283374786377
+====> Epoch: 2 Average loss: 0.62603463  running time 4.046456575393677
+====> Epoch: 2 Average loss: 0.62500832  running time 3.9061217308044434
+====> Epoch: 2 Average loss: 0.62497976  running time 3.800712823867798
+====> Epoch: 2 Average loss: 0.62617223  running time 4.000636339187622
+====> Epoch: 2 Average loss: 0.62468784  running time 4.009807586669922
+====> Test set BCE loss 0.6269727945327759 Custom Loss 0.6269727945327759 with ber  0.3753499984741211
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_7_n_8_chl_awgn\attention_model_2_awgn_lr_0.01_D1bl_20__k_7_n_8_chl_awgn_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.3758714199066162 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.37256428599357605 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3675000071525574 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.366264283657074 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.3659214377403259 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.36650002002716064 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.3670499920845032 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.36718571186065674 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3648357093334198 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.3679500222206116 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.36785000562667847 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.3673214316368103 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.36706429719924927 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3662857115268707 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.36620715260505676 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.366828590631485 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.36682143807411194 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.3674713969230652 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.3682999908924103 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.36742857098579407 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.3758714199066162, 0.37256428599357605, 0.3675000071525574, 0.366264283657074, 0.3659214377403259, 0.36650002002716064, 0.3670499920845032, 0.36718571186065674, 0.3648357093334198, 0.3679500222206116, 0.36785000562667847, 0.3673214316368103, 0.36706429719924927, 0.3662857115268707, 0.36620715260505676, 0.366828590631485, 0.36682143807411194, 0.3674713969230652, 0.3682999908924103, 0.36742857098579407]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+
+ 
+ ###############################################################################################
+Training Model for : block length => 20 coderate_k => 7 coderate_n => 8 channel => fading
+Channel_AE(
+  (enc): ENC(
+    (enc_rnn): GRU(7, 25, num_layers=3, batch_first=True)
+    (enc_linear): Linear(in_features=25, out_features=1, bias=True)
+  )
+  (dec): DEC(
+    (dropout): Dropout(p=0.0, inplace=False)
+    (attention): Attention(
+      (attn): Linear(in_features=200, out_features=1, bias=False)
+    )
+    (fc): Linear(in_features=200, out_features=100, bias=True)
+    (dec1_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec2_rnns): GRU(8, 100, num_layers=3, batch_first=True)
+    (dec_outputs): Linear(in_features=200, out_features=7, bias=True)
+  )
+)
+====> Epoch: 1 Average loss: 0.69351577  running time 3.7901291847229004
+====> Epoch: 1 Average loss: 0.68524283  running time 4.0330939292907715
+====> Epoch: 1 Average loss: 0.67282068  running time 4.011346817016602
+====> Epoch: 1 Average loss: 0.66908603  running time 3.97192645072937
+====> Epoch: 1 Average loss: 0.66753704  running time 3.9747025966644287
+====> Epoch: 1 Average loss: 0.66670195  running time 3.9094254970550537
+====> Test set BCE loss 0.6651512980461121 Custom Loss 0.6651512980461121 with ber  0.4180571436882019
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_7_n_8_chl_fading\attention_model_1_fading_lr_0.01_D1bl_20__k_7_n_8_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.41787856817245483 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.41220712661743164 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.40707144141197205 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.40915003418922424 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.4083428978919983 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.40790000557899475 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.4086357057094574 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.4083785116672516 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.40810713171958923 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.4076785445213318 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.41034287214279175 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.4089428782463074 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.4108571410179138 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.40780001878738403 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.4084785580635071 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.4076642394065857 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.4097142815589905 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.4082857072353363 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.40782856941223145 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.4081643223762512 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.41787856817245483, 0.41220712661743164, 0.40707144141197205, 0.40915003418922424, 0.4083428978919983, 0.40790000557899475, 0.4086357057094574, 0.4083785116672516, 0.40810713171958923, 0.4076785445213318, 0.41034287214279175, 0.4089428782463074, 0.4108571410179138, 0.40780001878738403, 0.4084785580635071, 0.4076642394065857, 0.4097142815589905, 0.4082857072353363, 0.40782856941223145, 0.4081643223762512]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
+====> Epoch: 2 Average loss: 0.66081887  running time 3.971142292022705
+====> Epoch: 2 Average loss: 0.65624105  running time 3.986927032470703
+====> Epoch: 2 Average loss: 0.65247998  running time 3.861829996109009
+====> Epoch: 2 Average loss: 0.65222849  running time 3.985384702682495
+====> Epoch: 2 Average loss: 0.65158403  running time 4.012575149536133
+====> Epoch: 2 Average loss: 0.65068625  running time 3.9132213592529297
+====> Test set BCE loss 0.6510865092277527 Custom Loss 0.6510865092277527 with ber  0.3991714119911194
+saved model C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_153001\model_faded\bl_20__k_7_n_8_chl_fading\attention_model_2_fading_lr_0.01_D1bl_20__k_7_n_8_chl_fading_1000_20230708_153001.pt
+SNRS [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+no pos BER specified.
+Test SNR 0.0 with ber  0.399150013923645 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 5.0 with ber  0.3946714401245117 with bler 1.0
+Punctured Test SNR 5.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 10.0 with ber  0.3920714259147644 with bler 1.0
+Punctured Test SNR 10.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 15.0 with ber  0.39114999771118164 with bler 1.0
+Punctured Test SNR 15.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 20.0 with ber  0.38980716466903687 with bler 1.0
+Punctured Test SNR 20.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 25.0 with ber  0.3910071551799774 with bler 1.0
+Punctured Test SNR 25.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 30.0 with ber  0.39032143354415894 with bler 1.0
+Punctured Test SNR 30.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 35.0 with ber  0.3898356854915619 with bler 1.0
+Punctured Test SNR 35.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 40.0 with ber  0.3898285925388336 with bler 1.0
+Punctured Test SNR 40.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 45.0 with ber  0.3905999958515167 with bler 1.0
+Punctured Test SNR 45.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 50.0 with ber  0.390328586101532 with bler 1.0
+Punctured Test SNR 50.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 55.0 with ber  0.387807160615921 with bler 1.0
+Punctured Test SNR 55.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 60.0 with ber  0.389685720205307 with bler 1.0
+Punctured Test SNR 60.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 65.0 with ber  0.3879428803920746 with bler 1.0
+Punctured Test SNR 65.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 70.0 with ber  0.38806426525115967 with bler 1.0
+Punctured Test SNR 70.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 75.0 with ber  0.38929283618927 with bler 1.0
+Punctured Test SNR 75.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 80.0 with ber  0.39221426844596863 with bler 1.0
+Punctured Test SNR 80.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 85.0 with ber  0.38946428894996643 with bler 1.0
+Punctured Test SNR 85.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 90.0 with ber  0.38930001854896545 with bler 1.0
+Punctured Test SNR 90.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 95.0 with ber  0.3889428973197937 with bler 1.0
+Punctured Test SNR 95.0 with ber  0.0 with bler 0.0
+final results on SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.399150013923645, 0.3946714401245117, 0.3920714259147644, 0.39114999771118164, 0.38980716466903687, 0.3910071551799774, 0.39032143354415894, 0.3898356854915619, 0.3898285925388336, 0.3905999958515167, 0.390328586101532, 0.387807160615921, 0.389685720205307, 0.3879428803920746, 0.38806426525115967, 0.38929283618927, 0.39221426844596863, 0.38946428894996643, 0.38930001854896545, 0.3889428973197937]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-0.0, 4.999999888090176, 10.00000005838476, 15.000000078774018, 19.999999870570157, 25.000000003171387, 30.000000467677864, 34.99999989681464, 40.00000019414476, 45.00000000317138, 50.000000083965574, 54.99999989681464, 59.99999958744239, 65.00000036280017, 70.00000024384569, 75.0000000389704, 80.00000021942404, 84.9999998008802, 89.99999964429526, 95.0000003943598]
