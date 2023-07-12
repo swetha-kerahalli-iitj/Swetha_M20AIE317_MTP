@@ -43,7 +43,7 @@ if __name__ == '__main__':
     else:
         start_epoch = int(args.init_nw_weight.split('_')[2]) + 1
         timestamp = args.init_nw_weight.split('_')[8].split('.')[0]
-    formatfile = 'attention_log_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(args.D) + '_' + str(
+    formatfile = 'attention_log_' + '_lr_' + str(args.enc_lr) + '_D' + str(args.D) + '_' + str(
         args.num_block) + '_' + timestamp + '.txt'
     logfilename = os.path.join(LOG_PATH, formatfile)
     logfile = open(logfilename, 'a')
@@ -55,35 +55,35 @@ if __name__ == '__main__':
     print("use_cuda: ", use_cuda)
     device = torch.device("cuda" if use_cuda else "cpu")
     filename_all = os.path.join(DATA_PATH,
-                            'attention_data_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(
+                            'attention_data'+'_lr_' + str(args.enc_lr) + '_D' + str(
                                 args.D) + 'All' + '_' +timestamp + '.txt')
-    test_filename_all = os.path.join(DATA_PATH,  'attention_data_test_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(args.D) + 'All' + '_' +timestamp + '.txt')
+    test_filename_all = os.path.join(DATA_PATH,  'attention_data_test'+'_lr_' + str(args.enc_lr) + '_D' + str(args.D) + 'All' + '_' +timestamp + '.txt')
     data_file_all = open(filename_all, 'a')
     # data_test_file_all = open(test_filename_all, 'a')
     for blocklen in (args.block_len):
         for coderate_k, coderate_n in zip( args.code_rate_k, args.code_rate_n):
-            for mod_type in (args.modtype):
+            for channel in (args.channel):
                 print('\n \n ###############################################################################################')
                 print('Training Model for :',
                       'block length =>',blocklen,
                       'coderate_k =>', coderate_k,
                       'coderate_n =>', coderate_n,
-                      'modulation_type =>', mod_type)
-                prefix = 'bl_' + str(blocklen) + '_' + '_k_' + str(coderate_k) +  '_n_' + str(coderate_n)+  '_mod_' + str(mod_type)
+                      'channel =>',channel)
+                prefix = 'bl_' + str(blocklen) + '_' + '_k_' + str(coderate_k) +  '_n_' + str(coderate_n)+'_chl_'+channel
                 for path in (os.path.join(DATA_PATH,prefix), os.path.join(MODEL_PATH,prefix)):
                     if not os.path.isdir(path):
                         os.makedirs(path)
                 filename = os.path.join(DATA_PATH,prefix,
-                                        'attention_data_' + str(args.channel) + '_lr_' + str(args.enc_lr) + '_D' + str(
+                                        'attention_data_' + str(channel) + '_lr_' + str(args.enc_lr) + '_D' + str(
                                             args.D) +prefix + '_' + str(args.num_block) + timestamp + '.txt')
-                test_filename = os.path.join(DATA_PATH, prefix,'attention_data_test_' + str(args.channel) + '_lr_' + str(
+                test_filename = os.path.join(DATA_PATH, prefix,'attention_data_test_' + str(channel) + '_lr_' + str(
                     args.enc_lr) + '_D' + str(
                     args.D)+prefix + '_' + str(args.num_block) + '_' + timestamp + '.txt')
                 attnFilename.append(filename)
 
                 store_files = ( filename, test_filename)
 
-                train_model(args,timestamp,store_files,start_epoch,use_cuda,blocklen,coderate_k,coderate_n,mod_type)
+                train_model(args,timestamp,store_files,start_epoch,use_cuda,blocklen,coderate_k,coderate_n,channel)
                 # f_data = open(filename, 'r')
                 # f_data.seek(0)
                 # data_file_all.write(f_data.read())
@@ -91,7 +91,7 @@ if __name__ == '__main__':
                 # f_test.seek(0)
                 # data_test_file_all.write(f_test.read())
                 data_file_all.write(
-                    str(blocklen) +' ' + str(coderate_k) + ' '+ str(coderate_n) + ' '+ str(float(coderate_k/coderate_n)) +' '+ mod_type +' '+str(filename) + ' ' + str(test_filename) + "\n")
+                    str(blocklen) +' ' + str(coderate_k) + ' '+ str(coderate_n) + ' '+ str(float(coderate_k/coderate_n)) +' '+ channel +' '+str(filename) + ' ' + str(test_filename) + "\n")
     # data_test_file_all.close()
     data_file_all.close()
     get_plots(args.PLOT_PATH,filename_all)

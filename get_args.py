@@ -7,15 +7,52 @@ def get_args():
     # Setup Parameters and get args
     ################################
     parser = argparse.ArgumentParser()
+    parser.add_argument('-encoder', choices=['Turboae_rate3_rnn',  # TurboAE Encoder, rate 1/3, RNN
+                                             'TurboAE_rate3_rnn_sys',
+                                             # TurboAE Encoder, rate 1/3, Systematic Bit hard coded.
+                                             'TurboAE_rate3_cnn',
+                                             # TurboAE Encoder, rate 1/3, Same Shape 1D CNN encoded.
+                                             'TurboAE_rate3_cnn_dense',
+                                             # Dense Encoder of TurboAE Encoder, rate 1/3, Same Shape 1D CNN encoded.
+                                             'TurboAE_rate3_cnn2d',
+                                             # TurboAE Encoder, rate 1/3, Same Shape 2D CNN encoded.
+                                             'TurboAE_rate3_cnn2d_dense',
+                                             'TurboAE_rate2_rnn',  # TurboAE Encoder, rate 1/2, RNN
+                                             'TurboAE_rate2_cnn',
+                                             # TurboAE Encoder, rate 1/2, Same Shape 1D CNN encoded.(TBD)
+                                             'rate3_cnn',  # CNN Encoder, rate 1/3. No Interleaver
+                                             'rate3_cnn2d',
+                                             'Turbo_rate3_757',  # Turbo Code, rate 1/3, 757.
+                                             'Turbo_rate3_lte',  # Turbo Code, rate 1/3, LTE.
+                                             'turboae_2int',  # experimental, use multiple interleavers
+                                             ],
+                        default='TurboAE_rate3_cnn')
 
+    parser.add_argument('-decoder', choices=['TurboAE_rate3_rnn',  # TurboAE Decoder, rate 1/3
+                                             'TurboAE_rate3_cnn',
+                                             # TurboAE Decoder, rate 1/3, Same Shape 1D CNN Decoder
+                                             'TurboAE_rate3_cnn_dense',  # Dense Encoder of TurboAE Decoder, rate 1/3
+                                             'TurboAE_rate3_cnn_2inter',  # TurboAE rate 1/3 CNN with 2 interleavers!
+                                             'TurboAE_rate3_cnn2d',
+                                             # TurboAE Encoder, rate 1/3, Same Shape 2D CNN encoded.
+                                             'TurboAE_rate3_cnn2d_dense',
+                                             'TurboAE_rate2_rnn',  # TurboAE Decoder, rate 1/2
+                                             'TurboAE_rate2_cnn',  # TurboAE Decoder, rate 1/2
+                                             'nbcjr_rate3',  # NeuralBCJR Decoder, rate 1/3, allow ft size.
+                                             'rate3_cnn',  # CNN Encoder, rate 1/3. No Interleaver
+                                             'rate3_cnn2d',
+                                             'turboae_2int',  # experimental, use multiple interleavers
+                                             ],
+                        default='TurboAE_rate3_cnn')
+    #################################
+    # Experimetal
+    #####################################
+    parser.add_argument('--is_k_same_code', action='store_true', default=False,
+                        help='train with same code for multiple times')
     ################################################################
     # Channel related parameters
     ################################################################
-    parser.add_argument('-channel', choices = ['awgn',             # AWGN
-                                               't-dist',           # Non-AWGN, ATN, with -vv associated
-                                               'radar',            # Non-AWGN, Radar, with -radar_prob, radar_power, associated
-                                               ],
-                        default = 'awgn')
+
     # Channel parameters
     parser.add_argument('-vv',type=float, default=5, help ='only for t distribution channel')
 
@@ -33,6 +70,7 @@ def get_args():
     ################################################################
     # TurboAE encoder/decoder parameters
     ################################################################
+    parser.add_argument('-joint_train', type=int, default=0, help='if 1, joint train enc+dec, 0: seperate train')
     parser.add_argument('-enc_rnn', choices=['gru', 'lstm', 'rnn'], default='gru')
     parser.add_argument('-dec_rnn', choices=['gru', 'lstm', 'rnn'], default='gru')
 
@@ -55,12 +93,12 @@ def get_args():
 
     parser.add_argument('-dropout',type=float, default=0.0)
 
-    parser.add_argument('-snr_test_start', type=float, default=-1.5)
-    parser.add_argument('-snr_test_end', type=float, default=4.0)
-    parser.add_argument('-snr_points', type=int, default=12)
+    parser.add_argument('-snr_test_start', type=float, default=-0)
+    parser.add_argument('-snr_test_end', type=float, default=100)
+    parser.add_argument('-snr_points', type=int, default=20)
 
     parser.add_argument('-batch_size', type=int, default=100)
-    parser.add_argument('-num_epoch', type=int, default=50)
+    parser.add_argument('-num_epoch', type=int, default=2)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
     # parser.add_argument('-block_len',type = tuple , default=(10,20,50,100))
@@ -70,13 +108,16 @@ def get_args():
     # parser.add_argument('-code_rate_n', type = tuple , default=(4,6,8))
     parser.add_argument('-code_rate_k', type=tuple, default=(3, 5, 7))
     parser.add_argument('-code_rate_n', type=tuple, default=(4, 6, 8))
+    # Non-AWGN, Radar, with -radar_prob, radar_power, associated
+    parser.add_argument('-channel',type=tuple, default=('awgn','fading'))
+
     parser.add_argument('-modtype', type = tuple , default=('QAM16','QAM64')) #'LDPC',
     parser.add_argument('-block_len_low', type=int, default=10)
     parser.add_argument('-block_len_high', type=int, default=200)
     parser.add_argument('--is_variable_block_len', action='store_true', default=False,
                         help='training with different block length')
 
-    parser.add_argument('-num_block', type=int, default=10000)
+    parser.add_argument('-num_block', type=int, default=100)
 
     parser.add_argument('-test_channel_mode',
                         choices=['block_norm','block_norm_ste'],
