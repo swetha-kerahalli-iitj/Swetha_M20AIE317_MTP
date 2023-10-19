@@ -12,7 +12,6 @@ import commpy.channels as chan
 import commpy.links as lk
 import commpy.modulation as mod
 import commpy.utilities as util
-import tf
 import torch
 
 # Authors: CommPy contributors
@@ -26,7 +25,7 @@ from scipy import special
 from scipy.special import erfc
 
 from get_args import get_args
-from plot123 import get_plots
+from plot import get_plots
 from utils import get_theo_ber, get_modem, snr_db2sigma, generate_noise_SNR, generate_noise_SNR_Sim
 
 if __name__ == '__main__':
@@ -134,24 +133,14 @@ if __name__ == '__main__':
     # plt.show()
     # exit()
 
-    a = torch.ones(2, 2)
-    b = torch.tensor([[0.5, 1.5], [2.5,3.5]])
-
-    print('Before:')
-    print(a)
-    print(b)
-    print('\nAfter multiplying')
-    print(a + b)
-    print(b)
-    print('\nAfter adding:')
-    print(a.add_(b))
-    print(a)
-    print(b)
-
-    exit()
-    path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230523_231429_EPoc_50\data_faded'
-    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230523_231429_EPoc_50\plot_faded'
-    filename = os.path.join(path,r'attention_data_awgn_lr_0.01_D1All_20230523_231429.txt')
+    # a = np.arange(18).reshape(3,3,2)
+    # print('all',a)
+    # print(':,:,1',a[:,:,1:])
+    # print(':, :, 0',a[:, :, 0:1])
+    # exit()
+    path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_182317\data_faded'
+    plot_path = r'C:\WorkSpace\FadingChannels\Swetha_M20AIE317_MTP\Fading\20230708_182317\plot_faded'
+    filename = os.path.join(path,r'attention_data_lr_0.01_D1All_20230708_182317.txt')
 
     get_plots(plot_path,filename)
     # test_data = np.loadtxt(os.path.join(path,r'bl_20__k_2_n_3',r'attention_data_test_awgn_lr_0.01_D1bl_20__k_2_n_3_500_20230325_180459.txt')).T

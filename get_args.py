@@ -61,9 +61,9 @@ def get_args():
 
     # continuous channels training algorithms
     parser.add_argument('-train_enc_channel_low', type=float, default  = 0.0)
-    parser.add_argument('-train_enc_channel_high', type=float, default = 100)
-    parser.add_argument('-train_dec_channel_low', type=float, default  = 0.0)
-    parser.add_argument('-train_dec_channel_high', type=float, default = 100.0)
+    parser.add_argument('-train_enc_channel_high', type=float, default = 1.0)
+    parser.add_argument('-train_dec_channel_low', type=float, default  = -1.5)
+    parser.add_argument('-train_dec_channel_high', type=float, default = 2.0)
 
     parser.add_argument('-init_nw_weight', type=str, default='default')
 
@@ -90,31 +90,6 @@ def get_args():
     ################################################################
     parser.add_argument('-num_train_dec', type=int, default=5, help ='')
     parser.add_argument('-num_train_enc', type=int, default=1, help ='')
-    parser.add_argument('-num_train_mod', type=int, default=1, help='')
-    parser.add_argument('-num_train_demod', type=int, default=5, help='')
-    parser.add_argument('-num_iteration', type=int, default=6)
-    # CNN related
-    parser.add_argument('-enc_kernel_size', type=int, default=5)
-    parser.add_argument('-dec_kernel_size', type=int, default=5)
-    parser.add_argument('-extrinsic', type=int, default=1)
-    parser.add_argument('-num_iter_ft', type=int, default=5)
-
-
-    parser.add_argument('-mod_pc',
-                        choices=['qpsk', 'symbol_power', 'block_power'],
-                        default='qpsk')
-
-    parser.add_argument('-is_interleave', type=int, default=1,
-                        help='0 is not interleaving, 1 is fixed interleaver, >1 is random interleaver')
-    parser.add_argument('-is_same_interleaver', type=int, default=1,
-                        help='not random interleaver, potentially finetune?')
-
-    parser.add_argument('-mod_num_layer', type=int, default=1, help='')
-    parser.add_argument('-mod_num_unit', type=int, default=20, help='')
-    parser.add_argument('-demod_num_layer', type=int, default=1, help='')
-    parser.add_argument('-demod_num_unit', type=int, default=20, help='')
-    parser.add_argument('-mod_lr', type=float, default=0.005, help='modulation leanring rate')
-    parser.add_argument('-demod_lr', type=float, default=0.005, help='demodulation leanring rate')
 
     parser.add_argument('-dropout',type=float, default=0.0)
 
@@ -122,26 +97,21 @@ def get_args():
     parser.add_argument('-snr_test_end', type=float, default=100)
     parser.add_argument('-snr_points', type=int, default=20)
 
-    parser.add_argument('-batch_size', type=int, default=5)
+    parser.add_argument('-batch_size', type=int, default=100)
     parser.add_argument('-num_epoch', type=int, default=2)
     parser.add_argument('-test_ratio', type=int, default=1,help = 'only for high SNR testing')
     # block length related
     # parser.add_argument('-block_len',type = tuple , default=(10,20,50,100))
-    parser.add_argument('-block_len', type=tuple, default=(2, 4))
+    parser.add_argument('-block_len', type=tuple, default=(10, 20))
     # code rate is k/n, so that enable multiple code rates. This has to match the encoder/decoder nw structure.
     # parser.add_argument('-code_rate_k', type = tuple , default=(3,5,7))
     # parser.add_argument('-code_rate_n', type = tuple , default=(4,6,8))
-    # parser.add_argument('-code_rate_k', type=tuple, default=(1,1))#, 5, 7))
-    # parser.add_argument('-code_rate_n', type=tuple, default=(3,3))#, 6, 8))
-    # parser.add_argument('-code_rate_n', type=tuple, default=(3,3))#, 6, 8))
-    parser.add_argument('-code_rate_k', type=int, default=1)#, 5, 7))
-    parser.add_argument('-code_rate_n', type=int, default=3)#, 6, 8))
+    parser.add_argument('-code_rate_k', type=tuple, default=(3, 5, 7))
+    parser.add_argument('-code_rate_n', type=tuple, default=(4, 6, 8))
     # Non-AWGN, Radar, with -radar_prob, radar_power, associated
     parser.add_argument('-channel',type=tuple, default=('awgn','fading'))
 
-    parser.add_argument('-modtype', type = tuple , default=('QAM2','QAM4')) #'LDPC',
-    parser.add_argument('-mod_rate', type=tuple, default=(2,4), help='code: (B, L, R), mode_output (B, L*R/mod_rate, 2)')
-
+    parser.add_argument('-modtype', type = tuple , default=('QAM16','QAM64')) #'LDPC',
     parser.add_argument('-block_len_low', type=int, default=10)
     parser.add_argument('-block_len_high', type=int, default=200)
     parser.add_argument('--is_variable_block_len', action='store_true', default=False,
