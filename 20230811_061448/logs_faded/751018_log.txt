@@ -1,0 +1,323 @@
+using random interleaver [26 86  2 55 75 93 16 73 54 95 53 92 78 13  7 30 22 24 33  8 43 62  3 71
+ 45 48  6 99 82 76 60 80 90 68 51 27 18 56 63 74  1 61 42 41  4 15 17 40
+ 38  5 91 59  0 34 28 50 11 35 23 52 10 31 66 57 79 85 32 84 14 89 19 29
+ 49 97 98 69 20 94 72 77 25 37 81 46 39 65 58 12 88 70 87 36 21 83  9 96
+ 67 64 47 44] [18 29 64 92 72 87  5 15 12 17 61 76  9 78 80  7 33  6 37 74 79  1 45 28
+ 60 52 25 39 97 44 16 55 83 49 22 70 47  4 82 94 53 66 26 84 31 63  8 75
+ 98 57 71 99 86 96 69 24 30 13 40 56 68 95 81 19 38 91 54 32 51 85 11 89
+ 90 36 65 88 41 14 27 50 20 46 67 35 62  2 59 23 58 43 10  0 73 21 77 42
+  3 93 48 34]
+Channel_ModAE(
+  (enc): ENC_interCNN2D(
+    (enc_cnn_1): SameShapeConv2d(
+      (cnns): ModuleList(
+        (0): Conv2d(1, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+      )
+    )
+    (enc_linear_1): SameShapeConv2d(
+      (cnns): ModuleList(
+        (0): Conv2d(100, 1, kernel_size=(1, 1), stride=(1, 1))
+      )
+    )
+    (enc_cnn_2): SameShapeConv2d(
+      (cnns): ModuleList(
+        (0): Conv2d(1, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+      )
+    )
+    (enc_linear_2): SameShapeConv2d(
+      (cnns): ModuleList(
+        (0): Conv2d(100, 1, kernel_size=(1, 1), stride=(1, 1))
+      )
+    )
+    (enc_cnn_3): SameShapeConv2d(
+      (cnns): ModuleList(
+        (0): Conv2d(1, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+      )
+    )
+    (enc_linear_3): SameShapeConv2d(
+      (cnns): ModuleList(
+        (0): Conv2d(100, 1, kernel_size=(1, 1), stride=(1, 1))
+      )
+    )
+    (interleaver): Interleaver2D()
+  )
+  (dec): DEC_LargeCNN2D(
+    (interleaver): Interleaver2D()
+    (deinterleaver): DeInterleaver2D()
+    (dec1_cnns): ModuleList(
+      (0): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (1): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (2): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (3): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (4): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (5): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+    )
+    (dec2_cnns): ModuleList(
+      (0): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (1): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (2): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (3): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (4): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+      (5): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(7, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (1): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (2): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (3): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+          (4): Conv2d(100, 100, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+        )
+      )
+    )
+    (dec1_outputs): ModuleList(
+      (0): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (1): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (2): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (3): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (4): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (5): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+    )
+    (dec2_outputs): ModuleList(
+      (0): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (1): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (2): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (3): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (4): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 5, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+      (5): SameShapeConv2d(
+        (cnns): ModuleList(
+          (0): Conv2d(100, 1, kernel_size=(1, 1), stride=(1, 1))
+        )
+      )
+    )
+  )
+  (mod): Modulation(
+    (mod_layer): SameShapeConv1d(
+      (cnns): ModuleList(
+        (0): Conv1d(2, 20, kernel_size=(1,), stride=(1,))
+      )
+    )
+    (mod_final): SameShapeConv1d(
+      (cnns): ModuleList(
+        (0): Conv1d(20, 2, kernel_size=(1,), stride=(1,))
+      )
+    )
+  )
+  (demod): DeModulation(
+    (demod_layer): SameShapeConv1d(
+      (cnns): ModuleList(
+        (0): Conv1d(2, 20, kernel_size=(1,), stride=(1,))
+      )
+    )
+    (demod_final): SameShapeConv1d(
+      (cnns): ModuleList(
+        (0): Conv1d(20, 2, kernel_size=(1,), stride=(1,))
+      )
+    )
+  )
+)
+====> Epoch: 1 Average loss: 0.69369692  running time 191.68609929084778
+====> Epoch: 1 Average loss: 20.58613679  running time 112.61190605163574
+====> Epoch: 1 Average loss: 50.17800026  running time 123.22974038124084
+====> Epoch: 1 Average loss: 49.76099968  running time 127.52919816970825
+====> Epoch: 1 Average loss: 50.11100006  running time 127.89928007125854
+====> Epoch: 1 Average loss: 50.06299973  running time 127.99067521095276
+====> Epoch: 1 Average loss: 49.88500023  running time 127.72143363952637
+====> Epoch: 1 Average loss: 49.81000061  running time 128.60241198539734
+====> Epoch: 1 Average loss: 50.27399979  running time 127.35926413536072
+====> Epoch: 1 Average loss: 50.05900002  running time 127.94189715385437
+====> Epoch: 1 Average loss: 49.90999985  running time 127.05168390274048
+====> Epoch: 1 Average loss: 49.86099968  running time 126.69244456291199
+====> Test set BCE loss 49.862998962402344 Custom Loss 49.862998962402344 with ber  0.49862998723983765
+====> Epoch: 2 Average loss: 49.87699966  running time 127.5370225906372
+====> Epoch: 2 Average loss: 49.97200050  running time 128.5825753211975
+====> Epoch: 2 Average loss: 50.24799995  running time 128.81978130340576
+====> Epoch: 2 Average loss: 49.70999985  running time 128.86530780792236
+====> Epoch: 2 Average loss: 49.96299934  running time 129.48543167114258
+====> Epoch: 2 Average loss: 50.17700043  running time 128.8543562889099
+====> Epoch: 2 Average loss: 49.82399979  running time 127.83822298049927
+====> Epoch: 2 Average loss: 50.06699982  running time 128.33413887023926
+====> Epoch: 2 Average loss: 50.08000031  running time 128.88563895225525
+====> Epoch: 2 Average loss: 50.11400032  running time 127.87572860717773
+====> Epoch: 2 Average loss: 49.98100014  running time 127.58623194694519
+====> Epoch: 2 Average loss: 50.02299995  running time 127.21837544441223
+====> Test set BCE loss 49.97100067138672 Custom Loss 49.97100067138672 with ber  0.4997100234031677
+saved model ./tmp/torch_model_751018.pt
+SNRS [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+no pos BER specified.
+Test SNR -1.5 with ber  0.4989200234413147 with bler 1.0
+Punctured Test SNR -1.5 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR -1.0 with ber  0.5008400082588196 with bler 1.0
+Punctured Test SNR -1.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR -0.5 with ber  0.5004200339317322 with bler 1.0
+Punctured Test SNR -0.5 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 0.0 with ber  0.4986800253391266 with bler 1.0
+Punctured Test SNR 0.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 0.5 with ber  0.49884000420570374 with bler 1.0
+Punctured Test SNR 0.5 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 1.0 with ber  0.5000700354576111 with bler 1.0
+Punctured Test SNR 1.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 1.5 with ber  0.5009100437164307 with bler 1.0
+Punctured Test SNR 1.5 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 2.0 with ber  0.4974699914455414 with bler 1.0
+Punctured Test SNR 2.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 2.5 with ber  0.4992600083351135 with bler 1.0
+Punctured Test SNR 2.5 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 3.0 with ber  0.5014100074768066 with bler 1.0
+Punctured Test SNR 3.0 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 3.5 with ber  0.501710057258606 with bler 1.0
+Punctured Test SNR 3.5 with ber  0.0 with bler 0.0
+no pos BER specified.
+Test SNR 4.0 with ber  0.5018699765205383 with bler 1.0
+Punctured Test SNR 4.0 with ber  0.0 with bler 0.0
+final results on SNRs  [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+BER [0.4989200234413147, 0.5008400082588196, 0.5004200339317322, 0.4986800253391266, 0.49884000420570374, 0.5000700354576111, 0.5009100437164307, 0.4974699914455414, 0.4992600083351135, 0.5014100074768066, 0.501710057258606, 0.5018699765205383]
+BLER [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+final results on punctured SNRs  [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+BER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+BLER [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+encoder power is tensor(1.)
+adjusted SNR should be [-1.4999997446509226, -1.0000000166986343, -0.49999973308696327, -0.0, 0.5000001308463472, 1.0000002900227403, 1.5000000201403676, 2.0000002404171053, 2.5000000877622415, 3.0000002493010487, 3.500000207085638, 3.999999717024358]
