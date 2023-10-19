@@ -13,7 +13,7 @@ def get_plots_all(plot_path,filename):
     fig = plt.figure()
     ax = plt.subplot(111)
     for test_row in file_data:
-        blocklen, coderate_k, coderate_n, coderate, channel, filename, testfilename = test_row
+        blocklen, coderate_k, coderate_n, coderate, channel, mod_type,filename, testfilename = test_row
         blocklens.append(blocklen)
         channels.append(channel)
         coderate_rounded = round(float(coderate), 2)
@@ -61,7 +61,7 @@ def get_plots_custom(plot_path,filename):
     color_legend= ("#CBF296","#BDF296","#AEF296","#A3F296","#97F296","#96F2A4","#96F2B2","#96F2BA","#96F2CB")
     color_legend_LC =( "#D296F2","#DC96F2","#EB96F2","#F296F1","#F296EE","#F296E3","#F296D8","#F296D2","#F296C5")
     for test_row in file_data:
-        blocklen, coderate_k, coderate_n, coderate, channel, filename, testfilename = test_row
+        blocklen, coderate_k, coderate_n, coderate, channel, mod_type,filename, testfilename = test_row
         blocklens.append(blocklen)
         channels.append(channel)
         coderate_rounded = round(float(coderate), 2)
